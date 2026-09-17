@@ -1419,7 +1419,7 @@ footer {
                 id="guestGreeting"
                 class="guest-greeting"
             >
-                Loading your invitation...
+                Personalising your invitation...
             </p>
 
         </div>
@@ -1834,7 +1834,7 @@ footer {
                         id="rsvpSubmitButton"
                         disabled
                     >
-                        Loading Invitation...
+                        Personalising your invitation...
                     </button>
 
                 </form>
@@ -1874,7 +1874,7 @@ footer {
                     onclick="downloadInvitationPDF()"
                     disabled
                 >
-                    Loading Invitation...
+                    Personalising your invitation...
                 </button>
 
                 <p class="download-note">
@@ -1889,7 +1889,7 @@ footer {
     <footer>
 
         <div class="footer-names">
-            Nishi & Manu
+            N&M 27
         </div>
 
         <div class="footer-date">
@@ -2081,6 +2081,64 @@ function getInvitationCode() {
 
 async function loadGuestInvitation() {
 
+    const envelopeGuest =
+        document.getElementById(
+            "envelopeGuest"
+        );
+
+    const guestGreeting =
+        document.getElementById(
+            "guestGreeting"
+        );
+
+    const rsvpSubmitButton =
+        document.getElementById(
+            "rsvpSubmitButton"
+        );
+
+    const downloadInvitationButton =
+        document.getElementById(
+            "downloadInvitationButton"
+        );
+
+
+
+    if (envelopeGuest) {
+
+        envelopeGuest.textContent =
+            "Personalising your invitation...";
+
+    }
+
+
+
+    if (guestGreeting) {
+
+        guestGreeting.textContent =
+            "Personalising your invitation...";
+
+    }
+
+
+
+    if (rsvpSubmitButton) {
+
+        rsvpSubmitButton.textContent =
+            "Personalising your invitation...";
+
+    }
+
+
+
+    if (downloadInvitationButton) {
+
+        downloadInvitationButton.textContent =
+            "Personalising your invitation...";
+
+    }
+
+
+
     invitationCode =
         getInvitationCode();
 
@@ -2146,12 +2204,12 @@ async function loadGuestInvitation() {
 
 
 
-        const envelopeGuest =
+        envelopeGuest =
             document.getElementById(
                 "envelopeGuest"
             );
 
-        const guestGreeting =
+        guestGreeting =
             document.getElementById(
                 "guestGreeting"
             );
@@ -2171,12 +2229,12 @@ async function loadGuestInvitation() {
                 "fullName"
             );
 
-        const rsvpSubmitButton =
+        rsvpSubmitButton =
             document.getElementById(
                 "rsvpSubmitButton"
             );
 
-        const downloadInvitationButton =
+        downloadInvitationButton =
             document.getElementById(
                 "downloadInvitationButton"
             );
