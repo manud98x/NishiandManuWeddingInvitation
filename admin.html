@@ -1,0 +1,2161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Nishi & Manu · Invitation Admin</title>
+
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#fdfaf6">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Great+Vibes&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+
+    min-height: 100vh;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #fffdf9 0%,
+            #fdfaf6 52%,
+            #f4ead9 100%
+        );
+
+    color: #3c3028;
+
+    font-family:
+        "Cormorant Garamond",
+        serif;
+}
+
+button,
+input,
+textarea {
+    font-family: inherit;
+}
+
+button {
+    -webkit-tap-highlight-color:
+        transparent;
+}
+
+.page {
+    width: min(920px, 100%);
+
+    margin: 0 auto;
+
+    padding:
+        35px 16px
+        70px;
+}
+
+.header {
+    text-align: center;
+
+    margin-bottom: 28px;
+}
+
+.header-small {
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-size: 11px;
+
+    letter-spacing: 4px;
+
+    text-transform:
+        uppercase;
+
+    color: #a67c00;
+}
+
+.header-title {
+    margin:
+        8px 0 0;
+
+    font-family:
+        "Great Vibes",
+        cursive;
+
+    font-size:
+        clamp(
+            54px,
+            13vw,
+            86px
+        );
+
+    font-weight: 400;
+
+    color: #b08b32;
+}
+
+.header-subtitle {
+    margin-top: 4px;
+
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-size: 12px;
+
+    letter-spacing: 3px;
+
+    text-transform:
+        uppercase;
+
+    color: #806d5a;
+}
+
+.panel {
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .83
+        );
+
+    border:
+        1px solid
+        rgba(
+            198,
+            162,
+            82,
+            .28
+        );
+
+    border-radius: 8px;
+
+    padding:
+        28px 20px;
+
+    margin-bottom: 20px;
+
+    box-shadow:
+        0 15px 45px
+        rgba(
+            74,
+            55,
+            30,
+            .07
+        );
+}
+
+.panel-title {
+    margin:
+        0 0 18px;
+
+    text-align: center;
+
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-size: 15px;
+
+    font-weight: 500;
+
+    letter-spacing: 4px;
+
+    text-transform:
+        uppercase;
+
+    color: #a67c00;
+}
+
+.panel-copy {
+    margin:
+        0 auto 20px;
+
+    max-width: 600px;
+
+    text-align: center;
+
+    font-size: 18px;
+
+    line-height: 1.5;
+
+    color: #6e5c4e;
+}
+
+.field {
+    margin-bottom: 15px;
+}
+
+.field label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-size: 11px;
+
+    letter-spacing: 2px;
+
+    text-transform:
+        uppercase;
+
+    color: #806c58;
+}
+
+.field input,
+.field textarea {
+    width: 100%;
+
+    border:
+        1px solid
+        #ddcda9;
+
+    border-radius: 5px;
+
+    padding:
+        14px 15px;
+
+    background: #fffdf9;
+
+    color: #493b30;
+
+    font-size: 17px;
+
+    outline: none;
+
+    transition:
+        border .2s ease,
+        box-shadow .2s ease;
+}
+
+.field textarea {
+    min-height: 150px;
+
+    resize: vertical;
+}
+
+.field input:focus,
+.field textarea:focus {
+    border-color: #c7a34d;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(
+            212,
+            175,
+            55,
+            .10
+        );
+}
+
+.button {
+    width: 100%;
+
+    border: 0;
+
+    border-radius: 5px;
+
+    padding:
+        14px 16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #a67c00,
+            #d4af37,
+            #a67c00
+        );
+
+    background-size:
+        200% auto;
+
+    color: #fff;
+
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-size: 12px;
+
+    letter-spacing: 2px;
+
+    text-transform:
+        uppercase;
+
+    cursor: pointer;
+
+    transition:
+        background-position .3s ease,
+        transform .15s ease,
+        opacity .2s ease;
+}
+
+.button:hover {
+    background-position:
+        right center;
+}
+
+.button:active {
+    transform:
+        scale(.99);
+}
+
+.button:disabled {
+    opacity: .55;
+
+    cursor:
+        not-allowed;
+}
+
+.button.secondary {
+    background: #fffaf0;
+
+    color: #8b6a18;
+
+    border:
+        1px solid
+        rgba(
+            166,
+            124,
+            0,
+            .35
+        );
+}
+
+.button.danger {
+    background: #fff7f4;
+
+    color: #8b4337;
+
+    border:
+        1px solid
+        rgba(
+            139,
+            67,
+            55,
+            .25
+        );
+}
+
+.button-row {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(
+                0,
+                1fr
+            )
+        );
+
+    gap: 10px;
+}
+
+.hidden {
+    display:
+        none !important;
+}
+
+.status {
+    margin-top: 14px;
+
+    padding: 12px;
+
+    border-radius: 5px;
+
+    text-align: center;
+
+    font-size: 16px;
+
+    line-height: 1.4;
+}
+
+.status.success {
+    background: #fffaf0;
+
+    border:
+        1px solid
+        rgba(
+            212,
+            175,
+            55,
+            .45
+        );
+
+    color: #80652d;
+}
+
+.status.error {
+    background: #fff6f2;
+
+    border:
+        1px solid
+        rgba(
+            151,
+            77,
+            61,
+            .30
+        );
+
+    color: #8b4337;
+}
+
+.toolbar {
+    display: grid;
+
+    grid-template-columns:
+        1fr auto;
+
+    gap: 10px;
+
+    align-items: center;
+
+    margin-bottom: 16px;
+}
+
+.search {
+    width: 100%;
+
+    border:
+        1px solid
+        #ddcda9;
+
+    border-radius: 5px;
+
+    padding:
+        12px 14px;
+
+    background:
+        #fffdf9;
+
+    font-size: 16px;
+
+    color: #493b30;
+
+    outline: none;
+}
+
+.counter {
+    white-space: nowrap;
+
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-size: 11px;
+
+    letter-spacing: 2px;
+
+    text-transform:
+        uppercase;
+
+    color: #a67c00;
+}
+
+.guest-list {
+    display: grid;
+
+    gap: 12px;
+}
+
+.guest-card {
+    border:
+        1px solid
+        rgba(
+            198,
+            162,
+            82,
+            .25
+        );
+
+    border-radius: 7px;
+
+    padding: 16px;
+
+    background:
+        rgba(
+            255,
+            253,
+            249,
+            .92
+        );
+}
+
+.guest-name {
+    font-size: 22px;
+
+    font-weight: 600;
+
+    color: #493b30;
+
+    word-break:
+        break-word;
+}
+
+.guest-link {
+    margin-top: 6px;
+
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-size: 11px;
+
+    line-height: 1.45;
+
+    color: #8b7766;
+
+    word-break:
+        break-all;
+}
+
+.guest-actions {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(
+                0,
+                1fr
+            )
+        );
+
+    gap: 8px;
+
+    margin-top: 14px;
+}
+
+.guest-actions .button {
+    padding:
+        11px 8px;
+
+    font-size: 10px;
+
+    letter-spacing: 1px;
+}
+
+.empty {
+    padding:
+        30px 10px;
+
+    text-align: center;
+
+    color: #8b7766;
+
+    font-size: 18px;
+}
+
+.help {
+    text-align: center;
+
+    color: #8b7766;
+
+    font-size: 15px;
+
+    line-height: 1.5;
+}
+
+code {
+    font-family:
+        ui-monospace,
+        SFMono-Regular,
+        Menlo,
+        Consolas,
+        monospace;
+
+    font-size: .9em;
+}
+
+@media (max-width: 600px) {
+
+    .page {
+        padding-top: 24px;
+    }
+
+    .panel {
+        padding:
+            24px 16px;
+    }
+
+    .button-row {
+        grid-template-columns:
+            1fr;
+    }
+
+    .guest-actions {
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+    .guest-actions .delete-action {
+        grid-column:
+            1 / -1;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <header class="header">
+
+        <div class="header-small">
+            Nishi & Manu
+        </div>
+
+        <h1 class="header-title">
+            Invitation Admin
+        </h1>
+
+        <div class="header-subtitle">
+            Mobile Guest Link Generator
+        </div>
+
+    </header>
+
+
+
+    <!-- LOGIN -->
+
+    <section
+        class="panel"
+        id="loginPanel"
+    >
+
+        <h2 class="panel-title">
+            Admin Access
+        </h2>
+
+        <p class="panel-copy">
+            Enter your invitation admin password.
+            It is kept only for this browser tab.
+        </p>
+
+        <div class="field">
+
+            <label for="adminSecret">
+                Admin Password
+            </label>
+
+            <input
+                type="password"
+                id="adminSecret"
+                autocomplete="current-password"
+                placeholder="Enter password"
+            >
+
+        </div>
+
+        <button
+            class="button"
+            id="loginButton"
+            type="button"
+        >
+            Open Generator
+        </button>
+
+        <div
+            id="loginStatus"
+            class="status error hidden"
+        ></div>
+
+    </section>
+
+
+
+    <!-- ADMIN APP -->
+
+    <div
+        id="adminApp"
+        class="hidden"
+    >
+
+        <section class="panel">
+
+            <h2 class="panel-title">
+                Create Invitations
+            </h2>
+
+            <p class="panel-copy">
+                Add one name or paste multiple names,
+                one guest or household per line.
+                Existing names keep their existing links.
+            </p>
+
+            <div class="field">
+
+                <label for="guestNames">
+                    Guest Names
+                </label>
+
+                <textarea
+                    id="guestNames"
+                    placeholder="Sarah Smith&#10;John & Mary Perera&#10;David Silva"
+                ></textarea>
+
+            </div>
+
+            <button
+                class="button"
+                id="generateButton"
+                type="button"
+            >
+                Generate Invitations
+            </button>
+
+            <div
+                id="generateStatus"
+                class="status success hidden"
+            ></div>
+
+        </section>
+
+
+
+        <section class="panel">
+
+            <h2 class="panel-title">
+                Your Invitations
+            </h2>
+
+            <div class="toolbar">
+
+                <input
+                    class="search"
+                    type="search"
+                    id="searchGuests"
+                    placeholder="Search guests..."
+                >
+
+                <div
+                    class="counter"
+                    id="guestCount"
+                >
+                    0 Guests
+                </div>
+
+            </div>
+
+            <div class="button-row">
+
+                <button
+                    class="button secondary"
+                    id="refreshButton"
+                    type="button"
+                >
+                    Refresh
+                </button>
+
+                <button
+                    class="button secondary"
+                    id="downloadCsvButton"
+                    type="button"
+                >
+                    Download CSV
+                </button>
+
+            </div>
+
+            <div
+                class="guest-list"
+                id="guestList"
+            ></div>
+
+        </section>
+
+
+
+        <section class="panel">
+
+            <h2 class="panel-title">
+                Admin Session
+            </h2>
+
+            <p class="help">
+                The admin password is stored in
+                <code>sessionStorage</code>,
+                so it is cleared when the browser
+                session ends.
+            </p>
+
+            <button
+                class="button danger"
+                id="logoutButton"
+                type="button"
+            >
+                Log Out
+            </button>
+
+        </section>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+const API =
+    "/.netlify/functions/admin-invitations";
+
+
+
+let invitations =
+    [];
+
+
+
+function getSecret() {
+
+    return (
+        sessionStorage
+            .getItem(
+                "weddingInviteAdminSecret"
+            ) || ""
+    );
+
+}
+
+
+
+function setSecret(
+    value
+) {
+
+    sessionStorage
+        .setItem(
+            "weddingInviteAdminSecret",
+            value
+        );
+
+}
+
+
+
+function clearSecret() {
+
+    sessionStorage
+        .removeItem(
+            "weddingInviteAdminSecret"
+        );
+
+}
+
+
+
+async function adminRequest(
+    options = {}
+) {
+
+    const secret =
+        getSecret();
+
+
+
+    const headers = {
+
+        "x-admin-secret":
+            secret,
+
+        ...(
+            options.headers ||
+            {}
+        )
+
+    };
+
+
+
+    if (
+        options.body &&
+        !headers[
+            "Content-Type"
+        ]
+    ) {
+
+        headers[
+            "Content-Type"
+        ] =
+            "application/json";
+
+    }
+
+
+
+    const response =
+        await fetch(
+            API,
+            {
+                ...options,
+                headers
+            }
+        );
+
+
+
+    let data =
+        {};
+
+
+
+    try {
+
+        data =
+            await response.json();
+
+    } catch {
+
+        data = {};
+
+    }
+
+
+
+    if (
+        !response.ok
+    ) {
+
+        const error =
+            new Error(
+                data.error ||
+                "Request failed."
+            );
+
+        error.status =
+            response.status;
+
+        throw error;
+
+    }
+
+
+
+    return data;
+
+}
+
+
+
+function showStatus(
+    element,
+    message,
+    type = "success"
+) {
+
+    element.textContent =
+        message;
+
+    element.className =
+        `status ${type}`;
+
+}
+
+
+
+function hideStatus(
+    element
+) {
+
+    element.classList.add(
+        "hidden"
+    );
+
+}
+
+
+
+async function login() {
+
+    const input =
+        document.getElementById(
+            "adminSecret"
+        );
+
+    const button =
+        document.getElementById(
+            "loginButton"
+        );
+
+    const status =
+        document.getElementById(
+            "loginStatus"
+        );
+
+
+
+    const secret =
+        input.value.trim();
+
+
+
+    if (!secret) {
+
+        showStatus(
+            status,
+            "Enter your admin password.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+
+    setSecret(
+        secret
+    );
+
+
+
+    button.disabled =
+        true;
+
+    button.textContent =
+        "Checking...";
+
+
+
+    try {
+
+        await loadInvitations();
+
+        document
+            .getElementById(
+                "loginPanel"
+            )
+            .classList
+            .add(
+                "hidden"
+            );
+
+        document
+            .getElementById(
+                "adminApp"
+            )
+            .classList
+            .remove(
+                "hidden"
+            );
+
+        hideStatus(
+            status
+        );
+
+    } catch (
+        error
+    ) {
+
+        clearSecret();
+
+        showStatus(
+            status,
+            error.status === 401
+                ? "Incorrect admin password."
+                : error.message,
+            "error"
+        );
+
+    } finally {
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            "Open Generator";
+
+    }
+
+}
+
+
+
+async function loadInvitations() {
+
+    const result =
+        await adminRequest();
+
+
+
+    invitations =
+        result.invitations ||
+        [];
+
+
+
+    renderInvitations();
+
+}
+
+
+
+function normalizeInputNames(
+    value
+) {
+
+    const seen =
+        new Set();
+
+
+
+    return value
+        .split(
+            /\r?\n/
+        )
+        .map(
+            name =>
+                name
+                    .replace(
+                        /\s+/g,
+                        " "
+                    )
+                    .trim()
+        )
+        .filter(
+            name => {
+
+                if (!name) {
+
+                    return false;
+
+                }
+
+
+
+                const key =
+                    name
+                        .toLocaleLowerCase();
+
+
+
+                if (
+                    seen.has(
+                        key
+                    )
+                ) {
+
+                    return false;
+
+                }
+
+
+
+                seen.add(
+                    key
+                );
+
+                return true;
+
+            }
+        );
+
+}
+
+
+
+async function generateInvitations() {
+
+    const textarea =
+        document.getElementById(
+            "guestNames"
+        );
+
+    const button =
+        document.getElementById(
+            "generateButton"
+        );
+
+    const status =
+        document.getElementById(
+            "generateStatus"
+        );
+
+
+
+    const names =
+        normalizeInputNames(
+            textarea.value
+        );
+
+
+
+    if (
+        names.length === 0
+    ) {
+
+        showStatus(
+            status,
+            "Add at least one guest name.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+
+    button.disabled =
+        true;
+
+    button.textContent =
+        "Generating...";
+
+
+
+    try {
+
+        const result =
+            await adminRequest(
+                {
+                    method:
+                        "POST",
+
+                    body:
+                        JSON.stringify(
+                            {
+                                names
+                            }
+                        )
+                }
+            );
+
+
+
+        invitations =
+            result.invitations ||
+            invitations;
+
+
+
+        renderInvitations();
+
+
+
+        const created =
+            result.createdCount ||
+            0;
+
+        const existing =
+            result.existingCount ||
+            0;
+
+
+
+        showStatus(
+            status,
+            `${created} new invitation${created === 1 ? "" : "s"} created. ${existing} existing invitation${existing === 1 ? "" : "s"} kept unchanged.`,
+            "success"
+        );
+
+
+
+        textarea.value =
+            "";
+
+
+
+    } catch (
+        error
+    ) {
+
+        showStatus(
+            status,
+            error.message,
+            "error"
+        );
+
+    } finally {
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            "Generate Invitations";
+
+    }
+
+}
+
+
+
+function invitationUrl(
+    code
+) {
+
+    return (
+        `${window.location.origin}/invite/${code}`
+    );
+
+}
+
+
+
+async function copyText(
+    text
+) {
+
+    if (
+        navigator.clipboard &&
+        window.isSecureContext
+    ) {
+
+        await navigator
+            .clipboard
+            .writeText(
+                text
+            );
+
+        return;
+
+    }
+
+
+
+    const textarea =
+        document
+            .createElement(
+                "textarea"
+            );
+
+
+
+    textarea.value =
+        text;
+
+    textarea.style.position =
+        "fixed";
+
+    textarea.style.opacity =
+        "0";
+
+
+
+    document.body
+        .appendChild(
+            textarea
+        );
+
+
+
+    textarea.select();
+
+
+
+    document
+        .execCommand(
+            "copy"
+        );
+
+
+
+    textarea.remove();
+
+}
+
+
+
+async function copyInvitation(
+    code,
+    button
+) {
+
+    const link =
+        invitationUrl(
+            code
+        );
+
+
+
+    await copyText(
+        link
+    );
+
+
+
+    const old =
+        button.textContent;
+
+
+
+    button.textContent =
+        "Copied";
+
+
+
+    setTimeout(
+        () => {
+
+            button.textContent =
+                old;
+
+        },
+        1200
+    );
+
+}
+
+
+
+async function shareInvitation(
+    invitation
+) {
+
+    const link =
+        invitationUrl(
+            invitation.code
+        );
+
+
+
+    const text =
+        `Hi ${invitation.name}! 🤍
+
+We’d love for you to join us as we celebrate our wedding on 12 February 2027.
+
+Here’s your personal invitation:
+${link}
+
+Can’t wait to celebrate with you!
+Nishi & Manu ✨`;
+
+
+
+    if (
+        navigator.share
+    ) {
+
+        try {
+
+            await navigator
+                .share(
+                    {
+                        title:
+                            "Nishi & Manu Wedding Invitation",
+
+                        text
+                    }
+                );
+
+            return;
+
+        } catch (
+            error
+        ) {
+
+            if (
+                error.name ===
+                "AbortError"
+            ) {
+
+                return;
+
+            }
+
+        }
+
+    }
+
+
+
+    await copyText(
+        text
+    );
+
+
+
+    alert(
+        "Personalised invitation message copied."
+    );
+
+}
+
+
+
+async function deleteInvitation(
+    invitation
+) {
+
+    const confirmed =
+        confirm(
+            `Delete the invitation for ${invitation.name}?\n\nTheir current link will stop working.`
+        );
+
+
+
+    if (
+        !confirmed
+    ) {
+
+        return;
+
+    }
+
+
+
+    try {
+
+        const result =
+            await adminRequest(
+                {
+                    method:
+                        "DELETE",
+
+                    body:
+                        JSON.stringify(
+                            {
+                                code:
+                                    invitation.code
+                            }
+                        )
+                }
+            );
+
+
+
+        invitations =
+            result.invitations ||
+            [];
+
+
+
+        renderInvitations();
+
+
+
+    } catch (
+        error
+    ) {
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+
+
+function renderInvitations() {
+
+    const list =
+        document.getElementById(
+            "guestList"
+        );
+
+    const count =
+        document.getElementById(
+            "guestCount"
+        );
+
+    const search =
+        document.getElementById(
+            "searchGuests"
+        )
+        .value
+        .trim()
+        .toLocaleLowerCase();
+
+
+
+    const filtered =
+        invitations
+            .filter(
+                invitation =>
+                    invitation
+                        .name
+                        .toLocaleLowerCase()
+                        .includes(
+                            search
+                        )
+            );
+
+
+
+    count.textContent =
+        `${invitations.length} Guest${invitations.length === 1 ? "" : "s"}`;
+
+
+
+    list.innerHTML =
+        "";
+
+
+
+    if (
+        filtered.length === 0
+    ) {
+
+        const empty =
+            document
+                .createElement(
+                    "div"
+                );
+
+
+
+        empty.className =
+            "empty";
+
+        empty.textContent =
+            invitations.length
+                ? "No guests match your search."
+                : "No invitations yet. Add your first guest above.";
+
+
+
+        list.appendChild(
+            empty
+        );
+
+        return;
+
+    }
+
+
+
+    filtered.forEach(
+        invitation => {
+
+            const card =
+                document
+                    .createElement(
+                        "article"
+                    );
+
+
+
+            card.className =
+                "guest-card";
+
+
+
+            const name =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+
+
+            name.className =
+                "guest-name";
+
+            name.textContent =
+                invitation.name;
+
+
+
+            const link =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+
+
+            link.className =
+                "guest-link";
+
+            link.textContent =
+                invitationUrl(
+                    invitation.code
+                );
+
+
+
+            const actions =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+
+
+            actions.className =
+                "guest-actions";
+
+
+
+            const copyButton =
+                document
+                    .createElement(
+                        "button"
+                    );
+
+
+
+            copyButton.type =
+                "button";
+
+            copyButton.className =
+                "button secondary";
+
+            copyButton.textContent =
+                "Copy Link";
+
+            copyButton.addEventListener(
+                "click",
+                () =>
+                    copyInvitation(
+                        invitation.code,
+                        copyButton
+                    )
+            );
+
+
+
+            const shareButton =
+                document
+                    .createElement(
+                        "button"
+                    );
+
+
+
+            shareButton.type =
+                "button";
+
+            shareButton.className =
+                "button secondary";
+
+            shareButton.textContent =
+                "Share";
+
+            shareButton.addEventListener(
+                "click",
+                () =>
+                    shareInvitation(
+                        invitation
+                    )
+            );
+
+
+
+            const deleteButton =
+                document
+                    .createElement(
+                        "button"
+                    );
+
+
+
+            deleteButton.type =
+                "button";
+
+            deleteButton.className =
+                "button danger delete-action";
+
+            deleteButton.textContent =
+                "Delete";
+
+            deleteButton.addEventListener(
+                "click",
+                () =>
+                    deleteInvitation(
+                        invitation
+                    )
+            );
+
+
+
+            actions.append(
+                copyButton,
+                shareButton,
+                deleteButton
+            );
+
+
+
+            card.append(
+                name,
+                link,
+                actions
+            );
+
+
+
+            list.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+
+function csvEscape(
+    value
+) {
+
+    const text =
+        String(
+            value ?? ""
+        );
+
+
+
+    if (
+        /[",\n\r]/
+            .test(
+                text
+            )
+    ) {
+
+        return (
+            `"${text.replace(/"/g, '""')}"`
+        );
+
+    }
+
+
+
+    return text;
+
+}
+
+
+
+function downloadCsv() {
+
+    if (
+        invitations.length === 0
+    ) {
+
+        alert(
+            "There are no invitations to export."
+        );
+
+        return;
+
+    }
+
+
+
+    const rows = [
+
+        [
+            "Guest",
+            "Code",
+            "Invitation Link"
+        ],
+
+        ...invitations.map(
+            invitation => [
+
+                invitation.name,
+
+                invitation.code,
+
+                invitationUrl(
+                    invitation.code
+                )
+
+            ]
+        )
+
+    ];
+
+
+
+    const csv =
+        rows
+            .map(
+                row =>
+                    row
+                        .map(
+                            csvEscape
+                        )
+                        .join(
+                            ","
+                        )
+            )
+            .join(
+                "\r\n"
+            );
+
+
+
+    const blob =
+        new Blob(
+            [
+                "\uFEFF",
+                csv
+            ],
+            {
+                type:
+                    "text/csv;charset=utf-8"
+            }
+        );
+
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+
+    const a =
+        document
+            .createElement(
+                "a"
+            );
+
+
+
+    a.href =
+        url;
+
+    a.download =
+        "guest-links.csv";
+
+
+
+    document.body
+        .appendChild(
+            a
+        );
+
+
+
+    a.click();
+
+    a.remove();
+
+
+
+    setTimeout(
+        () =>
+            URL.revokeObjectURL(
+                url
+            ),
+        1000
+    );
+
+}
+
+
+
+function logout() {
+
+    clearSecret();
+
+    invitations =
+        [];
+
+
+
+    document
+        .getElementById(
+            "adminApp"
+        )
+        .classList
+        .add(
+            "hidden"
+        );
+
+
+
+    document
+        .getElementById(
+            "loginPanel"
+        )
+        .classList
+        .remove(
+            "hidden"
+        );
+
+
+
+    document
+        .getElementById(
+            "adminSecret"
+        )
+        .value =
+        "";
+
+}
+
+
+
+document
+    .getElementById(
+        "loginButton"
+    )
+    .addEventListener(
+        "click",
+        login
+    );
+
+
+
+document
+    .getElementById(
+        "adminSecret"
+    )
+    .addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                login();
+
+            }
+
+        }
+    );
+
+
+
+document
+    .getElementById(
+        "generateButton"
+    )
+    .addEventListener(
+        "click",
+        generateInvitations
+    );
+
+
+
+document
+    .getElementById(
+        "refreshButton"
+    )
+    .addEventListener(
+        "click",
+        async () => {
+
+            try {
+
+                await loadInvitations();
+
+            } catch (
+                error
+            ) {
+
+                alert(
+                    error.message
+                );
+
+            }
+
+        }
+    );
+
+
+
+document
+    .getElementById(
+        "downloadCsvButton"
+    )
+    .addEventListener(
+        "click",
+        downloadCsv
+    );
+
+
+
+document
+    .getElementById(
+        "searchGuests"
+    )
+    .addEventListener(
+        "input",
+        renderInvitations
+    );
+
+
+
+document
+    .getElementById(
+        "logoutButton"
+    )
+    .addEventListener(
+        "click",
+        logout
+    );
+
+
+
+window.addEventListener(
+    "load",
+    async () => {
+
+        if (
+            !getSecret()
+        ) {
+
+            return;
+
+        }
+
+
+
+        try {
+
+            await loadInvitations();
+
+            document
+                .getElementById(
+                    "loginPanel"
+                )
+                .classList
+                .add(
+                    "hidden"
+                );
+
+            document
+                .getElementById(
+                    "adminApp"
+                )
+                .classList
+                .remove(
+                    "hidden"
+                );
+
+        } catch {
+
+            clearSecret();
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>

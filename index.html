@@ -1,0 +1,3273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Nishi Weds Manu</title>
+
+<meta name="description" content="Nishi & Manu's Wedding Invitation">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Great+Vibes&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+
+
+<!-- =========================================================
+     PDF DOWNLOAD LIBRARIES
+========================================================= -->
+
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+></script>
+
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
+></script>
+
+
+<style>
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background: #fdfaf6;
+    color: #3c3028;
+    font-family: "Cormorant Garamond", serif;
+    overflow-x: hidden;
+}
+
+button,
+input,
+textarea {
+    font-family: inherit;
+}
+
+.hidden {
+    display: none !important;
+}
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+#intro {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        radial-gradient(circle at center, #fffdf8 0%, #f4ead8 100%);
+
+    transition:
+        opacity 1.2s ease,
+        visibility 1.2s ease;
+}
+
+#intro.hide {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.intro-content {
+    text-align: center;
+    padding: 30px;
+}
+
+.intro-small {
+    font-family: "Playfair Display", serif;
+    font-size: 12px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: #a67c00;
+    margin-bottom: 20px;
+}
+
+.intro-title {
+    font-family: "Great Vibes", cursive;
+    font-size: clamp(55px, 12vw, 105px);
+    font-weight: 400;
+    color: #b08b32;
+    margin: 0;
+}
+
+.intro-subtitle {
+    margin-top: 20px;
+    font-family: "Playfair Display", serif;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: #8b7766;
+}
+
+
+/* =========================================================
+   ENVELOPE
+========================================================= */
+
+#envelopeScreen {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        radial-gradient(circle at center, #fffdf8 0%, #eee0c9 100%);
+
+    transition:
+        opacity 1s ease,
+        visibility 1s ease;
+}
+
+#envelopeScreen.hide {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.envelope-wrapper {
+    width: min(420px, 88vw);
+    text-align: center;
+}
+
+.envelope {
+    position: relative;
+
+    width: 100%;
+    aspect-ratio: 1.55;
+
+    perspective: 1200px;
+
+    cursor: pointer;
+}
+
+.envelope-body {
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            145deg,
+            #d9bd72,
+            #f4e4b7 45%,
+            #c8a44f
+        );
+
+    border-radius: 4px;
+
+    box-shadow:
+        0 25px 70px rgba(77, 55, 24, 0.25),
+        inset 0 0 0 1px rgba(255,255,255,.4);
+
+    overflow: hidden;
+}
+
+.envelope-body::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            transparent 49%,
+            rgba(255,255,255,.4) 50%,
+            transparent 51%
+        );
+
+    opacity: .25;
+}
+
+.envelope-flap {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 55%;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ead18d,
+            #c9a650
+        );
+
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+
+    transform-origin: top center;
+
+    z-index: 3;
+
+    transition:
+        transform 1.4s cubic-bezier(.77,0,.18,1);
+}
+
+.envelope.open .envelope-flap {
+    transform: rotateX(180deg);
+}
+
+.envelope-front {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 4;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    pointer-events: none;
+}
+
+.envelope-names {
+    font-family: "Great Vibes", cursive;
+    font-size: clamp(48px, 10vw, 70px);
+
+    color: #fff8e6;
+
+    text-shadow:
+        0 2px 4px rgba(80, 55, 10, .3);
+}
+
+.envelope-guest {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 20px;
+
+    text-align: center;
+
+    color: #75663e;
+
+    font-family: "Playfair Display", serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+
+    text-shadow: 0 1px 3px rgba(50,30,10,.3);
+}
+
+.open-text {
+    margin-top: 25px;
+
+    font-family: "Playfair Display", serif;
+    font-size: 12px;
+
+    letter-spacing: 4px;
+    text-transform: uppercase;
+
+    color: #8d7145;
+
+    animation: pulseText 2s infinite;
+}
+
+@keyframes pulseText {
+
+    0%,100% {
+        opacity: .45;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+#main {
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity 1.5s ease,
+        visibility 1.5s ease;
+}
+
+#main.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.hero {
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    padding: 80px 20px;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #fffdf9 0%,
+            #fdfaf6 55%,
+            #f4ead9 100%
+        );
+}
+
+.hero-inner {
+    max-width: 850px;
+}
+
+.small-title {
+    font-family: "Playfair Display", serif;
+    text-transform: uppercase;
+    letter-spacing: 6px;
+    font-size: 13px;
+    color: #a67c00;
+}
+
+.hero-title {
+    margin: 15px 0 5px;
+
+    font-family: "Great Vibes", cursive;
+    font-size: clamp(75px, 15vw, 145px);
+
+    font-weight: 400;
+
+    background:
+        linear-gradient(
+            120deg,
+            #9d741d,
+            #f2d889,
+            #b68a2e,
+            #fff0a7,
+            #a67c00
+        );
+
+    background-size: 300% auto;
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+
+    animation: goldShimmer 6s linear infinite;
+}
+
+@keyframes goldShimmer {
+
+    0% {
+        background-position: 0% center;
+    }
+
+    100% {
+        background-position: 300% center;
+    }
+}
+
+.hero-subtitle {
+    font-family: "Playfair Display", serif;
+    font-size: 15px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: #816d5d;
+}
+
+.guest-greeting {
+    max-width: 600px;
+    margin: 35px auto 0;
+
+    font-size: 20px;
+    line-height: 1.6;
+
+    color: #6e5c4e;
+}
+
+
+/* =========================================================
+   SECTIONS
+========================================================= */
+
+.section {
+    padding: 80px 20px;
+}
+
+.section-inner {
+    max-width: 900px;
+    margin: auto;
+}
+
+.card {
+    position: relative;
+
+    background: rgba(255,255,255,.78);
+
+    border: 1px solid rgba(198,162,82,.28);
+
+    border-radius: 4px;
+
+    padding: 55px 35px;
+
+    margin-bottom: 35px;
+
+    text-align: center;
+
+    box-shadow:
+        0 15px 50px rgba(74,55,30,.06);
+
+    opacity: 0;
+    transform: translateY(-40px);
+
+    transition:
+        opacity 1.1s ease,
+        transform 1.1s cubic-bezier(.22,1,.36,1);
+}
+
+.card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.card h2 {
+    margin: 0 0 25px;
+
+    font-family: "Playfair Display", serif;
+
+    font-weight: 400;
+
+    text-transform: uppercase;
+
+    letter-spacing: 5px;
+
+    font-size: 18px;
+
+    color: #a67c00;
+}
+
+.card p {
+    font-size: 20px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   DATE CARD
+========================================================= */
+
+.date-card {
+    max-height: 250px;
+
+    overflow: hidden;
+
+    transition:
+        max-height 1.6s cubic-bezier(.22,1,.36,1),
+        padding 1.2s ease,
+        box-shadow 1.2s ease;
+}
+
+.date-card.expanded {
+    max-height: 1000px;
+
+    box-shadow:
+        0 30px 80px rgba(0,0,0,.08);
+}
+
+
+/* =========================================================
+   SLOT MACHINE
+========================================================= */
+
+.slot-window {
+    position: relative;
+
+    width: min(400px, 90%);
+
+    height: 70px;
+
+    margin: 30px auto;
+
+    overflow: hidden;
+
+    border-radius: 5px;
+
+    border: 2px solid #c7a34d;
+
+    background:
+        linear-gradient(
+            180deg,
+            #fffdf5,
+            #efe0b9
+        );
+
+    box-shadow:
+        inset 0 8px 15px rgba(80,50,10,.08),
+        inset 0 -8px 15px rgba(80,50,10,.08),
+        0 10px 25px rgba(90,60,20,.12);
+
+    cursor: pointer;
+}
+
+.reel {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+
+    transition:
+        transform 1s cubic-bezier(.22,1,.36,1);
+}
+
+.reel > div {
+    height: 70px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-family: "Playfair Display", serif;
+
+    font-size: 18px;
+
+    color: #6d5630;
+
+    letter-spacing: 2px;
+}
+
+.slot-overlay {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 5;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-family: "Playfair Display", serif;
+
+    font-size: 12px;
+
+    letter-spacing: 4px;
+
+    text-transform: uppercase;
+
+    color: #a67c00;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,.2),
+            rgba(255,255,255,.55),
+            rgba(255,255,255,.2)
+        );
+
+    transition: opacity .5s ease;
+}
+
+.slot-window.slot-glow {
+    box-shadow:
+        0 0 15px rgba(212,175,55,.4),
+        0 0 45px rgba(212,175,55,.25),
+        inset 0 0 20px rgba(212,175,55,.15);
+}
+
+.slot-window.revealed {
+    border-color: #d4af37;
+}
+
+.date-content {
+    opacity: 0;
+    transform: translateY(15px);
+
+    transition:
+        opacity 1s ease,
+        transform 1s ease;
+}
+
+.date-content.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.date-main {
+    font-family: "Great Vibes", cursive;
+
+    font-size: clamp(48px, 9vw, 75px) !important;
+
+    color: #a67c00;
+
+    margin: 20px 0 5px !important;
+}
+
+.date-sub {
+    font-family: "Playfair Display", serif;
+
+    font-size: 16px !important;
+
+    letter-spacing: 2px;
+
+    color: #766251;
+}
+
+.divider {
+    width: 70px;
+    height: 1px;
+
+    margin: 15px auto;
+
+    background: #d4af37;
+}
+
+.countdown {
+    margin-top: 25px;
+
+    font-family: "Playfair Display", serif;
+
+    font-size: 15px;
+
+    letter-spacing: 2px;
+
+    color: #a67c00;
+}
+
+
+/* =========================================================
+   SPARKLES
+========================================================= */
+
+.sparkle-drop {
+    position: fixed;
+
+    top: -10px;
+
+    width: 6px;
+    height: 6px;
+
+    background:
+        radial-gradient(
+            circle,
+            #fff3b0,
+            #d4af37
+        );
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    z-index: 999;
+
+    animation:
+        drop 2.8s ease-out forwards;
+}
+
+@keyframes drop {
+
+    0% {
+        transform:
+            translateY(-20px)
+            scale(.6);
+
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    100% {
+        transform:
+            translateY(100vh)
+            scale(1);
+
+        opacity: 0;
+    }
+}
+
+
+/* =========================================================
+   LOCATION
+========================================================= */
+
+.map {
+    width: 100%;
+
+    height: 350px;
+
+    border: 0;
+
+    margin-top: 20px;
+}
+
+
+/* =========================================================
+   ITINERARY
+========================================================= */
+
+.timeline {
+    max-width: 600px;
+
+    margin: 30px auto 0;
+
+    text-align: left;
+}
+
+.timeline-item {
+    display: flex;
+
+    gap: 25px;
+
+    padding: 20px 0;
+
+    border-bottom: 1px solid rgba(166,124,0,.2);
+}
+
+.timeline-time {
+    min-width: 80px;
+
+    font-family: "Playfair Display", serif;
+
+    color: #a67c00;
+}
+
+.timeline-event {
+    font-size: 19px;
+}
+
+
+/* =========================================================
+   DRESS CODE
+========================================================= */
+
+.swatches {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 15px;
+
+    margin: 30px 0;
+}
+
+.swatch {
+    width: 45px;
+    height: 45px;
+
+    border-radius: 50%;
+
+    border: 1px solid rgba(80,50,20,.2);
+
+    box-shadow:
+        0 4px 10px rgba(0,0,0,.08);
+}
+
+.swatch.gold {
+    background: #d4af37;
+}
+
+.swatch.cream {
+    background: #f3e4c2;
+}
+
+.swatch.tan {
+    background: #cbb27a;
+}
+
+.swatch.white {
+    background: #fff;
+}
+
+.swatch.black {
+    background: #222;
+}
+
+
+/* =========================================================
+   GIFTS
+========================================================= */
+
+.gift-icon {
+    font-size: 45px;
+
+    margin-bottom: 10px;
+
+    color: #d4af37;
+}
+
+
+/* =========================================================
+   DOWNLOAD INVITATION
+========================================================= */
+
+.download-button {
+    width: 100%;
+
+    max-width: 420px;
+
+    padding: 15px;
+
+    border: 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            #a67c00,
+            #d4af37,
+            #a67c00
+        );
+
+    background-size: 200% auto;
+
+    color: white;
+
+    font-family: "Playfair Display", serif;
+
+    text-transform: uppercase;
+
+    letter-spacing: 3px;
+
+    font-size: 13px;
+
+    cursor: pointer;
+
+    border-radius: 3px;
+
+    transition:
+        background-position .5s ease,
+        transform .2s ease;
+}
+
+.download-button:hover {
+    background-position: right center;
+
+    transform: translateY(-2px);
+}
+
+.download-button:disabled {
+    opacity: .55;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+.download-note {
+    margin-top: 15px;
+
+    font-size: 15px !important;
+
+    color: #8b7766;
+}
+
+
+/* =========================================================
+   PDF INVITATION
+========================================================= */
+
+#pdfWrapper {
+    position: fixed;
+
+    left: 0;
+    top: 0;
+
+    width: 559px;
+    height: 794px;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    z-index: 1;
+}
+
+.pdf-invitation {
+    position: relative;
+
+    width: 559px;
+    height: 794px;
+
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #fffdf9 0%,
+            #fdfaf6 55%,
+            #f4ead9 100%
+        );
+
+    color: #3c3028;
+
+    font-family: "Cormorant Garamond", serif;
+}
+
+.pdf-invitation::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 28px;
+
+    border:
+        1px solid
+        rgba(198,162,82,.55);
+
+    pointer-events: none;
+}
+
+.pdf-invitation::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 35px;
+
+    border:
+        1px solid
+        rgba(198,162,82,.22);
+
+    pointer-events: none;
+}
+
+.pdf-content {
+    position: relative;
+
+    z-index: 2;
+
+    width: 100%;
+
+    padding: 60px;
+}
+
+.pdf-small-title {
+    font-family: "Playfair Display", serif;
+
+    text-transform: uppercase;
+
+    letter-spacing: 6px;
+
+    font-size: 12px;
+
+    color: #a67c00;
+
+    margin-bottom: 18px;
+}
+
+.pdf-title {
+    margin: 0;
+
+    font-family: "Great Vibes", cursive;
+
+    font-size: 88px;
+
+    font-weight: 400;
+
+    line-height: 1.1;
+
+    color: #b08b32;
+}
+
+.pdf-subtitle {
+    margin-top: 10px;
+
+    font-family: "Playfair Display", serif;
+
+    font-size: 12px;
+
+    letter-spacing: 5px;
+
+    text-transform: uppercase;
+
+    color: #816d5d;
+}
+
+.pdf-divider {
+    width: 70px;
+    height: 1px;
+
+    margin: 36px auto;
+
+    background: #d4af37;
+}
+
+.pdf-guest-label {
+    font-family: "Playfair Display", serif;
+
+    text-transform: uppercase;
+
+    letter-spacing: 4px;
+
+    font-size: 10px;
+
+    color: #a67c00;
+}
+
+.pdf-guest-name {
+    margin-top: 12px;
+
+    font-family: "Cormorant Garamond", serif;
+
+    font-size: 27px;
+
+    font-weight: 500;
+
+    color: #6e5c4e;
+}
+
+.pdf-date {
+    margin-top: 42px;
+
+    font-family: "Great Vibes", cursive;
+
+    font-size: 55px;
+
+    line-height: 1;
+
+    color: #a67c00;
+}
+
+.pdf-time {
+    margin-top: 15px;
+
+    font-family: "Playfair Display", serif;
+
+    font-size: 14px;
+
+    letter-spacing: 4px;
+
+    color: #766251;
+}
+
+.pdf-location {
+    margin-top: 18px;
+
+    font-family: "Playfair Display", serif;
+
+    font-size: 13px;
+
+    letter-spacing: 2px;
+
+    color: #766251;
+}
+
+.pdf-footer {
+    margin-top: 55px;
+
+    font-family: "Great Vibes", cursive;
+
+    font-size: 28px;
+
+    color: #b08b32;
+}
+
+
+/* =========================================================
+   RSVP
+========================================================= */
+
+.rsvp-form {
+    max-width: 550px;
+
+    margin: 30px auto 0;
+
+    text-align: left;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-family: "Playfair Display", serif;
+
+    font-size: 13px;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+    color: #806c58;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+
+    padding: 14px 15px;
+
+    border: 1px solid #ddcda9;
+
+    border-radius: 3px;
+
+    background: #fffdf9;
+
+    font-size: 17px;
+
+    color: #493b30;
+
+    outline: none;
+
+    transition:
+        border .3s ease,
+        box-shadow .3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #c7a34d;
+
+    box-shadow:
+        0 0 0 3px rgba(212,175,55,.1);
+}
+
+.form-group textarea {
+    min-height: 120px;
+
+    resize: vertical;
+}
+
+.rsvp-button {
+    width: 100%;
+
+    padding: 15px;
+
+    border: 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            #a67c00,
+            #d4af37,
+            #a67c00
+        );
+
+    background-size: 200% auto;
+
+    color: white;
+
+    font-family: "Playfair Display", serif;
+
+    text-transform: uppercase;
+
+    letter-spacing: 3px;
+
+    font-size: 13px;
+
+    cursor: pointer;
+
+    border-radius: 3px;
+
+    transition:
+        background-position .5s ease,
+        transform .2s ease;
+}
+
+.rsvp-button:hover {
+    background-position: right center;
+
+    transform: translateY(-2px);
+}
+
+.rsvp-button:disabled {
+    opacity: .55;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+.rsvp-success {
+    display: none;
+
+    margin-top: 25px;
+
+    padding: 20px;
+
+    border: 1px solid #d4af37;
+
+    background: #fffaf0;
+
+    text-align: center;
+
+    font-size: 19px;
+
+    color: #80652d;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+    padding: 70px 20px;
+
+    text-align: center;
+
+    background: #f5ecdd;
+}
+
+.footer-names {
+    font-family: "Great Vibes", cursive;
+
+    font-size: 55px;
+
+    color: #b08b32;
+}
+
+.footer-date {
+    margin-top: 10px;
+
+    font-family: "Playfair Display", serif;
+
+    letter-spacing: 3px;
+
+    font-size: 12px;
+
+    text-transform: uppercase;
+
+    color: #806d5a;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .section {
+        padding: 50px 15px;
+    }
+
+    .card {
+        padding: 40px 20px;
+    }
+
+    .hero {
+        padding: 60px 15px;
+    }
+
+    .hero-title {
+        font-size: 82px;
+    }
+
+    .guest-greeting {
+        font-size: 18px;
+    }
+
+    .timeline-item {
+        gap: 15px;
+    }
+
+    .timeline-time {
+        min-width: 65px;
+        font-size: 14px;
+    }
+
+    .timeline-event {
+        font-size: 17px;
+    }
+
+    .map {
+        height: 300px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+
+<!-- =========================================================
+     INTRO
+========================================================= -->
+
+<div id="intro">
+
+    <div class="intro-content">
+
+        <div class="intro-small">
+            A Celebration of Love
+        </div>
+
+        <h1 class="intro-title">
+            Nishi & Manu
+        </h1>
+
+        <div class="intro-subtitle">
+            Our Wedding
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     ENVELOPE
+========================================================= -->
+
+<div id="envelopeScreen">
+
+    <div class="envelope-wrapper">
+
+        <div
+            class="envelope"
+            id="envelope"
+            onclick="openInvite()"
+        >
+
+            <div class="envelope-body">
+
+                <div class="envelope-flap"></div>
+
+                <div class="envelope-front">
+
+                    <div class="envelope-names">
+                        Nishi & Manu
+                    </div>
+
+                </div>
+
+                <div
+                    class="envelope-guest"
+                    id="envelopeGuest"
+                >
+                    Loading Invitation
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="open-text">
+            Tap to Open
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     MAIN CONTENT
+========================================================= -->
+
+<main id="main">
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <div class="hero-inner">
+
+            <div class="small-title">
+                Together with their families
+            </div>
+
+            <h1 class="hero-title">
+                Nishi & Manu
+            </h1>
+
+            <div class="hero-subtitle">
+                Are getting married
+            </div>
+
+            <p
+                id="guestGreeting"
+                class="guest-greeting"
+            >
+                Loading your invitation...
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         DETAILS
+    ====================================================== -->
+
+    <section class="section">
+
+        <div class="section-inner">
+
+
+
+            <!-- DATE -->
+
+            <div class="card date-card">
+
+                <h2>
+                    The Date
+                </h2>
+
+                <div
+                    class="slot-window"
+                    id="slotBox"
+                    onclick="spin()"
+                >
+
+                    <div
+                        class="slot-overlay"
+                        id="slotTap"
+                    >
+                        Tap to Reveal
+                    </div>
+
+                    <div
+                        class="reel"
+                        id="reel"
+                    >
+
+                        <div></div>
+                        <div>12 February 2027</div>
+                        <div>--------</div>
+                        <div>--------</div>
+                        <div>--------</div>
+                        <div>--------</div>
+                        <div>--------</div>
+                        <div>--------</div>
+                        <div>--------</div>
+                        <div>--------</div>
+                        <div>--------</div>
+                        <div>--------</div>
+                        <div>--------</div>
+                        <div>--------</div>
+                        <div>--------</div>
+                        <div>--------</div>
+                        <div>--------</div>
+                        <div>--------</div>
+                        <div>--------</div>
+                        <div>--------</div>
+
+                    </div>
+
+                </div>
+
+
+
+                <div
+                    class="date-content"
+                    id="dateContent"
+                >
+
+                    <p class="date-main">
+                        12 February 2027
+                    </p>
+
+                    <div class="divider"></div>
+
+                    <p class="date-sub">
+                        6:00 PM · Anantara Resort Kalutara
+                    </p>
+
+                    <div
+                        class="countdown"
+                        id="countdown"
+                    >
+                        Counting down...
+                    </div>
+
+                </div>
+
+
+
+                <div id="confetti"></div>
+
+            </div>
+
+
+
+            <!-- LOCATION -->
+
+            <div class="card">
+
+                <h2>
+                    Location
+                </h2>
+
+                <p>
+                    Anantara Kalutara Resort
+                </p>
+
+                <iframe
+                    class="map"
+                    src="https://www.google.com/maps?q=Anantara+Kalutara+Resort&output=embed"
+                    loading="lazy"
+                    allowfullscreen
+                ></iframe>
+
+            </div>
+
+
+
+            <!-- ITINERARY -->
+
+            <div class="card">
+
+                <h2>
+                    Itinerary
+                </h2>
+
+                <div class="timeline">
+
+                    <div class="timeline-item">
+
+                        <div class="timeline-time">
+                            3:30
+                        </div>
+
+                        <div class="timeline-event">
+                            Guest Arrival
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="timeline-item">
+
+                        <div class="timeline-time">
+                            4:00
+                        </div>
+
+                        <div class="timeline-event">
+                            Ceremony Begins
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="timeline-item">
+
+                        <div class="timeline-time">
+                            5:00
+                        </div>
+
+                        <div class="timeline-event">
+                            Photography
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="timeline-item">
+
+                        <div class="timeline-time">
+                            6:30
+                        </div>
+
+                        <div class="timeline-event">
+                            Dinner & Reception
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="timeline-item">
+
+                        <div class="timeline-time">
+                            8:00
+                        </div>
+
+                        <div class="timeline-event">
+                            Dancing
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- DRESS CODE -->
+
+            <div class="card">
+
+                <h2>
+                    Dress Code
+                </h2>
+
+                <p>
+                    Guests are welcome to wear any colour and attire
+                    they feel comfortable in.
+                </p>
+
+                <div class="swatches">
+
+                    <div class="swatch gold"></div>
+                    <div class="swatch cream"></div>
+                    <div class="swatch tan"></div>
+                    <div class="swatch white"></div>
+                    <div class="swatch black"></div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- GIFTS -->
+
+            <div class="card">
+
+                <h2>
+                    Gifts
+                </h2>
+
+                <div class="gift-icon">
+                    ♡
+                </div>
+
+                <p>
+                    Your presence is the greatest gift of all.
+                </p>
+
+                <p>
+                    If you wish to contribute towards our future
+                    together, it would be deeply appreciated.
+                </p>
+
+            </div>
+
+
+
+            <!-- DOWNLOAD INVITATION -->
+
+            <div class="card">
+
+                <h2>
+                    Your Invitation
+                </h2>
+
+                <p>
+                    Keep a personal copy of our wedding invitation.
+                </p>
+
+                <button
+                    type="button"
+                    class="download-button"
+                    id="downloadInvitationButton"
+                    onclick="downloadInvitationPDF()"
+                    disabled
+                >
+                    Loading Invitation...
+                </button>
+
+                <p class="download-note">
+                    Your invitation will download as an A5 PDF.
+                </p>
+
+            </div>
+
+
+
+            <!-- RSVP -->
+
+            <div class="card">
+
+                <h2>
+                    RSVP
+                </h2>
+
+                <p>
+                    We would love to celebrate with you.
+                    Please let us know if you'll be joining us.
+                </p>
+
+
+
+                <form
+                    class="rsvp-form"
+                    name="wedding-rsvp"
+                    method="POST"
+                    data-netlify="true"
+                    netlify-honeypot="bot-field"
+                    id="rsvpForm"
+                >
+
+                    <input
+                        type="hidden"
+                        name="form-name"
+                        value="wedding-rsvp"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="guest"
+                        id="guestField"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="invitationCode"
+                        id="invitationCodeField"
+                    >
+
+                    <p class="hidden">
+
+                        <label>
+                            Don't fill this out if you're human:
+                            <input
+                                name="bot-field"
+                            >
+                        </label>
+
+                    </p>
+
+
+
+                    <div class="form-group">
+
+                        <label for="fullName">
+                            Full Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="fullName"
+                            name="name"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label for="attendance">
+                            Will you be joining us?
+                        </label>
+
+                        <select
+                            id="attendance"
+                            name="attendance"
+                            required
+                        >
+
+                            <option value="">
+                                Please select
+                            </option>
+
+                            <option value="Yes">
+                                Yes, I’ll be there
+                            </option>
+
+                            <option value="No">
+                                Sadly, I can’t make it
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label for="guests">
+                            Number of Guests
+                        </label>
+
+                        <select
+                            id="guests"
+                            name="guests"
+                        >
+
+                            <option value="1">
+                                1
+                            </option>
+
+                            <option value="2">
+                                2
+                            </option>
+
+                            <option value="3">
+                                3
+                            </option>
+
+                            <option value="4">
+                                4
+                            </option>
+
+                            <option value="5+">
+                                5+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label for="message">
+                            Message
+                        </label>
+
+                        <textarea
+                            id="message"
+                            name="message"
+                            placeholder="Leave us a message..."
+                        ></textarea>
+
+                    </div>
+
+
+
+                    <button
+                        type="submit"
+                        class="rsvp-button"
+                        id="rsvpSubmitButton"
+                        disabled
+                    >
+                        Loading Invitation...
+                    </button>
+
+                </form>
+
+
+
+                <div
+                    class="rsvp-success"
+                    id="rsvpSuccess"
+                >
+                    Thank you! Your RSVP has been received.
+                    We can't wait to celebrate with you.
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- FOOTER -->
+
+    <footer>
+
+        <div class="footer-names">
+            Nishi & Manu
+        </div>
+
+        <div class="footer-date">
+            12 February 2027 · Kalutara, Sri Lanka
+        </div>
+
+    </footer>
+
+
+
+    <form name="wedding-rsvp" netlify netlify-honeypot="bot-field" hidden>
+
+        <input
+            type="text"
+            name="name"
+        >
+
+        <input
+            type="text"
+            name="attendance"
+        >
+
+        <input
+            type="text"
+            name="guests"
+        >
+
+        <input
+            type="text"
+            name="message"
+        >
+
+        <input
+            type="text"
+            name="guest"
+        >
+
+        <input
+            type="text"
+            name="invitationCode"
+        >
+
+    </form>
+
+
+
+</main>
+
+
+
+<!-- =========================================================
+     PDF INVITATION
+========================================================= -->
+
+<div id="pdfWrapper">
+
+    <div
+        class="pdf-invitation"
+        id="pdfInvitation"
+    >
+
+        <div class="pdf-content">
+
+            <div class="pdf-small-title">
+                Together With Their Families
+            </div>
+
+            <h1 class="pdf-title">
+                Nishi & Manu
+            </h1>
+
+            <div class="pdf-subtitle">
+                Are Getting Married
+            </div>
+
+            <div class="pdf-divider"></div>
+
+            <div class="pdf-guest-label">
+                This Invitation Is For
+            </div>
+
+            <div
+                class="pdf-guest-name"
+                id="pdfGuestName"
+            >
+                Guest
+            </div>
+
+            <div class="pdf-date">
+                12 February 2027
+            </div>
+
+            <div class="pdf-time">
+                6:00 PM
+            </div>
+
+            <div class="pdf-divider"></div>
+
+            <div class="pdf-location">
+                Anantara Kalutara Resort
+            </div>
+
+            <div class="pdf-footer">
+                Nishi & Manu
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     MUSIC
+========================================================= -->
+
+<audio
+    id="bgMusic"
+    loop
+    preload="auto"
+>
+    <source
+        src="/music.mp3"
+        type="audio/mpeg"
+    >
+</audio>
+
+
+
+<script>
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+window.addEventListener("load", () => {
+
+    setTimeout(() => {
+
+        document
+            .getElementById("intro")
+            .classList.add("hide");
+
+    }, 2200);
+
+});
+
+
+
+/* =========================================================
+   SECURE PERSONALIZED GUEST INVITATION
+========================================================= */
+
+let guestName = "";
+
+let invitationCode = "";
+
+let invitationIsValid = false;
+
+
+
+function getInvitationCode() {
+
+    const pathParts =
+        window.location.pathname
+            .split("/")
+            .filter(Boolean);
+
+
+
+    if (
+        pathParts[0] !== "invite" ||
+        !pathParts[1]
+    ) {
+
+        return "";
+
+    }
+
+
+
+    return pathParts[1];
+
+}
+
+
+
+async function loadGuestInvitation() {
+
+    invitationCode =
+        getInvitationCode();
+
+
+
+    if (!invitationCode) {
+
+        showInvalidInvitation();
+
+        return;
+
+    }
+
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/.netlify/functions/invitation?code=${encodeURIComponent(invitationCode)}`,
+                {
+                    cache: "no-store"
+                }
+            );
+
+
+
+        if (!response.ok) {
+
+            showInvalidInvitation();
+
+            return;
+
+        }
+
+
+
+        const invitation =
+            await response.json();
+
+
+
+        if (
+            !invitation.valid ||
+            !invitation.name
+        ) {
+
+            showInvalidInvitation();
+
+            return;
+
+        }
+
+
+
+        guestName =
+            invitation.name;
+
+
+
+        invitationIsValid =
+            true;
+
+
+
+        const envelopeGuest =
+            document.getElementById(
+                "envelopeGuest"
+            );
+
+        const guestGreeting =
+            document.getElementById(
+                "guestGreeting"
+            );
+
+        const guestField =
+            document.getElementById(
+                "guestField"
+            );
+
+        const invitationCodeField =
+            document.getElementById(
+                "invitationCodeField"
+            );
+
+        const fullName =
+            document.getElementById(
+                "fullName"
+            );
+
+        const rsvpSubmitButton =
+            document.getElementById(
+                "rsvpSubmitButton"
+            );
+
+        const downloadInvitationButton =
+            document.getElementById(
+                "downloadInvitationButton"
+            );
+
+
+
+        if (envelopeGuest) {
+
+            envelopeGuest.textContent =
+                `For ${guestName}`;
+
+        }
+
+
+
+        if (guestGreeting) {
+
+            guestGreeting.textContent =
+                `Dear ${guestName}, We would be delighted to celebrate this special day with you. Your presence means so much to us, 
+                and we look forward to sharing our joy, laughter, and unforgettable moments together.`;
+
+        }
+
+
+
+        if (guestField) {
+
+            guestField.value =
+                guestName;
+
+        }
+
+
+
+        if (invitationCodeField) {
+
+            invitationCodeField.value =
+                invitationCode;
+
+        }
+
+
+
+        if (fullName) {
+
+            fullName.value =
+                guestName;
+
+            fullName.readOnly =
+                true;
+
+        }
+
+
+
+        if (rsvpSubmitButton) {
+
+            rsvpSubmitButton.disabled =
+                false;
+
+            rsvpSubmitButton.textContent =
+                "Send RSVP";
+
+        }
+
+
+
+        if (downloadInvitationButton) {
+
+            downloadInvitationButton.disabled =
+                false;
+
+            downloadInvitationButton.textContent =
+                "Download Invitation";
+
+        }
+
+
+
+    } catch (error) {
+
+        console.error(
+            "Invitation lookup failed:",
+            error
+        );
+
+        showInvalidInvitation();
+
+    }
+
+}
+
+
+
+function showInvalidInvitation() {
+
+    guestName =
+        "";
+
+
+
+    invitationCode =
+        "";
+
+
+
+    invitationIsValid =
+        false;
+
+
+
+    const envelopeGuest =
+        document.getElementById(
+            "envelopeGuest"
+        );
+
+    const guestGreeting =
+        document.getElementById(
+            "guestGreeting"
+        );
+
+    const fullName =
+        document.getElementById(
+            "fullName"
+        );
+
+    const rsvpSubmitButton =
+        document.getElementById(
+            "rsvpSubmitButton"
+        );
+
+    const downloadInvitationButton =
+        document.getElementById(
+            "downloadInvitationButton"
+        );
+
+
+
+    if (envelopeGuest) {
+
+        envelopeGuest.textContent =
+            "Invalid Invitation";
+
+    }
+
+
+
+    if (guestGreeting) {
+
+        guestGreeting.textContent =
+            "This invitation link is invalid. Please use the personal invitation link that was sent to you.";
+
+    }
+
+
+
+    if (fullName) {
+
+        fullName.value =
+            "";
+
+        fullName.readOnly =
+            true;
+
+    }
+
+
+
+    if (rsvpSubmitButton) {
+
+        rsvpSubmitButton.disabled =
+            true;
+
+        rsvpSubmitButton.textContent =
+            "Invalid Invitation";
+
+    }
+
+
+
+    if (downloadInvitationButton) {
+
+        downloadInvitationButton.disabled =
+            true;
+
+        downloadInvitationButton.textContent =
+            "Invalid Invitation";
+
+    }
+
+}
+
+
+
+loadGuestInvitation();
+
+
+
+/* =========================================================
+   OPEN INVITATION
+========================================================= */
+
+let musicStarted = false;
+
+
+
+function startMusic() {
+
+    if (musicStarted) {
+        return;
+    }
+
+    const music =
+        document.getElementById("bgMusic");
+
+    if (!music) {
+        return;
+    }
+
+    music.volume = 0;
+
+    music
+        .play()
+        .then(() => {
+
+            musicStarted = true;
+
+            let volume = 0;
+
+            const fade =
+                setInterval(() => {
+
+                    volume += .02;
+
+                    if (volume >= .35) {
+
+                        volume = .35;
+
+                        clearInterval(fade);
+
+                    }
+
+                    music.volume = volume;
+
+                }, 100);
+
+        })
+        .catch(() => {
+
+            /*
+                Browser may block autoplay.
+                Because play() happens after the user's
+                envelope click, it should normally work.
+            */
+
+        });
+
+}
+
+
+
+function openInvite() {
+
+    const envelope =
+        document.getElementById("envelope");
+
+    const envelopeScreen =
+        document.getElementById("envelopeScreen");
+
+    const main =
+        document.getElementById("main");
+
+
+
+    envelope.classList.add("open");
+
+    startMusic();
+
+
+
+    setTimeout(() => {
+
+        envelopeScreen.classList.add("hide");
+
+        main.classList.add("show");
+
+        setTimeout(() => {
+
+            observeCards();
+
+        }, 400);
+
+    }, 1300);
+
+}
+
+
+
+/* =========================================================
+   SCROLL CARD ANIMATION
+========================================================= */
+
+function observeCards() {
+
+    const cards =
+        document.querySelectorAll(".card");
+
+    const observer =
+        new IntersectionObserver(
+
+            entries => {
+
+                entries.forEach(entry => {
+
+                    if (entry.isIntersecting) {
+
+                        entry.target
+                            .classList
+                            .add("visible");
+
+                    }
+
+                });
+
+            },
+
+            {
+                threshold: .12
+            }
+
+        );
+
+
+
+    cards.forEach(card => {
+
+        observer.observe(card);
+
+    });
+
+}
+
+
+
+/* =========================================================
+   SLOT MACHINE
+========================================================= */
+
+let slotDone = false;
+
+
+
+function spin() {
+
+    if (slotDone) {
+        return;
+    }
+
+    slotDone = true;
+
+
+
+    const reel =
+        document.getElementById("reel");
+
+    const items =
+        reel.children;
+
+    const slot =
+        document.getElementById("slotBox");
+
+    const tap =
+        document.getElementById("slotTap");
+
+    const itemHeight = 70;
+
+
+
+    tap.style.opacity = "0";
+
+
+
+    function randomDate() {
+
+        const months = [
+
+            "JAN",
+            "FEB",
+            "MAR",
+            "APR",
+            "MAY",
+            "JUN",
+            "JUL",
+            "AUG",
+            "SEP",
+            "OCT",
+            "NOV",
+            "DEC"
+
+        ];
+
+
+
+        return (
+
+            Math.floor(
+                Math.random() * 28
+            ) + 1
+
+        )
+
+        + " "
+
+        +
+
+        months[
+            Math.floor(
+                Math.random() * months.length
+            )
+        ]
+
+        + " "
+
+        +
+
+        (
+            2025 +
+            Math.floor(
+                Math.random() * 4
+            )
+        );
+
+    }
+
+
+
+    reel.style.transition =
+        "transform .5s linear";
+
+    reel.style.transform =
+        `translateY(-${itemHeight * 9}px)`;
+
+
+
+    const interval =
+        setInterval(() => {
+
+            for (
+                let i = 0;
+                i < items.length;
+                i++
+            ) {
+
+                items[i].innerText =
+                    randomDate();
+
+            }
+
+        }, 90);
+
+
+
+    setTimeout(() => {
+
+        clearInterval(interval);
+
+
+
+        items[1].innerText =
+            "12 February 2027";
+
+
+
+        reel.style.transition =
+            "none";
+
+        reel.style.transform =
+            `translateY(-${itemHeight}px)`;
+
+
+
+        reel.offsetHeight;
+
+
+
+        reel.style.transition =
+            "transform 1s cubic-bezier(.22,1,.36,1)";
+
+
+
+        reel.style.transform =
+            `translateY(-${itemHeight}px)`;
+
+
+
+        slot.classList.add(
+            "slot-glow"
+        );
+
+
+
+        setTimeout(() => {
+
+            slot.classList.add(
+                "revealed"
+            );
+
+
+
+            const card =
+                document.querySelector(
+                    ".date-card"
+                );
+
+
+
+            setTimeout(() => {
+
+                card.classList.add(
+                    "expanded"
+                );
+
+
+
+                setTimeout(() => {
+
+                    card.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center"
+                    });
+
+                }, 350);
+
+            }, 400);
+
+
+
+            setTimeout(() => {
+
+                document
+                    .getElementById("dateContent")
+                    .classList
+                    .add("show");
+
+            }, 650);
+
+
+
+            dropSparkles();
+
+        }, 1000);
+
+    }, 2600);
+
+}
+
+
+
+/* =========================================================
+   SPARKLES
+========================================================= */
+
+function dropSparkles() {
+
+    for (
+        let i = 0;
+        i < 60;
+        i++
+    ) {
+
+        const sparkle =
+            document.createElement("div");
+
+
+
+        sparkle.className =
+            "sparkle-drop";
+
+
+
+        sparkle.style.left =
+            Math.random() * 100 + "vw";
+
+
+
+        sparkle.style.animationDelay =
+            Math.random() * .8 + "s";
+
+
+
+        sparkle.style.width =
+            (Math.random() * 5 + 3) + "px";
+
+
+
+        sparkle.style.height =
+            sparkle.style.width;
+
+
+
+        document.body.appendChild(
+            sparkle
+        );
+
+
+
+        setTimeout(() => {
+
+            sparkle.remove();
+
+        }, 3500);
+
+    }
+
+}
+
+
+
+/* =========================================================
+   COUNTDOWN
+========================================================= */
+
+const weddingDate =
+    new Date(
+        "February 12, 2027 18:00:00"
+    ).getTime();
+
+
+
+function updateCountdown() {
+
+    const countdown =
+        document.getElementById(
+            "countdown"
+        );
+
+
+
+    if (!countdown) {
+        return;
+    }
+
+
+
+    const now =
+        new Date().getTime();
+
+
+
+    const distance =
+        weddingDate - now;
+
+
+
+    if (distance <= 0) {
+
+        countdown.textContent =
+            "Today is the day!";
+
+        return;
+
+    }
+
+
+
+    const days =
+        Math.floor(
+            distance /
+            (1000 * 60 * 60 * 24)
+        );
+
+
+
+    const hours =
+        Math.floor(
+            (
+                distance %
+                (1000 * 60 * 60 * 24)
+            ) /
+            (1000 * 60 * 60)
+        );
+
+
+
+    const minutes =
+        Math.floor(
+            (
+                distance %
+                (1000 * 60 * 60)
+            ) /
+            (1000 * 60)
+        );
+
+
+
+    const seconds =
+        Math.floor(
+            (
+                distance %
+                (1000 * 60)
+            ) /
+            1000
+        );
+
+
+
+    countdown.textContent =
+        `${days} Days · ${hours} Hours · ${minutes} Minutes · ${seconds} Seconds`;
+
+}
+
+
+
+updateCountdown();
+
+setInterval(
+    updateCountdown,
+    1000
+);
+
+
+
+/* =========================================================
+   DOWNLOAD INVITATION PDF
+========================================================= */
+
+async function downloadInvitationPDF() {
+
+    if (
+        !invitationIsValid ||
+        !guestName
+    ) {
+
+        alert(
+            "Please use your valid personal invitation link."
+        );
+
+        return;
+
+    }
+
+
+
+    const pdfInvitation =
+        document.getElementById(
+            "pdfInvitation"
+        );
+
+
+
+    const pdfGuestName =
+        document.getElementById(
+            "pdfGuestName"
+        );
+
+
+
+    pdfGuestName.textContent =
+        guestName;
+
+
+
+    if (
+        document.fonts &&
+        document.fonts.ready
+    ) {
+
+        await document.fonts.ready;
+
+    }
+
+
+
+    if (
+        typeof html2canvas ===
+        "undefined"
+    ) {
+
+        alert(
+            "The invitation generator could not load. Please refresh the page and try again."
+        );
+
+        return;
+
+    }
+
+
+
+    if (
+        !window.jspdf
+    ) {
+
+        alert(
+            "The PDF generator could not load. Please refresh the page and try again."
+        );
+
+        return;
+
+    }
+
+
+
+    const canvas =
+        await html2canvas(
+            pdfInvitation,
+            {
+
+                scale: 3,
+
+                useCORS: true,
+
+                allowTaint: false,
+
+                backgroundColor:
+                    "#fdfaf6",
+
+                logging: false,
+
+                width: 559,
+
+                height: 794,
+
+                windowWidth: 559,
+
+                windowHeight: 794,
+
+                scrollX: 0,
+
+                scrollY: 0,
+
+
+
+                onclone:
+                    function(
+                        clonedDocument
+                    ) {
+
+                        const clonedWrapper =
+                            clonedDocument
+                                .getElementById(
+                                    "pdfWrapper"
+                                );
+
+
+
+                        if (
+                            clonedWrapper
+                        ) {
+
+                            clonedWrapper
+                                .style
+                                .visibility =
+                                "visible";
+
+
+
+                            clonedWrapper
+                                .style
+                                .position =
+                                "absolute";
+
+
+
+                            clonedWrapper
+                                .style
+                                .left =
+                                "0";
+
+
+
+                            clonedWrapper
+                                .style
+                                .top =
+                                "0";
+
+
+
+                            clonedWrapper
+                                .style
+                                .zIndex =
+                                "999999";
+
+                        }
+
+                    }
+
+            }
+        );
+
+
+
+    const invitationImage =
+        canvas.toDataURL(
+            "image/png"
+        );
+
+
+
+    const {
+        jsPDF
+    } = window.jspdf;
+
+
+
+    const pdf =
+        new jsPDF({
+
+            orientation:
+                "portrait",
+
+            unit:
+                "mm",
+
+            format:
+                "a5",
+
+            compress:
+                true
+
+        });
+
+
+
+    pdf.addImage(
+        invitationImage,
+        "PNG",
+        0,
+        0,
+        148,
+        210,
+        undefined,
+        "FAST"
+    );
+
+
+
+    const safeGuestName =
+        guestName
+            .replace(
+                /[^a-z0-9]+/gi,
+                "-"
+            )
+            .replace(
+                /^-|-$/g,
+                ""
+            );
+
+
+
+    pdf.save(
+        `Nishi-and-Manu-Invitation-${safeGuestName || "Guest"}.pdf`
+    );
+
+}
+
+
+
+/* =========================================================
+   RSVP
+========================================================= */
+
+const rsvpForm =
+    document.getElementById(
+        "rsvpForm"
+    );
+
+
+
+if (rsvpForm) {
+
+    rsvpForm.addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+
+
+            if (
+                !invitationIsValid ||
+                !guestName ||
+                !invitationCode
+            ) {
+
+                alert(
+                    "Please use your valid personal invitation link."
+                );
+
+                return;
+
+            }
+
+
+
+            const button =
+                rsvpForm.querySelector(
+                    "button[type='submit']"
+                );
+
+
+
+            button.disabled = true;
+
+            button.textContent =
+                "Sending...";
+
+
+
+            const formData =
+                new FormData(rsvpForm);
+
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type":
+                                    "application/x-www-form-urlencoded"
+                            },
+                            body:
+                                new URLSearchParams(
+                                    formData
+                                ).toString()
+                        }
+                    );
+
+
+
+                if (
+                    !response.ok
+                ) {
+
+                    throw new Error(
+                        "Submission failed"
+                    );
+
+                }
+
+
+
+                rsvpForm.style.display =
+                    "none";
+
+
+
+                document
+                    .getElementById(
+                        "rsvpSuccess"
+                    )
+                    .style.display =
+                    "block";
+
+
+
+            } catch (error) {
+
+                button.disabled =
+                    false;
+
+                button.textContent =
+                    "Send RSVP";
+
+                alert(
+                    "Something went wrong. Please try again."
+                );
+
+            }
+
+        }
+    );
+
+}
+
+</script>
+
+</body>
+</html>
