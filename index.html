@@ -2603,6 +2603,57 @@ function startMusic() {
 
 }
 
+/* =========================================================
+   STOP MUSIC WHEN BROWSER IS HIDDEN
+========================================================= */
+
+document.addEventListener(
+    "visibilitychange",
+    () => {
+
+        const music =
+            document.getElementById(
+                "bgMusic"
+            );
+
+
+
+        if (!music) {
+            return;
+        }
+
+
+
+        if (document.hidden) {
+
+            music.pause();
+
+        }
+
+    }
+);
+
+
+
+window.addEventListener(
+    "pagehide",
+    () => {
+
+        const music =
+            document.getElementById(
+                "bgMusic"
+            );
+
+
+
+        if (music) {
+
+            music.pause();
+
+        }
+
+    }
+);
 
 
 function openInvite() {
@@ -3310,7 +3361,7 @@ async function downloadInvitationPDF() {
     } finally {
 
         await new Promise(resolve =>
-            setTimeout(resolve, 1500)
+            setTimeout(resolve, 3000)
         );
 
         hidePersonalisingDialog();
