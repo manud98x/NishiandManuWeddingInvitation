@@ -1423,31 +1423,6 @@ footer {
 
 
 <!-- =========================================================
-     PERSONALISING INVITATION
-========================================================= -->
-
-<div
-    id="personalisingDialog"
-    class="personalising-dialog"
->
-
-    <div class="personalising-box">
-
-        <div class="personalising-spinner"></div>
-
-        <div class="personalising-title">
-            Personalising your invitation
-        </div>
-
-        <div class="personalising-text">
-            Just a moment while we prepare your personal invitation...
-        </div>
-
-    </div>
-
-</div>
-
-<!-- =========================================================
      INTRO
 ========================================================= -->
 
@@ -1984,7 +1959,32 @@ footer {
 
     </section>
 
-        <!-- DOWNLOAD INVITATION -->
+    <!-- =========================================================
+     PERSONALISING INVITATION
+========================================================= -->
+
+<div
+    id="personalisingDialog"
+    class="personalising-dialog hide"
+>
+
+    <div class="personalising-box">
+
+        <div class="personalising-spinner"></div>
+
+        <div class="personalising-title">
+            Personalising your invitation
+        </div>
+
+        <div class="personalising-text">
+            Just a moment while we prepare your personal invitation...
+        </div>
+
+    </div>
+
+</div>
+
+    <!-- DOWNLOAD INVITATION -->
 
             <div class="card">
 
@@ -2206,6 +2206,27 @@ function getInvitationCode() {
 
 }
 
+function showPersonalisingDialog() {
+
+    const dialog =
+        document.getElementById(
+            "personalisingDialog"
+        );
+
+
+
+    if (dialog) {
+
+        dialog.classList.remove(
+            "hide"
+        );
+
+    }
+
+}
+
+
+
 function hidePersonalisingDialog() {
 
     const dialog =
@@ -2402,10 +2423,6 @@ async function loadGuestInvitation() {
 
 
 
-        hidePersonalisingDialog();
-
-
-
     } catch (error) {
 
         console.error(
@@ -2422,10 +2439,6 @@ async function loadGuestInvitation() {
 
 
 function showInvalidInvitation() {
-
-    hidePersonalisingDialog();
-
-
 
     guestName =
         "";
@@ -3074,6 +3087,14 @@ async function downloadInvitationPDF() {
 
 
 
+    showPersonalisingDialog();
+
+
+
+    try {
+
+
+
     const pdfInvitation =
         document.getElementById(
             "pdfInvitation"
@@ -3283,6 +3304,18 @@ async function downloadInvitationPDF() {
     pdf.save(
         `Nishi-and-Manu-Invitation-${safeGuestName || "Guest"}.pdf`
     );
+
+
+
+    } finally {
+
+        await new Promise(resolve =>
+            setTimeout(resolve, 1500)
+        );
+
+        hidePersonalisingDialog();
+
+    }
 
 }
 
