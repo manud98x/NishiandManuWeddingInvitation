@@ -405,6 +405,110 @@ textarea {
     color: #6e5c4e;
 }
 
+/* =========================================================
+   PERSONALISING INVITATION
+========================================================= */
+
+.personalising-dialog {
+    position: fixed;
+    inset: 0;
+
+    z-index: 12000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 25px;
+
+    background:
+        rgba(253, 250, 246, .92);
+
+    backdrop-filter:
+        blur(6px);
+
+    transition:
+        opacity .5s ease,
+        visibility .5s ease;
+}
+
+.personalising-dialog.hide {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.personalising-box {
+    width: min(420px, 90vw);
+
+    padding: 45px 30px;
+
+    text-align: center;
+
+    background:
+        #fffdf9;
+
+    border:
+        1px solid rgba(198, 162, 82, .45);
+
+    box-shadow:
+        0 20px 60px rgba(74, 55, 30, .12);
+}
+
+.personalising-spinner {
+    width: 42px;
+    height: 42px;
+
+    margin:
+        0 auto 25px;
+
+    border:
+        2px solid rgba(212, 175, 55, .25);
+
+    border-top-color:
+        #b08b32;
+
+    border-radius:
+        50%;
+
+    animation:
+        personalisingSpin .9s linear infinite;
+}
+
+@keyframes personalisingSpin {
+
+    to {
+        transform:
+            rotate(360deg);
+    }
+
+}
+
+.personalising-title {
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-size: 17px;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+    color:
+        #a67c00;
+}
+
+.personalising-text {
+    margin-top: 12px;
+
+    font-size: 17px;
+
+    line-height: 1.5;
+
+    color:
+        #6e5c4e;
+}
 
 /* =========================================================
    SECTIONS
@@ -1319,6 +1423,31 @@ footer {
 
 
 <!-- =========================================================
+     PERSONALISING INVITATION
+========================================================= -->
+
+<div
+    id="personalisingDialog"
+    class="personalising-dialog"
+>
+
+    <div class="personalising-box">
+
+        <div class="personalising-spinner"></div>
+
+        <div class="personalising-title">
+            Personalising your invitation
+        </div>
+
+        <div class="personalising-text">
+            Just a moment while we prepare your personal invitation...
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =========================================================
      INTRO
 ========================================================= -->
 
@@ -1855,7 +1984,7 @@ footer {
 
     </section>
 
-    <!-- DOWNLOAD INVITATION -->
+        <!-- DOWNLOAD INVITATION -->
 
             <div class="card">
 
@@ -2011,7 +2140,7 @@ footer {
 <audio
     id="bgMusic"
     loop
-    preload="auto"
+    preload="none"
 >
     <source
         src="/music.mp3"
@@ -2077,7 +2206,24 @@ function getInvitationCode() {
 
 }
 
+function hidePersonalisingDialog() {
 
+    const dialog =
+        document.getElementById(
+            "personalisingDialog"
+        );
+
+
+
+    if (dialog) {
+
+        dialog.classList.add(
+            "hide"
+        );
+
+    }
+
+}
 
 async function loadGuestInvitation() {
 
@@ -2256,6 +2402,10 @@ async function loadGuestInvitation() {
 
 
 
+        hidePersonalisingDialog();
+
+
+
     } catch (error) {
 
         console.error(
@@ -2272,6 +2422,10 @@ async function loadGuestInvitation() {
 
 
 function showInvalidInvitation() {
+
+    hidePersonalisingDialog();
+
+
 
     guestName =
         "";
