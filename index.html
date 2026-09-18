@@ -202,7 +202,6 @@ textarea {
     justify-content: center;
 
     padding: 24px;
-
     overflow: hidden;
 
     background:
@@ -258,14 +257,17 @@ textarea {
     align-items: center;
 
     z-index: 2;
+
+    perspective:
+        1500px;
 }
 
 
 /* =========================================================
-   SIDEWAYS ENVELOPE STAGE
+   ENVELOPE STAGE
 ========================================================= */
 
-.side-envelope {
+.envelope-stage {
     position: relative;
 
     width: 100%;
@@ -278,12 +280,6 @@ textarea {
 
     touch-action:
         manipulation;
-
-    perspective:
-        1500px;
-
-    transform-style:
-        flat;
 }
 
 .floor-shadow {
@@ -318,25 +314,96 @@ textarea {
 
 
 /* =========================================================
-   INVITATION CARD
+   BACK OF ENVELOPE
 ========================================================= */
+
+.envelope-back {
+    position: absolute;
+    inset: 0;
+
+    z-index: 1;
+
+    border:
+        1px solid rgba(198,162,82,.18);
+
+    border-radius:
+        7px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fffdf9 0%,
+            #f4ead8 54%,
+            #ece0cd 100%
+        );
+
+    box-shadow:
+        0 26px 54px rgba(52,46,38,.16),
+        inset 0 1px 0 rgba(255,255,255,.72);
+
+    transition:
+        opacity .8s ease,
+        transform 1.05s cubic-bezier(.22,1,.36,1);
+}
+
+.envelope-back::before {
+    content: "";
+
+    position: absolute;
+    inset: 11px;
+
+    border:
+        1px solid rgba(198,162,82,.10);
+
+    border-radius:
+        3px;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   LETTER MASK + INVITATION
+========================================================= */
+
+/*
+    The mask is the important part:
+    while the envelope is closed/opening, it physically clips the
+    letter inside the envelope rectangle so nothing can protrude
+    below or outside the edges.
+*/
+.letter-mask {
+    position: absolute;
+    inset: 0;
+
+    z-index: 4;
+
+    overflow: hidden;
+
+    pointer-events: none;
+}
 
 .invitation-card {
     position: absolute;
 
-    z-index: 2;
+    left:
+        6%;
 
-    inset: 0;
+    top:
+        34%;
 
-    width: 100%;
-    height: 100%;
+    width:
+        88%;
+
+    height:
+        82%;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
     padding:
-        38px 42px;
+        34px 36px;
 
     background:
         linear-gradient(
@@ -347,8 +414,7 @@ textarea {
         #fffdf9;
 
     border:
-        1px solid
-        rgba(198,162,82,.22);
+        1px solid rgba(198,162,82,.22);
 
     border-radius:
         10px;
@@ -358,10 +424,14 @@ textarea {
         inset 0 0 0 1px rgba(255,255,255,.55);
 
     transform:
-        translateX(0);
+        translateY(0);
 
     transition:
         transform 1.05s cubic-bezier(.22,1,.36,1),
+        top 1.05s cubic-bezier(.22,1,.36,1),
+        left 1.05s cubic-bezier(.22,1,.36,1),
+        width 1.05s cubic-bezier(.22,1,.36,1),
+        height 1.05s cubic-bezier(.22,1,.36,1),
         box-shadow .9s ease;
 }
 
@@ -374,8 +444,7 @@ textarea {
         16px;
 
     border:
-        1px solid
-        rgba(198,162,82,.14);
+        1px solid rgba(198,162,82,.14);
 
     border-radius:
         4px;
@@ -472,94 +541,209 @@ textarea {
 
 
 /* =========================================================
-   ENVELOPE BODY / POCKET
+   FRONT POCKET
 ========================================================= */
 
-.envelope-shell {
+/*
+    This is the front pocket only.
+    There is deliberately NO second top triangle here.
+    Once the separate flap opens, the upper part of the letter
+    can be revealed directly above this straight pocket edge.
+*/
+.envelope-front {
     position: absolute;
 
-    inset: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 
-    z-index: 6;
+    height:
+        68%;
+
+    z-index:
+        6;
+
+    overflow: hidden;
+
+    border:
+        1px solid rgba(198,162,82,.18);
+
+    border-radius:
+        0 0 7px 7px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fffdf9 0%,
+            #f5ead8 56%,
+            #ecdfca 100%
+        );
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.70);
 
     transition:
         opacity .8s ease,
         transform 1.05s cubic-bezier(.22,1,.36,1);
 }
 
-.envelope-pocket {
-    position: absolute;
-
-    inset: 0;
-
-    overflow: hidden;
-
-    border-radius:
-        10px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #fffdf8 0%,
-            #f4ead8 55%,
-            #eee0c9 100%
-        );
-
-    border:
-        1px solid
-        rgba(198,162,82,.18);
-
-    box-shadow:
-        0 26px 54px rgba(52,46,38,.16),
-        inset 0 1px 0 rgba(255,255,255,.68);
-}
-
-.envelope-pocket::before {
+.envelope-front::before {
     content: "";
 
     position: absolute;
 
-    inset:
-        14px;
-
-    border:
-        1px solid
-        rgba(198,162,82,.12);
-
-    border-radius:
-        4px;
-}
-
-.envelope-pocket::after {
-    content: "";
-
-    position: absolute;
-
-    top: 7%;
-    right: 0;
-    bottom: 7%;
-
-    width:
+    left:
         10px;
 
-    background:
-        linear-gradient(
-            90deg,
-            rgba(90,70,45,.08),
-            rgba(255,255,255,.42),
-            rgba(255,255,255,0)
-        );
+    right:
+        10px;
 
-    opacity:
-        .65;
+    top:
+        10px;
+
+    bottom:
+        10px;
+
+    border:
+        1px solid rgba(198,162,82,.10);
+
+    border-radius:
+        2px;
 
     pointer-events:
         none;
 }
 
-.envelope-pocket::before {
-    box-shadow:
-        inset -12px 0 18px rgba(120,95,60,.03);
+.envelope-front::after {
+    content: "";
+
+    position: absolute;
+
+    left:
+        8%;
+
+    right:
+        8%;
+
+    top:
+        0;
+
+    height:
+        9px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(90,70,45,.08),
+            rgba(255,255,255,.34),
+            rgba(255,255,255,0)
+        );
+
+    opacity:
+        .72;
+
+    pointer-events:
+        none;
+}
+
+/* lower fold hints only — never another upper triangle */
+.fold-left,
+.fold-right,
+.fold-bottom {
+    position: absolute;
+
+    pointer-events:
+        none;
+}
+
+.fold-left {
+    left: 0;
+    bottom: 0;
+
+    width:
+        46%;
+
+    height:
+        60%;
+
+    clip-path:
+        polygon(
+            0 25%,
+            100% 100%,
+            0 100%
+        );
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.22),
+            rgba(215,199,170,.16)
+        );
+
+    opacity:
+        .60;
+}
+
+.fold-right {
+    right: 0;
+    bottom: 0;
+
+    width:
+        46%;
+
+    height:
+        60%;
+
+    clip-path:
+        polygon(
+            100% 25%,
+            0 100%,
+            100% 100%
+        );
+
+    background:
+        linear-gradient(
+            215deg,
+            rgba(255,255,255,.18),
+            rgba(215,199,170,.14)
+        );
+
+    opacity:
+        .56;
+}
+
+.fold-bottom {
+    left:
+        50%;
+
+    bottom:
+        0;
+
+    width:
+        62%;
+
+    height:
+        38%;
+
+    transform:
+        translateX(-50%);
+
+    clip-path:
+        polygon(
+            50% 0,
+            100% 100%,
+            0 100%
+        );
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,.10),
+            rgba(214,196,165,.18)
+        );
+
+    opacity:
+        .54;
 }
 
 .metal-edge {
@@ -583,41 +767,42 @@ textarea {
         );
 
     opacity:
-        .52;
+        .42;
 }
 
 
 /* =========================================================
-   SEPARATE HINGED SIDE FLAP
+   COMPLETELY SEPARATE TOP FLAP
 ========================================================= */
 
 .flap-hinge {
     position: absolute;
 
     top: 0;
-    right: 0;
+    left: 0;
 
     width:
-        54%;
-
-    height:
         100%;
 
+    aspect-ratio:
+        1.72 / 1;
+
     z-index:
-        9;
+        8;
 
     transform-origin:
-        right center;
+        top center;
 
     transform:
-        rotateY(0deg);
+        rotateX(0deg);
 
     transform-style:
         preserve-3d;
 
     transition:
-        transform 1.25s cubic-bezier(.72,0,.18,1),
-        filter .9s ease;
+        transform 1.18s cubic-bezier(.72,0,.18,1),
+        filter .9s ease,
+        opacity .8s ease;
 
     pointer-events:
         none;
@@ -625,7 +810,6 @@ textarea {
 
 .flap-face {
     position: absolute;
-
     inset: 0;
 
     transform-style:
@@ -639,9 +823,9 @@ textarea {
 
     clip-path:
         polygon(
+            0 0,
             100% 0,
-            100% 100%,
-            0 50%
+            50% 100%
         );
 }
 
@@ -651,16 +835,16 @@ textarea {
 
     background:
         linear-gradient(
-            150deg,
+            160deg,
             #fffdf8 0%,
-            #f2e5cf 54%,
+            #f2e5cf 56%,
             #e7d2ae 100%
         );
 
     filter:
         drop-shadow(
-            -12px 0 14px
-            rgba(52,46,38,.12)
+            0 8px 16px
+            rgba(52,46,38,.10)
         );
 }
 
@@ -670,23 +854,22 @@ textarea {
     position: absolute;
 
     inset:
-        8px 7px 8px 22%;
+        8px 14px 12px 14px;
 
     clip-path:
         polygon(
+            0 0,
             100% 0,
-            100% 100%,
-            0 50%
+            50% 100%
         );
 
     border:
-        1px solid
-        rgba(166,124,0,.12);
+        1px solid rgba(166,124,0,.10);
 }
 
 .flap-back {
     transform:
-        rotateY(180deg);
+        rotateX(180deg);
 
     background:
         linear-gradient(
@@ -697,59 +880,38 @@ textarea {
         );
 
     box-shadow:
-        inset 24px 0 34px rgba(90,76,58,.14),
-        inset -8px 0 14px rgba(255,255,255,.18);
+        inset 0 18px 28px rgba(90,76,58,.10),
+        inset 0 -8px 14px rgba(255,255,255,.16);
 
     filter:
         drop-shadow(
-            8px 0 14px
-            rgba(52,46,38,.10)
+            0 -6px 10px
+            rgba(52,46,38,.08)
         );
-}
-
-.flap-back::after {
-    content: "";
-
-    position: absolute;
-
-    top:
-        8%;
-
-    right:
-        3%;
-
-    bottom:
-        8%;
-
-    width:
-        1px;
-
-    background:
-        rgba(166,124,0,.20);
 }
 
 
 /* =========================================================
-   MONOGRAM ON FLAP
+   REFINED SEAL
 ========================================================= */
 
-.flap-monogram {
+.flap-seal {
     position: absolute;
 
     z-index:
-        4;
+        5;
 
     left:
-        67%;
-
-    top:
         50%;
 
+    top:
+        88%;
+
     width:
-        94px;
+        86px;
 
     height:
-        94px;
+        86px;
 
     display:
         grid;
@@ -759,34 +921,28 @@ textarea {
 
     transform:
         translate(-50%,-50%)
-        translateZ(3px);
+        translateZ(6px);
 
     border-radius:
         50%;
 
+    background:
+        radial-gradient(
+            circle at 34% 28%,
+            #fffdf8 0%,
+            #f8efd9 42%,
+            #ead8b7 74%,
+            #d8bd86 100%
+        );
+
     border:
-        1px solid
-        rgba(166,124,0,.15);
+        1px solid rgba(166,124,0,.28);
 
     box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.58),
-        inset 0 -1px 0 rgba(88,76,61,.08);
-
-    font-family:
-        "Playfair Display",
-        serif;
-
-    font-size:
-        27px;
-
-    font-weight:
-        500;
-
-    color:
-        #b08b32;
-
-    text-shadow:
-        0 1px rgba(255,255,255,.5);
+        0 10px 20px rgba(52,46,38,.13),
+        0 2px 5px rgba(126,91,24,.10),
+        inset 0 2px 2px rgba(255,255,255,.74),
+        inset 0 -2px 3px rgba(105,79,35,.12);
 
     backface-visibility:
         hidden;
@@ -795,9 +951,270 @@ textarea {
         hidden;
 }
 
-.flap-monogram span {
+.flap-seal::before {
+    content: "";
+
+    position: absolute;
+
+    inset:
+        6px;
+
+    border-radius:
+        50%;
+
+    border:
+        1px solid rgba(166,124,0,.26);
+
+    box-shadow:
+        inset 0 0 0 4px rgba(255,255,255,.10),
+        0 0 0 1px rgba(255,255,255,.24);
+
+    pointer-events:
+        none;
+}
+
+.flap-seal::after {
+    content: "";
+
+    position: absolute;
+
+    inset:
+        13px;
+
+    border-radius:
+        50%;
+
+    border:
+        1px solid rgba(166,124,0,.13);
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(255,255,255,.12),
+            rgba(198,162,82,.035)
+        );
+
+    pointer-events:
+        none;
+}
+
+.seal-mark {
+    position:
+        relative;
+
+    z-index:
+        2;
+
+    display:
+        flex;
+
+    align-items:
+        baseline;
+
+    justify-content:
+        center;
+
+    gap:
+        1px;
+
+    color:
+        #a67c00;
+
+    text-shadow:
+        0 1px rgba(255,255,255,.65),
+        0 -1px rgba(87,64,24,.05);
+}
+
+.seal-letter {
+    font-family:
+        "Playfair Display",
+        serif;
+
     font-size:
-        16px;
+        25px;
+
+    font-weight:
+        500;
+
+    line-height:
+        1;
+}
+
+.seal-amp {
+    margin:
+        0 -1px;
+
+    font-family:
+        "Great Vibes",
+        cursive;
+
+    font-size:
+        21px;
+
+    line-height:
+        1;
+
+    color:
+        #b08b32;
+}
+
+.seal-mark::before,
+.seal-mark::after {
+    content: "";
+
+    position:
+        absolute;
+
+    left:
+        50%;
+
+    width:
+        22px;
+
+    height:
+        1px;
+
+    transform:
+        translateX(-50%);
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(166,124,0,.34),
+            transparent
+        );
+}
+
+.seal-mark::before {
+    top:
+        -10px;
+}
+
+.seal-mark::after {
+    bottom:
+        -10px;
+}
+
+
+/* =========================================================
+   OPENING STATES
+========================================================= */
+
+.flap-hinge.open {
+    z-index:
+        8;
+
+    transform:
+        rotateX(180deg);
+
+    filter:
+        drop-shadow(
+            0 -14px 20px
+            rgba(52,46,38,.12)
+        );
+}
+
+.flap-hinge.behind {
+    z-index:
+        2;
+}
+
+/*
+    First reveal only the TOP of the card.
+    Front pocket remains over the lower card.
+*/
+.envelope-stage.peek
+.invitation-card {
+    transform:
+        translateY(-23%);
+}
+
+/*
+    Only now do we allow the card to leave the envelope rectangle.
+*/
+.envelope-stage.letter-out
+.letter-mask {
+    overflow:
+        visible;
+}
+
+.envelope-stage.letter-out
+.invitation-card {
+    transform:
+        translateY(-66%);
+
+    box-shadow:
+        0 36px 72px rgba(48,43,36,.19),
+        inset 0 0 0 1px rgba(255,255,255,.58);
+}
+
+.envelope-stage.focus
+.envelope-front {
+    opacity:
+        0;
+
+    transform:
+        translateY(42%);
+}
+
+.envelope-stage.focus
+.envelope-back {
+    opacity:
+        0;
+
+    transform:
+        translateY(34%);
+}
+
+.envelope-stage.focus
+.invitation-card {
+    left:
+        0;
+
+    top:
+        0;
+
+    width:
+        100%;
+
+    height:
+        100%;
+
+    transform:
+        translateY(0);
+
+    box-shadow:
+        0 34px 70px rgba(48,43,36,.16),
+        inset 0 0 0 1px rgba(255,255,255,.58);
+}
+
+.flap-hinge.clear {
+    z-index:
+        2;
+
+    opacity:
+        0;
+
+    transform:
+        rotateX(180deg)
+        translateY(28%);
+}
+
+.envelope-stage.open
+.floor-shadow {
+    opacity:
+        .48;
+
+    transform:
+        translateX(-50%)
+        scale(.93);
+}
+
+.envelope-stage.open
+~ .tap-cue {
+    opacity:
+        0;
 }
 
 
@@ -826,134 +1243,10 @@ textarea {
         #8d7145;
 
     animation:
-        sidewaysPulse
-        2s ease-in-out infinite;
+        upwardPulse 2s ease-in-out infinite;
 
     transition:
         opacity .4s ease;
-}
-
-
-/* =========================================================
-   PHASE 1 — FLAP OPENS BY ITSELF
-========================================================= */
-
-.side-envelope.open
-.flap-hinge {
-    z-index:
-        8;
-
-    transform:
-        rotateY(180deg);
-
-    filter:
-        drop-shadow(
-            18px 0 26px
-            rgba(52,46,38,.14)
-        );
-}
-
-.side-envelope.open
-~ .tap-cue {
-    opacity:
-        0;
-}
-
-.side-envelope.open
-.floor-shadow {
-    opacity:
-        .48;
-
-    transform:
-        translateX(-50%)
-        scale(.93);
-}
-
-.side-envelope.open
-.envelope-shell {
-    z-index:
-        6;
-}
-
-.side-envelope.open
-.invitation-card {
-    z-index:
-        5;
-}
-
-
-/* =========================================================
-   PHASE 2 — LETTER SLIDES OUT
-========================================================= */
-
-.side-envelope.letter-out
-.invitation-card {
-    z-index:
-        5;
-
-    transform:
-        translateX(48%);
-
-    box-shadow:
-        0 36px 72px rgba(48,43,36,.19),
-        inset 0 0 0 1px rgba(255,255,255,.58);
-}
-
-.side-envelope.letter-out
-.envelope-shell {
-    z-index:
-        6;
-
-    transform:
-        translateX(-8%);
-}
-
-.side-envelope.letter-out
-.flap-hinge {
-    z-index:
-        1;
-
-    transform:
-        rotateY(180deg);
-}
-
-
-/* =========================================================
-   PHASE 3 — ENVELOPE CLEARS, LETTER CENTERS
-========================================================= */
-
-.side-envelope.focus
-.envelope-shell {
-    opacity:
-        0;
-
-    transform:
-        translateX(-55%);
-}
-
-.side-envelope.focus
-.flap-hinge {
-    opacity:
-        0;
-
-    z-index:
-        1;
-
-    transform:
-        rotateY(180deg);
-}
-
-.side-envelope.focus
-.invitation-card {
-    z-index:
-        8;
-
-    transform:
-        translateX(0);
-
-    box-shadow:
-        0 34px 70px rgba(48,43,36,.16),
-        inset 0 0 0 1px rgba(255,255,255,.58);
 }
 
 
@@ -972,18 +1265,28 @@ textarea {
         width:
             min(
                 320px,
-                82vw
+                84vw
             );
-    }
 
-    .side-envelope {
         perspective:
             1200px;
     }
 
     .invitation-card {
+        left:
+            6%;
+
+        top:
+            34%;
+
+        width:
+            88%;
+
+        height:
+            82%;
+
         padding:
-            28px 24px;
+            26px 22px;
     }
 
     .invitation-card::before {
@@ -1025,63 +1328,62 @@ textarea {
             2px;
     }
 
-    .flap-monogram {
+    .flap-seal {
         width:
-            72px;
+            70px;
 
         height:
-            72px;
+            70px;
+    }
 
+    .seal-letter {
         font-size:
             21px;
     }
 
-    /*
-        Mobile extraction:
-        Keep the full invitation inside the viewport.
-        The envelope moves left more than the letter moves right,
-        so it still looks like the card is being pulled out sideways.
-    */
+    .seal-amp {
+        font-size:
+            18px;
+    }
 
-    .side-envelope.letter-out
+    .seal-mark::before {
+        top:
+            -8px;
+    }
+
+    .seal-mark::after {
+        bottom:
+            -8px;
+    }
+
+    .envelope-stage.peek
     .invitation-card {
         transform:
-            translateX(8%);
+            translateY(-22%);
     }
 
-    .side-envelope.letter-out
-    .envelope-shell {
-        transform:
-            translateX(-18%);
-    }
-
-    .side-envelope.letter-out
-    .flap-hinge {
-        z-index:
-            1;
-
-        transform:
-            translateX(-18%)
-            rotateY(180deg);
-    }
-
-    .side-envelope.focus
-    .envelope-shell {
-        transform:
-            translateX(-45%);
-    }
-
-    .side-envelope.focus
-    .flap-hinge {
-        transform:
-            translateX(-45%)
-            rotateY(180deg);
-    }
-
-    .side-envelope.focus
+    .envelope-stage.letter-out
     .invitation-card {
         transform:
-            translateX(0);
+            translateY(-58%);
+    }
+
+    .envelope-stage.focus
+    .invitation-card {
+        left:
+            0;
+
+        top:
+            0;
+
+        width:
+            100%;
+
+        height:
+            100%;
+
+        transform:
+            translateY(0);
     }
 
     .tap-cue {
@@ -1097,7 +1399,7 @@ textarea {
 
 }
 
-@keyframes sidewaysPulse {
+@keyframes upwardPulse {
 
     0%,
     100% {
@@ -1111,7 +1413,6 @@ textarea {
     }
 
 }
-
 
 /* =========================================================
    MAIN
@@ -2367,8 +2668,8 @@ footer {
     <div class="envelope-wrapper">
 
         <div
-            class="side-envelope"
-            id="sideEnvelope"
+            class="envelope-stage"
+            id="topEnvelope"
             role="button"
             tabindex="0"
             aria-label="Open invitation"
@@ -2378,65 +2679,80 @@ footer {
             <div class="floor-shadow"></div>
 
 
-            <!-- INNER INVITATION -->
+            <!-- FULL BACK OF THE ENVELOPE -->
 
-            <div class="invitation-card">
-
-                <div class="card-content">
-
-                    <div class="card-names">
-                        Nishi &amp; Manu
-                    </div>
-
-                    <div class="card-subtext">
-                        request the pleasure of your company<br>
-                        as they celebrate their marriage
-                    </div>
-
-                    <div class="card-rule"></div>
-
-                    <div
-                        class="card-guest"
-                        id="envelopeGuest"
-                    >
-                        Loading Invitation
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- ENVELOPE BODY -->
-
-            <div class="envelope-shell">
-
-                <div class="envelope-pocket">
-
-                    <div class="metal-edge"></div>
-
-                </div>
-
-            </div>
+            <div class="envelope-back"></div>
 
 
             <!--
-                SEPARATE SIDE FLAP
-                This is intentionally its own hinged 3D element,
-                independent of the envelope body.
+                LETTER IS PHYSICALLY CLIPPED INSIDE THE ENVELOPE
+                UNTIL THE EXTRACTION PHASE.
             -->
 
-            <div class="flap-hinge">
+            <div class="letter-mask">
 
-                <div class="flap-face flap-front">
+                <div class="invitation-card">
 
-                    <div class="flap-monogram">
-                        N<span>&amp;</span>M
+                    <div class="card-content">
+
+                        <div class="card-names">
+                            Nishi &amp; Manu
+                        </div>
+
+                        <div class="card-subtext">
+                            request the pleasure of your company<br>
+                            as they celebrate their marriage
+                        </div>
+
+                        <div class="card-rule"></div>
+
+                        <div
+                            class="card-guest"
+                            id="envelopeGuest"
+                        >
+                            Loading Invitation
+                        </div>
+
                     </div>
 
                 </div>
 
-                <div class="flap-face flap-back"></div>
+            </div>
+
+
+            <!-- STRAIGHT FRONT POCKET — NO SECOND TOP TRIANGLE -->
+
+            <div class="envelope-front">
+
+                <div class="fold-left"></div>
+                <div class="fold-right"></div>
+                <div class="fold-bottom"></div>
+                <div class="metal-edge"></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- COMPLETELY SEPARATE HINGED FLAP -->
+
+        <div
+            class="flap-hinge"
+            id="topFlap"
+            aria-hidden="true"
+        >
+
+            <div class="flap-face flap-front"></div>
+
+            <div class="flap-face flap-back"></div>
+
+            <div class="flap-seal">
+
+                <div class="seal-mark">
+                    <span class="seal-letter">N</span>
+                    <span class="seal-amp">&amp;</span>
+                    <span class="seal-letter">M</span>
+                </div>
 
             </div>
 
@@ -2450,7 +2766,6 @@ footer {
     </div>
 
 </div>
-
 
 
 <!-- =========================================================
@@ -3821,9 +4136,14 @@ window.addEventListener(
 
 function openInvite() {
 
-    const sideEnvelope =
+    const topEnvelope =
         document.getElementById(
-            "sideEnvelope"
+            "topEnvelope"
+        );
+
+    const topFlap =
+        document.getElementById(
+            "topFlap"
         );
 
     const envelopeScreen =
@@ -3839,8 +4159,9 @@ function openInvite() {
 
 
     if (
-        !sideEnvelope ||
-        sideEnvelope.classList.contains(
+        !topEnvelope ||
+        !topFlap ||
+        topEnvelope.classList.contains(
             "open"
         )
     ) {
@@ -3852,11 +4173,15 @@ function openInvite() {
 
 
     /*
-        Phase 1:
-        The separate hinged flap opens fully first.
+        1. Open ONLY the separate flap.
+        The letter remains completely hidden behind the front pocket.
     */
 
-    sideEnvelope.classList.add(
+    topEnvelope.classList.add(
+        "open"
+    );
+
+    topFlap.classList.add(
         "open"
     );
 
@@ -3867,15 +4192,27 @@ function openInvite() {
 
 
     /*
-        Phase 2:
-        Only after the flap has opened,
-        the invitation slides out of the side.
+        2. Once the flap is open, place it behind the letter.
     */
 
     setTimeout(() => {
 
-        sideEnvelope.classList.add(
-            "letter-out"
+        topFlap.classList.add(
+            "behind"
+        );
+
+    }, 1180);
+
+
+
+    /*
+        3. Reveal only the top of the letter above the straight pocket edge.
+    */
+
+    setTimeout(() => {
+
+        topEnvelope.classList.add(
+            "peek"
         );
 
     }, 1350);
@@ -3883,24 +4220,39 @@ function openInvite() {
 
 
     /*
-        Phase 3:
-        The envelope clears away and
-        the invitation returns to exact centre.
+        4. Pull the letter fully upward.
     */
 
     setTimeout(() => {
 
-        sideEnvelope.classList.add(
-            "focus"
+        topEnvelope.classList.add(
+            "letter-out"
         );
 
-    }, 2350);
+    }, 1780);
 
 
 
     /*
-        Phase 4:
-        Move into the main website.
+        5. Clear envelope parts independently and center the card.
+    */
+
+    setTimeout(() => {
+
+        topEnvelope.classList.add(
+            "focus"
+        );
+
+        topFlap.classList.add(
+            "clear"
+        );
+
+    }, 2850);
+
+
+
+    /*
+        6. Transition into the main site.
     */
 
     setTimeout(() => {
@@ -3921,7 +4273,7 @@ function openInvite() {
 
         }, 400);
 
-    }, 3550);
+    }, 4150);
 
 }
 
@@ -4239,7 +4591,7 @@ function dropSparkles() {
 
             sparkle.remove();
 
-        }, 3500);
+        }, 4000);
 
     }
 
