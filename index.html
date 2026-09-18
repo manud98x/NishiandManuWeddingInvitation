@@ -201,12 +201,41 @@ textarea {
     align-items: center;
     justify-content: center;
 
+    padding: 24px;
+
+    overflow: hidden;
+
     background:
-        radial-gradient(circle at center, #fffdf8 0%, #eee0c9 100%);
+        radial-gradient(
+            circle at 50% 34%,
+            #fffdf9 0%,
+            #fdfaf6 52%,
+            #f4ead9 100%
+        );
 
     transition:
         opacity 1s ease,
         visibility 1s ease;
+}
+
+#envelopeScreen::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+
+    opacity: .22;
+
+    background:
+        repeating-linear-gradient(
+            0deg,
+            rgba(60,55,48,.015) 0,
+            rgba(60,55,48,.015) 1px,
+            transparent 1px,
+            transparent 5px
+        );
 }
 
 #envelopeScreen.hide {
@@ -216,92 +245,224 @@ textarea {
 }
 
 .envelope-wrapper {
-    width: min(420px, 88vw);
-    text-align: center;
+    position: relative;
+
+    width:
+        min(
+            430px,
+            88vw
+        );
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    z-index: 2;
 }
 
-.envelope {
+
+/* =========================================================
+   COUTURE SLEEVE
+========================================================= */
+
+.sleeve-wrap {
     position: relative;
 
     width: 100%;
-    aspect-ratio: 1.55;
-
-    perspective: 1200px;
+    aspect-ratio: 1.48;
 
     cursor: pointer;
+
+    -webkit-tap-highlight-color:
+        transparent;
+
+    touch-action:
+        manipulation;
 }
 
-.envelope-body {
+.floor-shadow {
     position: absolute;
-    inset: 0;
+
+    left: 50%;
+    bottom: -20px;
+
+    width: 72%;
+    height: 34px;
+
+    transform:
+        translateX(-50%);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(48,43,36,.18),
+            rgba(48,43,36,0) 72%
+        );
+
+    filter:
+        blur(9px);
+
+    transition:
+        opacity .7s ease,
+        transform .8s ease;
+}
+
+
+/* =========================================================
+   INVITATION CARD
+========================================================= */
+
+.invitation-card {
+    position: absolute;
+
+    z-index: 1;
+
+    left: 8%;
+    top: 8%;
+
+    width: 84%;
+    height: 84%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 26px 30px;
 
     background:
         linear-gradient(
-            145deg,
-            #d9bd72,
-            #f4e4b7 45%,
-            #c8a44f
-        );
+            180deg,
+            rgba(255,255,255,.72),
+            rgba(255,255,255,0) 20%
+        ),
+        #fffdf9;
 
-    border-radius: 4px;
+    border:
+        1px solid
+        rgba(198,162,82,.22);
 
     box-shadow:
-        0 25px 70px rgba(77, 55, 24, 0.25),
-        inset 0 0 0 1px rgba(255,255,255,.4);
+        0 18px 36px rgba(48,43,36,.12),
+        inset 0 0 0 1px rgba(255,255,255,.55);
 
-    overflow: hidden;
+    transform:
+        translateY(18%)
+        scale(.965);
+
+    transition:
+        transform 1.15s cubic-bezier(.22,1,.36,1),
+        box-shadow .9s ease;
 }
 
-.envelope-body::before {
+.invitation-card::before {
     content: "";
 
     position: absolute;
-    inset: 0;
 
-    background:
-        linear-gradient(
-            135deg,
-            transparent 49%,
-            rgba(255,255,255,.4) 50%,
-            transparent 51%
-        );
+    inset: 12px;
 
-    opacity: .25;
+    border:
+        1px solid
+        rgba(198,162,82,.14);
+
+    pointer-events: none;
 }
 
-.envelope-flap {
-    position: absolute;
-
-    top: 0;
-    left: 0;
-
+.card-content {
     width: 100%;
-    height: 55%;
+    max-width: 330px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    text-align: center;
+}
+
+.card-names {
+    margin: 0;
+
+    font-family:
+        "Great Vibes",
+        cursive;
+
+    font-size:
+        38px;
+
+    line-height:
+        1;
+
+    font-weight:
+        400;
+
+    color:
+        #b08b32;
+}
+
+.card-subtext {
+    margin-top:
+        20px;
+
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size:
+        17px;
+
+    line-height:
+        1.45;
+
+    color:
+        #6e5c4e;
+}
+
+.card-rule {
+    width:
+        58px;
+
+    height:
+        1px;
+
+    margin:
+        18px 0 16px;
 
     background:
         linear-gradient(
-            145deg,
-            #ead18d,
-            #c9a650
+            90deg,
+            transparent,
+            #d4af37,
+            transparent
         );
-
-    clip-path: polygon(0 0, 100% 0, 50% 100%);
-
-    transform-origin: top center;
-
-    z-index: 3;
-
-    transition:
-        transform 1.4s cubic-bezier(.77,0,.18,1);
 }
 
-.envelope.open .envelope-flap {
-    transform: rotateX(180deg);
+.card-guest {
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-size:
+        9px;
+
+    letter-spacing:
+        3px;
+
+    text-transform:
+        uppercase;
+
+    color:
+        #8b7766;
 }
 
-.envelope-front {
+
+/* =========================================================
+   OUTER SLEEVE
+========================================================= */
+
+.outer-sleeve {
     position: absolute;
-
     inset: 0;
 
     z-index: 4;
@@ -310,61 +471,318 @@ textarea {
     align-items: center;
     justify-content: center;
 
-    pointer-events: none;
+    overflow: hidden;
+
+    border-radius: 9px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fffdf8 0%,
+            #f4ead8 55%,
+            #eee0c9 100%
+        );
+
+    border:
+        1px solid
+        rgba(198,162,82,.18);
+
+    box-shadow:
+        0 26px 54px rgba(52,46,38,.16),
+        inset 0 1px 0 rgba(255,255,255,.68);
+
+    transition:
+        transform 1.05s cubic-bezier(.22,1,.36,1),
+        opacity .7s ease;
 }
 
-.envelope-names {
-    font-family: "Great Vibes", cursive;
-    font-size: clamp(48px, 10vw, 70px);
+.outer-sleeve::before {
+    content: "";
 
-    color: #fff8e6;
+    position: absolute;
+
+    inset: 14px;
+
+    border:
+        1px solid
+        rgba(198,162,82,.12);
+
+    border-radius: 4px;
+}
+
+.outer-sleeve::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.22),
+            transparent 42%,
+            rgba(90,76,58,.04)
+        );
+}
+
+
+/* =========================================================
+   BLIND EMBOSS
+========================================================= */
+
+.emboss {
+    position: relative;
+
+    z-index: 2;
+
+    width: 120px;
+    height: 120px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    border:
+        1px solid
+        rgba(166,124,0,.14);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.55),
+        inset 0 -1px 0 rgba(88,76,61,.08);
+}
+
+.emboss::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 10px;
+
+    border-radius: 50%;
+
+    border:
+        1px solid
+        rgba(166,124,0,.10);
+}
+
+.emboss-text {
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-size: 34px;
+
+    font-weight: 500;
+
+    letter-spacing: -1px;
+
+    color:
+        #b08b32;
 
     text-shadow:
-        0 2px 4px rgba(80, 55, 10, .3);
+        0 1px rgba(255,255,255,.5);
 }
 
-.envelope-guest {
+.emboss-text span {
+    font-size: 19px;
+}
+
+
+/* =========================================================
+   METAL EDGE
+========================================================= */
+
+.metal-edge {
     position: absolute;
 
     left: 0;
     right: 0;
-    bottom: 20px;
+    bottom: 0;
 
-    text-align: center;
+    height: 5px;
 
-    color: #75663e;
+    background:
+        linear-gradient(
+            90deg,
+            #9d741d,
+            #c7a34d 20%,
+            #f2d889 50%,
+            #b68a2e 80%,
+            #a67c00
+        );
 
-    font-family: "Playfair Display", serif;
-    font-size: 13px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-
-    text-shadow: 0 1px 3px rgba(50,30,10,.3);
+    opacity: .52;
 }
 
-.open-text {
-    margin-top: 25px;
 
-    font-family: "Playfair Display", serif;
-    font-size: 12px;
+/* =========================================================
+   TAP CUE
+========================================================= */
 
-    letter-spacing: 4px;
+.tap-cue {
+    margin-top: 28px;
+
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-size: 10px;
+
+    letter-spacing: 5px;
+
     text-transform: uppercase;
 
-    color: #8d7145;
+    color:
+        #8d7145;
 
-    animation: pulseText 2s infinite;
+    animation:
+        couturePulse
+        2s ease-in-out infinite;
+
+    transition:
+        opacity .4s ease;
 }
 
-@keyframes pulseText {
 
-    0%,100% {
-        opacity: .45;
+/* =========================================================
+   OPEN STATE
+========================================================= */
+
+.sleeve-wrap.open
+.outer-sleeve {
+    transform:
+        translateX(108%)
+        rotate(.6deg);
+
+    opacity: .12;
+}
+
+.sleeve-wrap.open
+.invitation-card {
+    transform:
+        translateY(-5%)
+        scale(1);
+
+    box-shadow:
+        0 32px 64px rgba(48,43,36,.16),
+        inset 0 0 0 1px rgba(255,255,255,.58);
+}
+
+.sleeve-wrap.open
+.floor-shadow {
+    opacity: .45;
+
+    transform:
+        translateX(-50%)
+        scale(.9);
+}
+
+.sleeve-wrap.open
+~ .tap-cue {
+    opacity: 0;
+}
+
+
+/* =========================================================
+   SECOND PHASE
+========================================================= */
+
+.sleeve-wrap.focus
+.outer-sleeve {
+    opacity: 0;
+}
+
+.sleeve-wrap.focus
+.invitation-card {
+    transform:
+        translateY(-10%)
+        scale(1.035);
+}
+
+
+/* =========================================================
+   MOBILE ENVELOPE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    #envelopeScreen {
+        padding:
+            18px;
+    }
+
+    .envelope-wrapper {
+        width:
+            min(
+                350px,
+                88vw
+            );
+    }
+
+    .emboss {
+        width:
+            96px;
+
+        height:
+            96px;
+    }
+
+    .emboss-text {
+        font-size:
+            28px;
+    }
+
+    .card-content {
+        max-width:
+            270px;
+    }
+
+    .card-names {
+        font-size:
+            34px;
+    }
+
+    .card-subtext {
+        margin-top:
+            16px;
+
+        font-size:
+            15px;
+
+        line-height:
+            1.4;
+    }
+
+    .card-rule {
+        margin:
+            15px 0 14px;
+    }
+
+    .card-guest {
+        font-size:
+            8px;
+
+        letter-spacing:
+            2.3px;
+    }
+
+}
+
+@keyframes couturePulse {
+
+    0%,
+    100% {
+        opacity: .4;
     }
 
     50% {
         opacity: 1;
     }
+
 }
 
 
@@ -600,7 +1018,7 @@ textarea {
 
     border: 1px solid rgba(198,162,82,.28);
 
-    border-radius: 4px;
+    border-radius: 12px;
 
     padding: 55px 35px;
 
@@ -641,7 +1059,7 @@ textarea {
 ========================================================= */
 
 .date-card {
-    max-height: 250px;
+    max-height: 270px;
 
     overflow: hidden;
 
@@ -996,6 +1414,57 @@ textarea {
 
 .swatch.black {
     background: #222;
+}
+
+
+/* =========================================================
+   SECTION ICONS
+========================================================= */
+
+.section-icon {
+    width:
+        45px;
+
+    height:
+        45px;
+
+    margin:
+        0 auto 10px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    color:
+        #d4af37;
+}
+
+.section-icon svg {
+    width:
+        42px;
+
+    height:
+        42px;
+
+    fill:
+        none;
+
+    stroke:
+        currentColor;
+
+    stroke-width:
+        1.35;
+
+    stroke-linecap:
+        round;
+
+    stroke-linejoin:
+        round;
 }
 
 
@@ -1471,6 +1940,14 @@ footer {
 
     .card {
         padding: 40px 20px;
+
+        border-radius: 10px;
+    }
+
+    .card p {
+        font-size: 18px;
+
+        line-height: 1.6;
     }
 
     .hero {
@@ -1482,7 +1959,15 @@ footer {
     }
 
     .guest-greeting {
-        font-size: 18px;
+        font-size: 19px;
+    }
+
+    .date-sub {
+        font-size: 17px !important;
+    }
+
+    .countdown {
+        font-size: 16px;
     }
 
     .timeline-item {
@@ -1491,11 +1976,21 @@ footer {
 
     .timeline-time {
         min-width: 65px;
-        font-size: 14px;
+        font-size: 15px;
     }
 
     .timeline-event {
-        font-size: 17px;
+        font-size: 18px;
+    }
+
+    .download-note {
+        font-size: 16px !important;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 18px;
     }
 
     .map {
@@ -1545,35 +2040,65 @@ footer {
     <div class="envelope-wrapper">
 
         <div
-            class="envelope"
-            id="envelope"
+            class="sleeve-wrap"
+            id="sleeveWrap"
+            role="button"
+            tabindex="0"
+            aria-label="Open invitation"
             onclick="openInvite()"
         >
 
-            <div class="envelope-body">
+            <div class="floor-shadow"></div>
 
-                <div class="envelope-flap"></div>
 
-                <div class="envelope-front">
+            <!-- INNER INVITATION -->
 
-                    <div class="envelope-names">
-                        Nishi & Manu
+            <div class="invitation-card">
+
+                <div class="card-content">
+
+                    <div class="card-names">
+                        Nishi &amp; Manu
+                    </div>
+
+                    <div class="card-subtext">
+                        We would love to have you join us as we celebrate our marriage
+                    </div>
+
+                    <div class="card-rule"></div>
+
+                    <div
+                        class="card-guest"
+                        id="envelopeGuest"
+                    >
+                        Loading Invitation
                     </div>
 
                 </div>
 
-                <div
-                    class="envelope-guest"
-                    id="envelopeGuest"
-                >
-                    Loading Invitation
+            </div>
+
+
+            <!-- OUTER COUTURE SLEEVE -->
+
+            <div class="outer-sleeve">
+
+                <div class="emboss">
+
+                    <div class="emboss-text">
+                        N<span>&amp;</span>M
+                    </div>
+
                 </div>
+
+                <div class="metal-edge"></div>
 
             </div>
 
         </div>
 
-        <div class="open-text">
+
+        <div class="tap-cue">
             Tap to Open
         </div>
 
@@ -1637,6 +2162,14 @@ footer {
                 <h2>
                     The Date
                 </h2>
+
+                <div class="section-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48">
+                        <rect x="7" y="10" width="34" height="31" rx="3"></rect>
+                        <path d="M14 6v8M34 6v8M7 18h34"></path>
+                        <path d="M15 25h5M28 25h5M15 32h5M28 32h5"></path>
+                    </svg>
+                </div>
 
                 <div
                     class="slot-window"
@@ -1723,6 +2256,13 @@ footer {
                     Location
                 </h2>
 
+                <div class="section-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48">
+                        <path d="M24 43s13-12.2 13-24a13 13 0 1 0-26 0c0 11.8 13 24 13 24z"></path>
+                        <circle cx="24" cy="19" r="4.5"></circle>
+                    </svg>
+                </div>
+
                 <p class="location-name">
                     Anantara Kalutara Resort
                 </p>
@@ -1745,6 +2285,13 @@ footer {
                 <h2>
                     Itinerary
                 </h2>
+
+                <div class="section-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48">
+                        <circle cx="24" cy="24" r="17"></circle>
+                        <path d="M24 14v11l7 4"></path>
+                    </svg>
+                </div>
 
                 <div class="timeline">
 
@@ -1830,6 +2377,13 @@ footer {
                     Dress Code
                 </h2>
 
+                <div class="section-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48">
+                        <path d="M21 12a4 4 0 1 1 5.5 3.7L24 18"></path>
+                        <path d="M24 18 7 31h34L24 18z"></path>
+                    </svg>
+                </div>
+
                 <p>
                     Guests are welcome to wear any colour and attire
                     they feel comfortable in.
@@ -1872,6 +2426,14 @@ footer {
                 <h2>
                     RSVP
                 </h2>
+
+                <div class="section-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48">
+                        <rect x="6" y="11" width="36" height="27" rx="3"></rect>
+                        <path d="m7 14 17 13 17-13"></path>
+                        <path d="m31 31 3 3 6-7"></path>
+                    </svg>
+                </div>
 
                 <p>
                     We would love to celebrate with you.
@@ -2080,6 +2642,14 @@ footer {
                     Your Invitation
                 </h2>
 
+                <div class="section-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48">
+                        <path d="M13 6h16l7 7v29H13z"></path>
+                        <path d="M29 6v8h7"></path>
+                        <path d="M24 20v12M19 27l5 5 5-5"></path>
+                    </svg>
+                </div>
+
                 <p>
                     Keep a personal copy of our wedding invitation.
                 </p>
@@ -2110,6 +2680,14 @@ footer {
     <h2>
         Add to Calendar
     </h2>
+
+    <div class="section-icon" aria-hidden="true">
+        <svg viewBox="0 0 48 48">
+            <rect x="7" y="10" width="34" height="31" rx="3"></rect>
+            <path d="M14 6v8M34 6v8M7 18h34"></path>
+            <path d="M24 24v10M19 29h10"></path>
+        </svg>
+    </div>
 
     <p>
         Save our wedding date so you don't miss the celebration.
@@ -2898,18 +3476,41 @@ window.addEventListener(
 
 function openInvite() {
 
-    const envelope =
-        document.getElementById("envelope");
+    const sleeveWrap =
+        document.getElementById(
+            "sleeveWrap"
+        );
 
     const envelopeScreen =
-        document.getElementById("envelopeScreen");
+        document.getElementById(
+            "envelopeScreen"
+        );
 
     const main =
-        document.getElementById("main");
+        document.getElementById(
+            "main"
+        );
 
 
 
-    envelope.classList.add("open");
+    if (
+        !sleeveWrap ||
+        sleeveWrap.classList.contains(
+            "open"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+
+    sleeveWrap.classList.add(
+        "open"
+    );
+
+
 
     startMusic();
 
@@ -2917,9 +3518,25 @@ function openInvite() {
 
     setTimeout(() => {
 
-        envelopeScreen.classList.add("hide");
+        sleeveWrap.classList.add(
+            "focus"
+        );
 
-        main.classList.add("show");
+    }, 1050);
+
+
+
+    setTimeout(() => {
+
+        envelopeScreen.classList.add(
+            "hide"
+        );
+
+        main.classList.add(
+            "show"
+        );
+
+
 
         setTimeout(() => {
 
@@ -2927,7 +3544,7 @@ function openInvite() {
 
         }, 400);
 
-    }, 1300);
+    }, 2100);
 
 }
 
