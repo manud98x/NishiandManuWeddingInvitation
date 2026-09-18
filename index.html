@@ -248,8 +248,8 @@ textarea {
 
     width:
         min(
-            430px,
-            88vw
+            450px,
+            90vw
         );
 
     display: flex;
@@ -770,6 +770,47 @@ textarea {
         .42;
 }
 
+.envelope-recipient {
+    position: absolute;
+
+    left:
+        50%;
+
+    bottom:
+        18px;
+
+    transform:
+        translateX(-50%);
+
+    z-index:
+        7;
+
+    width:
+        78%;
+
+    text-align:
+        center;
+
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-size:
+        11px;
+
+    letter-spacing:
+        3px;
+
+    text-transform:
+        uppercase;
+
+    color:
+        #8b7766;
+
+    text-shadow:
+        0 1px 0 rgba(255,255,255,.75);
+}
+
 
 /* =========================================================
    COMPLETELY SEPARATE TOP FLAP
@@ -1264,8 +1305,8 @@ textarea {
     .envelope-wrapper {
         width:
             min(
-                320px,
-                84vw
+                340px,
+                88vw
             );
 
         perspective:
@@ -1274,16 +1315,16 @@ textarea {
 
     .invitation-card {
         left:
-            3%;
+            2%;
 
         top:
-            32%;
+            31%;
 
         width:
-            94%;
+            96%;
 
         height:
-            86%;
+            88%;
 
         padding:
             28px 24px;
@@ -1296,12 +1337,12 @@ textarea {
 
     .card-content {
         max-width:
-            250px;
+            265px;
     }
 
     .card-names {
         font-size:
-            31px;
+            33px;
     }
 
     .card-subtext {
@@ -1309,10 +1350,10 @@ textarea {
             14px;
 
         font-size:
-            14px;
+            15px;
 
         line-height:
-            1.38;
+            1.4;
     }
 
     .card-rule {
@@ -1322,10 +1363,24 @@ textarea {
 
     .card-guest {
         font-size:
-            7.5px;
+            8px;
 
         letter-spacing:
             2px;
+    }
+
+    .envelope-recipient {
+        bottom:
+            16px;
+
+        width:
+            82%;
+
+        font-size:
+            10px;
+
+        letter-spacing:
+            2.4px;
     }
 
     .flap-seal {
@@ -1371,16 +1426,16 @@ textarea {
     .envelope-stage.focus
     .invitation-card {
         left:
-            -3%;
+            -4%;
 
         top:
-            -2%;
+            -3%;
 
         width:
-            106%;
+            108%;
 
         height:
-            104%;
+            106%;
 
         transform:
             translateY(0);
@@ -2700,16 +2755,16 @@ footer {
                         </div>
 
                         <div class="card-subtext">
-                            We would love to have you join us as we celebrate our marriage
+                            request the pleasure of your company<br>
+                            as they celebrate their marriage
                         </div>
 
                         <div class="card-rule"></div>
 
                         <div
                             class="card-guest"
-                            id="envelopeGuest"
                         >
-                            Loading Invitation
+                            Wedding Invitation
                         </div>
 
                     </div>
@@ -2728,6 +2783,13 @@ footer {
                 <div class="fold-bottom"></div>
                 <div class="metal-edge"></div>
 
+            </div>
+
+            <div
+                class="envelope-recipient"
+                id="envelopeGuest"
+            >
+                For Our Guest
             </div>
 
         </div>
@@ -4590,7 +4652,7 @@ function dropSparkles() {
 
             sparkle.remove();
 
-        }, 4200);
+        }, 4000);
 
     }
 
