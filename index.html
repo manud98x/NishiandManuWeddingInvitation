@@ -958,7 +958,7 @@ textarea {
         50%;
 
     top:
-        88%;
+        84%;
 
     width:
         86px;
@@ -1302,6 +1302,13 @@ textarea {
         opacity .4s ease;
 }
 
+.tap-cue.opened {
+    animation: none !important;
+    opacity: 0 !important;
+    visibility: hidden;
+    pointer-events: none;
+}
+
 
 /* =========================================================
    MOBILE ENVELOPE
@@ -1386,7 +1393,7 @@ textarea {
             50%;
 
         bottom:
-            10px;
+            4px;
 
         width:
             90%;
@@ -1395,7 +1402,7 @@ textarea {
             0 12px;
 
         font-size:
-            10px;
+            12.5px;
 
         line-height:
             1.35;
@@ -2775,9 +2782,8 @@ footer {
                             Nishi &amp; Manu
                         </div>
 
-                        <div class="card-subtext">
-                            request the pleasure of your company<br>
-                            as they celebrate their marriage
+                        <div class="card-subtext"><br>
+                         We would love to have you join us as we celebrate our marriage
                         </div>
 
                         <div class="card-rule"></div>
@@ -4259,6 +4265,9 @@ function openInvite() {
         "open"
     );
 
+     document.querySelector(".tap-cue")?.classList.add("opened");
+
+
     topFlap.classList.add(
         "open"
     );
@@ -4351,7 +4360,7 @@ function openInvite() {
 
         }, 400);
 
-    }, 6200);
+    }, 7200);
 
 }
 
