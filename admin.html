@@ -1560,6 +1560,94 @@ async function deleteInvitation(
 
 
 
+function countPeopleInInvitationName(
+    name
+) {
+
+    const cleaned =
+        String(name || "")
+            .replace(
+                /\s+/g,
+                " "
+            )
+            .trim();
+
+
+
+    if (!cleaned) {
+
+        return 0;
+
+    }
+
+
+
+    /*
+        Counting rules:
+        John Smith = 1
+        John & Mary Smith = 2
+        John and Mary Smith = 2
+        John & Mary & David = 3
+        John and Family = 3 total
+        John & Family = 3 total
+    */
+
+    if (
+        /\bfamily\b/i
+            .test(
+                cleaned
+            )
+    ) {
+
+        return 3;
+
+    }
+
+
+
+    const people =
+        cleaned
+            .split(
+                /\s*(?:&|\band\b)\s*/i
+            )
+            .map(
+                person =>
+                    person.trim()
+            )
+            .filter(
+                Boolean
+            );
+
+
+
+    return Math.max(
+        1,
+        people.length
+    );
+
+}
+
+
+
+function totalGuestCount() {
+
+    return invitations
+        .reduce(
+            (
+                total,
+                invitation
+            ) =>
+                total +
+                countPeopleInInvitationName(
+                    invitation.name
+                ),
+            0
+        );
+
+}
+
+
+
 function renderInvitations() {
 
     const list =
@@ -1596,8 +1684,13 @@ function renderInvitations() {
 
 
 
+    const totalGuests =
+        totalGuestCount();
+
+
+
     count.textContent =
-        `${invitations.length} Guest${invitations.length === 1 ? "" : "s"}`;
+        `${totalGuests} Guest${totalGuests === 1 ? "" : "s"}`;
 
 
 
