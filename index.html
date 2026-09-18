@@ -965,65 +965,134 @@ textarea {
 
     #envelopeScreen {
         padding:
-            18px;
+            16px 12px;
     }
 
     .envelope-wrapper {
         width:
             min(
-                350px,
-                88vw
+                320px,
+                82vw
             );
+    }
+
+    .side-envelope {
+        perspective:
+            1200px;
     }
 
     .invitation-card {
         padding:
-            32px 28px;
+            28px 24px;
+    }
+
+    .invitation-card::before {
+        inset:
+            13px;
     }
 
     .card-content {
         max-width:
-            270px;
+            250px;
     }
 
     .card-names {
         font-size:
-            34px;
+            31px;
     }
 
     .card-subtext {
         margin-top:
-            16px;
+            14px;
 
         font-size:
-            15px;
+            14px;
 
         line-height:
-            1.4;
+            1.38;
     }
 
     .card-rule {
         margin:
-            15px 0 14px;
+            13px 0 12px;
     }
 
     .card-guest {
         font-size:
-            8px;
+            7.5px;
 
         letter-spacing:
-            2.3px;
+            2px;
     }
 
     .flap-monogram {
         width:
-            78px;
+            72px;
 
         height:
-            78px;
+            72px;
 
         font-size:
-            23px;
+            21px;
+    }
+
+    /*
+        Mobile extraction:
+        Keep the full invitation inside the viewport.
+        The envelope moves left more than the letter moves right,
+        so it still looks like the card is being pulled out sideways.
+    */
+
+    .side-envelope.letter-out
+    .invitation-card {
+        transform:
+            translateX(8%);
+    }
+
+    .side-envelope.letter-out
+    .envelope-shell {
+        transform:
+            translateX(-18%);
+    }
+
+    .side-envelope.letter-out
+    .flap-hinge {
+        z-index:
+            1;
+
+        transform:
+            translateX(-18%)
+            rotateY(180deg);
+    }
+
+    .side-envelope.focus
+    .envelope-shell {
+        transform:
+            translateX(-45%);
+    }
+
+    .side-envelope.focus
+    .flap-hinge {
+        transform:
+            translateX(-45%)
+            rotateY(180deg);
+    }
+
+    .side-envelope.focus
+    .invitation-card {
+        transform:
+            translateX(0);
+    }
+
+    .tap-cue {
+        margin-top:
+            22px;
+
+        font-size:
+            9px;
+
+        letter-spacing:
+            4px;
     }
 
 }
@@ -1119,7 +1188,7 @@ textarea {
 
     color: transparent;
 
-    animation: goldShimmer 15s linear infinite;
+    animation: goldShimmer 10s linear infinite;
 }
 
 @keyframes goldShimmer {
@@ -2320,7 +2389,8 @@ footer {
                     </div>
 
                     <div class="card-subtext">
-                        We would love to have you join us as we celebrate our marriage
+                        request the pleasure of your company<br>
+                        as they celebrate their marriage
                     </div>
 
                     <div class="card-rule"></div>
@@ -3851,7 +3921,7 @@ function openInvite() {
 
         }, 400);
 
-    }, 4000);
+    }, 3550);
 
 }
 
