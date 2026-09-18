@@ -342,8 +342,8 @@ textarea {
         inset 0 1px 0 rgba(255,255,255,.72);
 
     transition:
-        opacity 1s ease,
-        transform 1.3s cubic-bezier(.22,1,.36,1);
+        opacity .8s ease,
+        transform 1.05s cubic-bezier(.22,1,.36,1);
 }
 
 .envelope-back::before {
@@ -373,14 +373,7 @@ textarea {
     below or outside the edges.
 */
 .letter-mask {
-    position: absolute;
-    inset: 0;
-
-    z-index: 4;
-
-    overflow: hidden;
-
-    pointer-events: none;
+    display: none;
 }
 
 .invitation-card {
@@ -427,12 +420,12 @@ textarea {
         translateY(0);
 
     transition:
-        transform 1.4s cubic-bezier(.22,1,.36,1),
-        top 1.4s cubic-bezier(.22,1,.36,1),
-        left 1.4s cubic-bezier(.22,1,.36,1),
-        width 1.4s cubic-bezier(.22,1,.36,1),
-        height 1.4s cubic-bezier(.22,1,.36,1),
-        box-shadow 1.1s ease;
+        transform 1.05s cubic-bezier(.22,1,.36,1),
+        top 1.05s cubic-bezier(.22,1,.36,1),
+        left 1.05s cubic-bezier(.22,1,.36,1),
+        width 1.05s cubic-bezier(.22,1,.36,1),
+        height 1.05s cubic-bezier(.22,1,.36,1),
+        box-shadow .9s ease;
 }
 
 .invitation-card::before {
@@ -583,8 +576,8 @@ textarea {
         inset 0 1px 0 rgba(255,255,255,.70);
 
     transition:
-        opacity 1s ease,
-        transform 1.3s cubic-bezier(.22,1,.36,1);
+        opacity .8s ease,
+        transform 1.05s cubic-bezier(.22,1,.36,1);
 }
 
 .envelope-front::before {
@@ -853,9 +846,9 @@ textarea {
         preserve-3d;
 
     transition:
-        transform 1.5s cubic-bezier(.72,0,.18,1),
-        filter 1.1s ease,
-        opacity 1s ease;
+        transform 1.18s cubic-bezier(.72,0,.18,1),
+        filter .9s ease,
+        opacity .8s ease;
 
     pointer-events:
         none;
@@ -958,7 +951,7 @@ textarea {
         50%;
 
     top:
-        84%;
+        88%;
 
     width:
         86px;
@@ -1302,13 +1295,14 @@ textarea {
         opacity .4s ease;
 }
 
+
+
 .tap-cue.opened {
     animation: none !important;
     opacity: 0 !important;
     visibility: hidden;
     pointer-events: none;
 }
-
 
 /* =========================================================
    MOBILE ENVELOPE
@@ -1393,22 +1387,22 @@ textarea {
             50%;
 
         bottom:
-            4px;
+            26px;
 
         width:
-            90%;
+            86%;
 
         padding:
-            0 12px;
+            0 16px;
 
         font-size:
-            12.5px;
+            12px;
 
         line-height:
-            1.35;
+            1.4;
 
         letter-spacing:
-            2px;
+            1.8px;
     }
 
     .flap-seal {
@@ -1471,7 +1465,7 @@ textarea {
 
     .tap-cue {
         margin-top:
-            22px;
+            30px;
 
         font-size:
             9px;
@@ -2782,8 +2776,9 @@ footer {
                             Nishi &amp; Manu
                         </div>
 
-                        <div class="card-subtext"><br>
-                         We would love to have you join us as we celebrate our marriage
+                        <div class="card-subtext">
+                            request the pleasure of your company<br>
+                            as they celebrate their marriage
                         </div>
 
                         <div class="card-rule"></div>
@@ -4240,6 +4235,11 @@ function openInvite() {
             "main"
         );
 
+    const tapCue =
+        document.querySelector(
+            ".tap-cue"
+        );
+
 
 
     if (
@@ -4257,19 +4257,20 @@ function openInvite() {
 
 
     /*
-        1. Open ONLY the separate flap.
-        The letter remains completely hidden behind the front pocket.
+        Keep the envelope exactly as designed.
+        Only open the flap — there is no letter extraction.
     */
 
     topEnvelope.classList.add(
         "open"
     );
 
-     document.querySelector(".tap-cue")?.classList.add("opened");
-
-
     topFlap.classList.add(
         "open"
+    );
+
+    tapCue?.classList.add(
+        "opened"
     );
 
 
@@ -4279,67 +4280,8 @@ function openInvite() {
 
 
     /*
-        2. Once the flap is open, place it behind the letter.
-    */
-
-    setTimeout(() => {
-
-        topFlap.classList.add(
-            "behind"
-        );
-
-    }, 1550);
-
-
-
-    /*
-        3. Reveal only the top of the letter above the straight pocket edge.
-    */
-
-    setTimeout(() => {
-
-        topEnvelope.classList.add(
-            "peek"
-        );
-
-    }, 1900);
-
-
-
-    /*
-        4. Pull the letter fully upward.
-    */
-
-    setTimeout(() => {
-
-        topEnvelope.classList.add(
-            "letter-out"
-        );
-
-    }, 2900);
-
-
-
-    /*
-        5. Clear envelope parts independently and center the card.
-    */
-
-    setTimeout(() => {
-
-        topEnvelope.classList.add(
-            "focus"
-        );
-
-        topFlap.classList.add(
-            "clear"
-        );
-
-    }, 4400);
-
-
-
-    /*
-        6. Transition into the main site.
+        Leave the opened envelope visible briefly,
+        then transition directly to the main invitation page.
     */
 
     setTimeout(() => {
@@ -4360,7 +4302,7 @@ function openInvite() {
 
         }, 400);
 
-    }, 7200);
+    }, 3000);
 
 }
 
