@@ -213,8 +213,10 @@ textarea {
         );
 
     transition:
-        opacity 1s ease,
-        visibility 1s ease;
+        opacity .85s ease,
+        visibility .85s ease,
+        filter .85s ease,
+        transform .85s ease;
 }
 
 #envelopeScreen::before {
@@ -241,6 +243,12 @@ textarea {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
+
+    filter:
+        blur(12px);
+
+    transform:
+        scale(1.025);
 }
 
 .envelope-wrapper {
@@ -770,19 +778,19 @@ textarea {
         50%;
 
     bottom:
-        12px;
+        20px;
 
     z-index:
         7;
 
     width:
-        86%;
+        84%;
 
     transform:
         translateX(-50%);
 
     padding:
-        0 18px;
+        0 20px;
 
     text-align:
         center;
@@ -792,13 +800,13 @@ textarea {
         serif;
 
     font-size:
-        11px;
+        12px;
 
     line-height:
-        1.35;
+        1.4;
 
     letter-spacing:
-        2.4px;
+        2.2px;
 
     text-transform:
         uppercase;
@@ -846,9 +854,9 @@ textarea {
         preserve-3d;
 
     transition:
-        transform 1.18s cubic-bezier(.72,0,.18,1),
-        filter .9s ease,
-        opacity .8s ease;
+        transform .9s cubic-bezier(.72,0,.18,1),
+        filter .7s ease,
+        opacity .6s ease;
 
     pointer-events:
         none;
@@ -951,7 +959,7 @@ textarea {
         50%;
 
     top:
-        88%;
+        84%;
 
     width:
         86px;
@@ -1318,8 +1326,8 @@ textarea {
     .envelope-wrapper {
         width:
             min(
-                340px,
-                88vw
+                370px,
+                94vw
             );
 
         perspective:
@@ -1387,25 +1395,28 @@ textarea {
             50%;
 
         bottom:
-            26px;
+            12px;
 
         width:
-            86%;
+            88%;
 
         padding:
-            0 16px;
+            0 14px;
 
         font-size:
             12px;
 
         line-height:
-            1.4;
+            1.35;
 
         letter-spacing:
-            1.8px;
+            1.5px;
     }
 
     .flap-seal {
+        top:
+            79%;
+
         width:
             70px;
 
@@ -1499,14 +1510,28 @@ textarea {
     opacity: 0;
     visibility: hidden;
 
+    filter:
+        blur(10px);
+
+    transform:
+        scale(.99);
+
     transition:
-        opacity 1.5s ease,
-        visibility 1.5s ease;
+        opacity 1.15s ease,
+        visibility 1.15s ease,
+        filter 1.15s ease,
+        transform 1.15s ease;
 }
 
 #main.show {
     opacity: 1;
     visibility: visible;
+
+    filter:
+        blur(0);
+
+    transform:
+        scale(1);
 }
 
 .hero {
@@ -3610,7 +3635,7 @@ window.addEventListener("load", () => {
             .getElementById("intro")
             .classList.add("hide");
 
-    }, 2200);
+    }, 1700);
 
 });
 
@@ -4302,7 +4327,7 @@ function openInvite() {
 
         }, 400);
 
-    }, 3000);
+    }, 1000);
 
 }
 
