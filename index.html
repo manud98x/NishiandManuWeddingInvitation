@@ -2554,6 +2554,10 @@ textarea {
     resize: vertical;
 }
 
+#message {
+    min-height: 54px;
+}
+
 .rsvp-button {
     width: 100%;
 
@@ -3336,11 +3340,12 @@ footer {
                             Message
                         </label>
 
-                        <textarea
+                        <input
+                            type="text"
                             id="message"
                             name="message"
                             placeholder="Leave us a message..."
-                        ></textarea>
+                        >
 
                     </div>
 
