@@ -5110,37 +5110,12 @@ if (rsvpForm) {
 
 
 
-                const rsvpSuccess =
-                    document.getElementById(
+                document
+                    .getElementById(
                         "rsvpSuccess"
-                    );
-
-
-
-                if (rsvpSuccess) {
-
-                    rsvpSuccess.style.display =
-                        "block";
-
-
-
-                    requestAnimationFrame(
-                        () => {
-
-                            rsvpSuccess.scrollIntoView(
-                                {
-                                    behavior:
-                                        "smooth",
-
-                                    block:
-                                        "center"
-                                }
-                            );
-
-                        }
-                    );
-
-                }
+                    )
+                    .style.display =
+                    "block";
 
 
 

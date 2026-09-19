@@ -1,2 +1,4 @@
 /invite/*          /index.html    200
 /admin-generator   /admin.html    200
+/            /invitation-required.html    200
+/index.html  /invitation-required.html    200
