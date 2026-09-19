@@ -5110,12 +5110,37 @@ if (rsvpForm) {
 
 
 
-                document
-                    .getElementById(
+                const rsvpSuccess =
+                    document.getElementById(
                         "rsvpSuccess"
-                    )
-                    .style.display =
-                    "block";
+                    );
+
+
+
+                if (rsvpSuccess) {
+
+                    rsvpSuccess.style.display =
+                        "block";
+
+
+
+                    requestAnimationFrame(
+                        () => {
+
+                            rsvpSuccess.scrollIntoView(
+                                {
+                                    behavior:
+                                        "smooth",
+
+                                    block:
+                                        "center"
+                                }
+                            );
+
+                        }
+                    );
+
+                }
 
 
 
