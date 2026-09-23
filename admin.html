@@ -737,6 +737,63 @@ code {
         <section class="panel">
 
             <h2 class="panel-title">
+                Add Existing / Manual Link
+            </h2>
+
+            <p class="panel-copy">
+                Use this when you need to restore a deleted invitation
+                or add a specific invitation code manually.
+            </p>
+
+            <div class="field">
+
+                <label for="manualGuestName">
+                    Guest Name
+                </label>
+
+                <input
+                    type="text"
+                    id="manualGuestName"
+                    placeholder="Gaston and Janine"
+                >
+
+            </div>
+
+            <div class="field">
+
+                <label for="manualInvitationCode">
+                    Invitation Code
+                </label>
+
+                <input
+                    type="text"
+                    id="manualInvitationCode"
+                    placeholder="rAnhOKY0m-WoIqzj"
+                    autocomplete="off"
+                >
+
+            </div>
+
+            <button
+                class="button"
+                id="manualAddButton"
+                type="button"
+            >
+                Add Manual Invitation
+            </button>
+
+            <div
+                id="manualAddStatus"
+                class="status success hidden"
+            ></div>
+
+        </section>
+
+
+
+        <section class="panel">
+
+            <h2 class="panel-title">
                 Your Invitations
             </h2>
 
@@ -1495,6 +1552,163 @@ Nishi & Manu ✨`;
 
 
 
+async function addManualInvitation() {
+
+    const nameInput =
+        document.getElementById(
+            "manualGuestName"
+        );
+
+    const codeInput =
+        document.getElementById(
+            "manualInvitationCode"
+        );
+
+    const button =
+        document.getElementById(
+            "manualAddButton"
+        );
+
+    const status =
+        document.getElementById(
+            "manualAddStatus"
+        );
+
+    const restoreName =
+        nameInput.value
+            .replace(/\s+/g, " ")
+            .trim();
+
+    const restoreCode =
+        codeInput.value.trim();
+
+    if (
+        !restoreName ||
+        !restoreCode
+    ) {
+
+        showStatus(
+            status,
+            "Enter both the guest name and invitation code.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    button.disabled = true;
+    button.textContent = "Adding...";
+
+    try {
+
+        const result =
+            await adminRequest(
+                {
+                    method: "POST",
+                    body: JSON.stringify(
+                        {
+                            restoreCode,
+                            restoreName
+                        }
+                    )
+                }
+            );
+
+        invitations =
+            result.invitations ||
+            invitations;
+
+        renderInvitations();
+
+        showStatus(
+            status,
+            `Invitation restored for ${restoreName}.`,
+            "success"
+        );
+
+        nameInput.value = "";
+        codeInput.value = "";
+
+    } catch (error) {
+
+        showStatus(
+            status,
+            error.message,
+            "error"
+        );
+
+    } finally {
+
+        button.disabled = false;
+        button.textContent =
+            "Add Manual Invitation";
+
+    }
+
+}
+
+
+
+async function editInvitationName(
+    invitation
+) {
+
+    const newName =
+        prompt(
+            "Edit guest name. The invitation link will stay exactly the same.",
+            invitation.name
+        );
+
+    if (newName === null) {
+        return;
+    }
+
+    const cleanedName =
+        newName
+            .replace(/\s+/g, " ")
+            .trim();
+
+    if (!cleanedName) {
+        alert("Guest name cannot be empty.");
+        return;
+    }
+
+    if (cleanedName === invitation.name) {
+        return;
+    }
+
+    try {
+
+        const result =
+            await adminRequest(
+                {
+                    method: "PATCH",
+                    body: JSON.stringify(
+                        {
+                            code: invitation.code,
+                            name: cleanedName
+                        }
+                    )
+                }
+            );
+
+        invitations =
+            result.invitations ||
+            invitations;
+
+        renderInvitations();
+
+    } catch (error) {
+
+        alert(error.message);
+
+    }
+
+}
+
+
+
 async function deleteInvitation(
     invitation
 ) {
@@ -1849,6 +2063,33 @@ function renderInvitations() {
 
 
 
+            const editButton =
+                document
+                    .createElement(
+                        "button"
+                    );
+
+
+
+            editButton.type =
+                "button";
+
+            editButton.className =
+                "button secondary";
+
+            editButton.textContent =
+                "Edit Name";
+
+            editButton.addEventListener(
+                "click",
+                () =>
+                    editInvitationName(
+                        invitation
+                    )
+            );
+
+
+
             const deleteButton =
                 document
                     .createElement(
@@ -1879,6 +2120,7 @@ function renderInvitations() {
             actions.append(
                 copyButton,
                 shareButton,
+                editButton,
                 deleteButton
             );
 
@@ -2139,6 +2381,17 @@ document
     .addEventListener(
         "click",
         generateInvitations
+    );
+
+
+
+document
+    .getElementById(
+        "manualAddButton"
+    )
+    .addEventListener(
+        "click",
+        addManualInvitation
     );
 
 

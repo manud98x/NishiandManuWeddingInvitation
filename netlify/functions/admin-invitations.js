@@ -8,13 +8,11 @@ import {
 } from "node:crypto";
 
 
-
 const STORE_NAME =
     "wedding-invitations";
 
 const REGISTRY_KEY =
     "registry";
-
 
 
 function jsonResponse(
@@ -37,7 +35,6 @@ function jsonResponse(
 }
 
 
-
 function normalizeName(
     value
 ) {
@@ -54,7 +51,6 @@ function normalizeName(
 }
 
 
-
 function nameKey(
     value
 ) {
@@ -69,7 +65,6 @@ function nameKey(
 }
 
 
-
 function isAuthorized(
     request
 ) {
@@ -77,7 +72,6 @@ function isAuthorized(
     const expected =
         process.env
             .INVITE_ADMIN_SECRET;
-
 
 
     if (
@@ -92,7 +86,6 @@ function isAuthorized(
     }
 
 
-
     const provided =
         request
             .headers
@@ -101,19 +94,16 @@ function isAuthorized(
             ) || "";
 
 
-
     const expectedBuffer =
         Buffer.from(
             expected
         );
 
 
-
     const providedBuffer =
         Buffer.from(
             provided
         );
-
 
 
     if (
@@ -128,7 +118,6 @@ function isAuthorized(
     }
 
 
-
     return {
         ok:
             timingSafeEqual(
@@ -138,7 +127,6 @@ function isAuthorized(
     };
 
 }
-
 
 
 function createCode() {
@@ -153,7 +141,6 @@ function createCode() {
 }
 
 
-
 function getStoreInstance() {
 
     return getStore(
@@ -161,7 +148,6 @@ function getStoreInstance() {
     );
 
 }
-
 
 
 async function getRegistry(
@@ -181,7 +167,6 @@ async function getRegistry(
         );
 
 
-
     if (
         !registry ||
         typeof registry !==
@@ -197,11 +182,9 @@ async function getRegistry(
     }
 
 
-
     return registry;
 
 }
-
 
 
 function listInvitations(
@@ -250,7 +233,6 @@ function listInvitations(
 }
 
 
-
 export default async function (
     request
 ) {
@@ -259,7 +241,6 @@ export default async function (
         isAuthorized(
             request
         );
-
 
 
     if (
@@ -278,7 +259,6 @@ export default async function (
     }
 
 
-
     if (
         !authorization.ok
     ) {
@@ -294,11 +274,13 @@ export default async function (
     }
 
 
-
     const store =
         getStoreInstance();
 
 
+    /* =========================
+       GET ALL INVITATIONS
+    ========================= */
 
     if (
         request.method ===
@@ -309,7 +291,6 @@ export default async function (
             await getRegistry(
                 store
             );
-
 
 
         return jsonResponse(
@@ -324,6 +305,9 @@ export default async function (
     }
 
 
+    /* =========================
+       CREATE / RESTORE / EDIT
+    ========================= */
 
     if (
         request.method ===
@@ -331,7 +315,6 @@ export default async function (
     ) {
 
         let body;
-
 
 
         try {
@@ -352,6 +335,209 @@ export default async function (
         }
 
 
+        const registry =
+            await getRegistry(
+                store
+            );
+
+
+        /* =========================
+           MANUAL ADD / RESTORE
+        ========================= */
+
+        if (
+            body.restoreCode &&
+            body.restoreName
+        ) {
+
+            const restoreCode =
+                String(
+                    body.restoreCode
+                )
+                    .trim();
+
+            const restoreName =
+                normalizeName(
+                    body.restoreName
+                );
+
+
+            if (
+                !restoreCode ||
+                !restoreName
+            ) {
+
+                return jsonResponse(
+                    {
+                        error:
+                            "Invitation code and guest name are required."
+                    },
+                    400
+                );
+
+            }
+
+
+            if (
+                registry
+                    .invitations[
+                        restoreCode
+                    ]
+            ) {
+
+                return jsonResponse(
+                    {
+                        error:
+                            "That invitation code already exists."
+                    },
+                    409
+                );
+
+            }
+
+
+            registry
+                .invitations[
+                    restoreCode
+                ] = {
+
+                    name:
+                        restoreName,
+
+                    createdAt:
+                        new Date()
+                            .toISOString()
+
+                };
+
+
+            await store.setJSON(
+                REGISTRY_KEY,
+                registry
+            );
+
+
+            return jsonResponse(
+                {
+                    restored:
+                        true,
+
+                    code:
+                        restoreCode,
+
+                    name:
+                        restoreName,
+
+                    invitations:
+                        listInvitations(
+                            registry
+                        )
+                }
+            );
+
+        }
+
+
+        /* =========================
+           EDIT EXISTING NAME
+        ========================= */
+
+        if (
+            body.editCode &&
+            body.editName
+        ) {
+
+            const editCode =
+                String(
+                    body.editCode
+                )
+                    .trim();
+
+            const editName =
+                normalizeName(
+                    body.editName
+                );
+
+
+            if (
+                !editCode ||
+                !editName
+            ) {
+
+                return jsonResponse(
+                    {
+                        error:
+                            "Invitation code and new guest name are required."
+                    },
+                    400
+                );
+
+            }
+
+
+            const existing =
+                registry
+                    .invitations[
+                        editCode
+                    ];
+
+
+            if (
+                !existing
+            ) {
+
+                return jsonResponse(
+                    {
+                        error:
+                            "Invitation not found."
+                    },
+                    404
+                );
+
+            }
+
+
+            existing.name =
+                editName;
+
+
+            registry
+                .invitations[
+                    editCode
+                ] =
+                existing;
+
+
+            await store.setJSON(
+                REGISTRY_KEY,
+                registry
+            );
+
+
+            return jsonResponse(
+                {
+                    updated:
+                        true,
+
+                    code:
+                        editCode,
+
+                    name:
+                        editName,
+
+                    invitations:
+                        listInvitations(
+                            registry
+                        )
+                }
+            );
+
+        }
+
+
+        /* =========================
+           NORMAL INVITATION CREATION
+        ========================= */
 
         const rawNames =
             Array.isArray(
@@ -361,13 +547,11 @@ export default async function (
                 : [];
 
 
-
         const uniqueNames =
             [];
 
         const inputSeen =
             new Set();
-
 
 
         for (
@@ -381,7 +565,6 @@ export default async function (
                 );
 
 
-
             if (
                 !name
             ) {
@@ -391,12 +574,10 @@ export default async function (
             }
 
 
-
             const key =
                 nameKey(
                     name
                 );
-
 
 
             if (
@@ -410,7 +591,6 @@ export default async function (
             }
 
 
-
             inputSeen.add(
                 key
             );
@@ -420,7 +600,6 @@ export default async function (
             );
 
         }
-
 
 
         if (
@@ -439,7 +618,6 @@ export default async function (
         }
 
 
-
         if (
             uniqueNames.length >
             500
@@ -456,17 +634,8 @@ export default async function (
         }
 
 
-
-        const registry =
-            await getRegistry(
-                store
-            );
-
-
-
         const existingByName =
             new Map();
-
 
 
         for (
@@ -499,13 +668,11 @@ export default async function (
         }
 
 
-
         let createdCount =
             0;
 
         let existingCount =
             0;
-
 
 
         for (
@@ -519,13 +686,11 @@ export default async function (
                 );
 
 
-
             const existingCode =
                 existingByName
                     .get(
                         normalized
                     );
-
 
 
             if (
@@ -539,9 +704,7 @@ export default async function (
             }
 
 
-
             let code;
-
 
 
             do {
@@ -555,7 +718,6 @@ export default async function (
                         code
                     ]
             );
-
 
 
             registry
@@ -572,7 +734,6 @@ export default async function (
                 };
 
 
-
             existingByName
                 .set(
                     normalized,
@@ -580,18 +741,15 @@ export default async function (
                 );
 
 
-
             createdCount++;
 
         }
-
 
 
         await store.setJSON(
             REGISTRY_KEY,
             registry
         );
-
 
 
         return jsonResponse(
@@ -609,6 +767,9 @@ export default async function (
     }
 
 
+    /* =========================
+       DELETE INVITATION
+    ========================= */
 
     if (
         request.method ===
@@ -616,7 +777,6 @@ export default async function (
     ) {
 
         let body;
-
 
 
         try {
@@ -637,14 +797,12 @@ export default async function (
         }
 
 
-
         const code =
             String(
                 body.code ||
                 ""
             )
                 .trim();
-
 
 
         if (
@@ -662,12 +820,10 @@ export default async function (
         }
 
 
-
         const registry =
             await getRegistry(
                 store
             );
-
 
 
         if (
@@ -688,12 +844,10 @@ export default async function (
         }
 
 
-
         delete registry
             .invitations[
                 code
             ];
-
 
 
         await store.setJSON(
@@ -702,10 +856,10 @@ export default async function (
         );
 
 
-
         return jsonResponse(
             {
-                deleted: true,
+                deleted:
+                    true,
 
                 invitations:
                     listInvitations(
@@ -715,7 +869,6 @@ export default async function (
         );
 
     }
-
 
 
     return jsonResponse(
