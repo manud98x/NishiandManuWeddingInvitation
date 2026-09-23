@@ -278,9 +278,9 @@ export default async function (
         getStoreInstance();
 
 
-    /* =========================
+    /* =========================================================
        GET ALL INVITATIONS
-    ========================= */
+    ========================================================= */
 
     if (
         request.method ===
@@ -305,9 +305,10 @@ export default async function (
     }
 
 
-    /* =========================
+    /* =========================================================
+       POST
        CREATE / RESTORE / EDIT
-    ========================= */
+    ========================================================= */
 
     if (
         request.method ===
@@ -335,15 +336,9 @@ export default async function (
         }
 
 
-        const registry =
-            await getRegistry(
-                store
-            );
-
-
-        /* =========================
-           MANUAL ADD / RESTORE
-        ========================= */
+        /* =====================================================
+           MANUAL ADD / RESTORE EXISTING LINK
+        ===================================================== */
 
         if (
             body.restoreCode &&
@@ -376,6 +371,12 @@ export default async function (
                 );
 
             }
+
+
+            const registry =
+                await getRegistry(
+                    store
+                );
 
 
             if (
@@ -438,9 +439,10 @@ export default async function (
         }
 
 
-        /* =========================
-           EDIT EXISTING NAME
-        ========================= */
+        /* =====================================================
+           EDIT EXISTING GUEST NAME
+           CODE / LINK DOES NOT CHANGE
+        ===================================================== */
 
         if (
             body.editCode &&
@@ -475,7 +477,13 @@ export default async function (
             }
 
 
-            const existing =
+            const registry =
+                await getRegistry(
+                    store
+                );
+
+
+            const existingInvitation =
                 registry
                     .invitations[
                         editCode
@@ -483,7 +491,7 @@ export default async function (
 
 
             if (
-                !existing
+                !existingInvitation
             ) {
 
                 return jsonResponse(
@@ -497,7 +505,50 @@ export default async function (
             }
 
 
-            existing.name =
+            /* Prevent accidentally creating two
+               invitations with the same guest name */
+
+            const newNameKey =
+                nameKey(
+                    editName
+                );
+
+
+            for (
+                const [
+                    code,
+                    invitation
+                ]
+                of Object.entries(
+                    registry.invitations
+                )
+            ) {
+
+                if (
+                    code !==
+                        editCode &&
+                    invitation &&
+                    invitation.name &&
+                    nameKey(
+                        invitation.name
+                    ) ===
+                        newNameKey
+                ) {
+
+                    return jsonResponse(
+                        {
+                            error:
+                                "Another invitation already uses that guest name."
+                        },
+                        409
+                    );
+
+                }
+
+            }
+
+
+            existingInvitation.name =
                 editName;
 
 
@@ -505,7 +556,7 @@ export default async function (
                 .invitations[
                     editCode
                 ] =
-                existing;
+                existingInvitation;
 
 
             await store.setJSON(
@@ -535,9 +586,9 @@ export default async function (
         }
 
 
-        /* =========================
-           NORMAL INVITATION CREATION
-        ========================= */
+        /* =====================================================
+           NORMAL INVITATION GENERATION
+        ===================================================== */
 
         const rawNames =
             Array.isArray(
@@ -595,6 +646,7 @@ export default async function (
                 key
             );
 
+
             uniqueNames.push(
                 name
             );
@@ -634,6 +686,12 @@ export default async function (
         }
 
 
+        const registry =
+            await getRegistry(
+                store
+            );
+
+
         const existingByName =
             new Map();
 
@@ -657,8 +715,7 @@ export default async function (
                 existingByName
                     .set(
                         nameKey(
-                            invitation
-                                .name
+                            invitation.name
                         ),
                         code
                     );
@@ -767,9 +824,9 @@ export default async function (
     }
 
 
-    /* =========================
+    /* =========================================================
        DELETE INVITATION
-    ========================= */
+    ========================================================= */
 
     if (
         request.method ===
@@ -870,6 +927,10 @@ export default async function (
 
     }
 
+
+    /* =========================================================
+       UNSUPPORTED METHOD
+    ========================================================= */
 
     return jsonResponse(
         {
