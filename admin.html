@@ -171,6 +171,7 @@ button {
 
 .field input,
 .field textarea,
+.field select,
 .toolbar input,
 .toolbar select {
     width: 100%;
@@ -193,6 +194,7 @@ button {
 
 .field input:focus,
 .field textarea:focus,
+.field select:focus,
 .toolbar input:focus,
 .toolbar select:focus {
     border-color: #c7a34d;
@@ -1864,6 +1866,119 @@ code {
             <section class="panel">
 
                 <h2 class="panel-title">
+                    Add / Edit RSVP
+                </h2>
+
+                <p class="panel-copy">
+                    Use this to import an older Netlify RSVP or correct an existing response.
+                    Select the matching invitation so it becomes part of the current RSVP and seating system.
+                </p>
+
+                <div class="field">
+
+                    <label for="rsvpManagerGuest">
+                        Invitation
+                    </label>
+
+                    <select id="rsvpManagerGuest">
+                        <option value="">
+                            Select a guest or household...
+                        </option>
+                    </select>
+
+                </div>
+
+                <div class="field">
+
+                    <label for="rsvpManagerAttendance">
+                        Attendance
+                    </label>
+
+                    <select id="rsvpManagerAttendance">
+                        <option value="Yes">
+                            Attending
+                        </option>
+                        <option value="No">
+                            Declined
+                        </option>
+                    </select>
+
+                </div>
+
+                <div class="field">
+
+                    <label for="rsvpManagerGuests">
+                        Number Attending
+                    </label>
+
+                    <select id="rsvpManagerGuests">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5+">5+</option>
+                    </select>
+
+                </div>
+
+                <div class="field">
+
+                    <label for="rsvpManagerMessage">
+                        Message
+                    </label>
+
+                    <textarea
+                        id="rsvpManagerMessage"
+                        placeholder="Copy the guest's original message here if they left one."
+                    ></textarea>
+
+                </div>
+
+                <div class="field">
+
+                    <label for="rsvpManagerNote">
+                        Admin Note
+                    </label>
+
+                    <input
+                        type="text"
+                        id="rsvpManagerNote"
+                        placeholder="e.g. Imported from old Netlify RSVP"
+                    >
+
+                </div>
+
+                <div class="button-row">
+
+                    <button
+                        class="button"
+                        id="saveManagedRsvpButton"
+                        type="button"
+                    >
+                        Save RSVP
+                    </button>
+
+                    <button
+                        class="button secondary"
+                        id="clearManagedRsvpButton"
+                        type="button"
+                    >
+                        Clear
+                    </button>
+
+                </div>
+
+                <div
+                    id="managedRsvpStatus"
+                    class="status success hidden"
+                ></div>
+
+            </section>
+
+
+            <section class="panel">
+
+                <h2 class="panel-title">
                     Guest Responses
                 </h2>
 
@@ -1919,6 +2034,7 @@ code {
                                 <th>Guests</th>
                                 <th>Message</th>
                                 <th>Last Updated</th>
+                                <th>Actions</th>
                             </tr>
 
                         </thead>
@@ -2516,6 +2632,7 @@ async function loadInvitations() {
 
 
     renderInvitations();
+    renderRsvpManagerOptions();
 
 }
 
@@ -2539,6 +2656,7 @@ async function loadRsvps() {
 
     renderRsvpSummary();
     renderRsvpRows();
+    renderRsvpManagerOptions();
     renderOverview();
 
 }
@@ -3984,6 +4102,536 @@ function renderInvitations() {
 }
 
 
+
+/* =========================
+   RSVP MANAGEMENT
+========================= */
+
+function renderRsvpManagerOptions() {
+
+    const select =
+        document
+            .getElementById(
+                "rsvpManagerGuest"
+            );
+
+
+    if (
+        !select
+    ) {
+
+        return;
+
+    }
+
+
+    const currentValue =
+        select.value;
+
+
+    select.innerHTML =
+        "";
+
+
+    const placeholder =
+        document
+            .createElement(
+                "option"
+            );
+
+    placeholder.value =
+        "";
+
+    placeholder.textContent =
+        "Select a guest or household...";
+
+    select.appendChild(
+        placeholder
+    );
+
+
+    invitations
+        .slice()
+        .sort(
+            (
+                a,
+                b
+            ) =>
+                a.name.localeCompare(
+                    b.name
+                )
+        )
+        .forEach(
+            invitation => {
+
+                const row =
+                    rsvpRows.find(
+                        item =>
+                            item.code ===
+                            invitation.code
+                    );
+
+                const option =
+                    document
+                        .createElement(
+                            "option"
+                        );
+
+                option.value =
+                    invitation.code;
+
+                option.textContent =
+                    row &&
+                    row.status !==
+                        "Pending"
+                        ? `${invitation.name} — ${row.status === "Yes" ? "Attending" : "Declined"}`
+                        : invitation.name;
+
+                select.appendChild(
+                    option
+                );
+
+            }
+        );
+
+
+    if (
+        invitations.some(
+            invitation =>
+                invitation.code ===
+                    currentValue
+        )
+    ) {
+
+        select.value =
+            currentValue;
+
+    }
+
+}
+
+
+function clearManagedRsvpForm() {
+
+    const guest =
+        document
+            .getElementById(
+                "rsvpManagerGuest"
+            );
+
+    const attendance =
+        document
+            .getElementById(
+                "rsvpManagerAttendance"
+            );
+
+    const guests =
+        document
+            .getElementById(
+                "rsvpManagerGuests"
+            );
+
+    const message =
+        document
+            .getElementById(
+                "rsvpManagerMessage"
+            );
+
+    const note =
+        document
+            .getElementById(
+                "rsvpManagerNote"
+            );
+
+    const status =
+        document
+            .getElementById(
+                "managedRsvpStatus"
+            );
+
+
+    guest.value =
+        "";
+
+    attendance.value =
+        "Yes";
+
+    guests.value =
+        "1";
+
+    guests.disabled =
+        false;
+
+    message.value =
+        "";
+
+    note.value =
+        "";
+
+
+    hideStatus(
+        status
+    );
+
+}
+
+
+function updateManagedRsvpGuestCountState() {
+
+    const attendance =
+        document
+            .getElementById(
+                "rsvpManagerAttendance"
+            );
+
+    const guests =
+        document
+            .getElementById(
+                "rsvpManagerGuests"
+            );
+
+
+    if (
+        !attendance ||
+        !guests
+    ) {
+
+        return;
+
+    }
+
+
+    guests.disabled =
+        attendance.value ===
+        "No";
+
+}
+
+
+function loadRsvpIntoManager(
+    row
+) {
+
+    document
+        .getElementById(
+            "rsvpManagerGuest"
+        )
+        .value =
+        row.code;
+
+
+    document
+        .getElementById(
+            "rsvpManagerAttendance"
+        )
+        .value =
+        row.status === "No"
+            ? "No"
+            : "Yes";
+
+
+    document
+        .getElementById(
+            "rsvpManagerGuests"
+        )
+        .value =
+        row.status === "Yes" &&
+        [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5+"
+        ].includes(
+            String(
+                row.guestCount
+            )
+        )
+            ? String(
+                row.guestCount
+            )
+            : "1";
+
+
+    document
+        .getElementById(
+            "rsvpManagerMessage"
+        )
+        .value =
+        row.message ||
+        "";
+
+
+    document
+        .getElementById(
+            "rsvpManagerNote"
+        )
+        .value =
+        row.adminNote ||
+        "";
+
+
+    updateManagedRsvpGuestCountState();
+
+
+    openTab(
+        "rsvps"
+    );
+
+
+    document
+        .getElementById(
+            "rsvpManagerGuest"
+        )
+        .scrollIntoView(
+            {
+                behavior:
+                    "smooth",
+
+                block:
+                    "center"
+            }
+        );
+
+}
+
+
+async function saveManagedRsvp() {
+
+    const guest =
+        document
+            .getElementById(
+                "rsvpManagerGuest"
+            );
+
+    const attendance =
+        document
+            .getElementById(
+                "rsvpManagerAttendance"
+            );
+
+    const guests =
+        document
+            .getElementById(
+                "rsvpManagerGuests"
+            );
+
+    const message =
+        document
+            .getElementById(
+                "rsvpManagerMessage"
+            );
+
+    const note =
+        document
+            .getElementById(
+                "rsvpManagerNote"
+            );
+
+    const button =
+        document
+            .getElementById(
+                "saveManagedRsvpButton"
+            );
+
+    const status =
+        document
+            .getElementById(
+                "managedRsvpStatus"
+            );
+
+
+    if (
+        !guest.value
+    ) {
+
+        showStatus(
+            status,
+            "Select the matching invitation.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    button.disabled =
+        true;
+
+    button.textContent =
+        "Saving...";
+
+
+    try {
+
+        const result =
+            await apiRequest(
+                RSVP_API,
+                {
+                    method:
+                        "POST",
+
+                    body:
+                        JSON.stringify(
+                            {
+                                code:
+                                    guest.value,
+
+                                attendance:
+                                    attendance.value,
+
+                                guests:
+                                    guests.value,
+
+                                message:
+                                    message.value,
+
+                                adminNote:
+                                    note.value
+                            }
+                        )
+                }
+            );
+
+
+        rsvpRows =
+            result.rows ||
+            [];
+
+        rsvpSummaryData =
+            result.summary ||
+            {};
+
+
+        renderRsvpSummary();
+        renderRsvpRows();
+        renderRsvpManagerOptions();
+        renderOverview();
+
+
+        await loadSeating();
+
+
+        const invitation =
+            invitations.find(
+                item =>
+                    item.code ===
+                        guest.value
+            );
+
+
+        showStatus(
+            status,
+            `RSVP saved for ${invitation ? invitation.name : "guest"}.`,
+            "success"
+        );
+
+    } catch (
+        error
+    ) {
+
+        showStatus(
+            status,
+            error.message,
+            "error"
+        );
+
+    } finally {
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            "Save RSVP";
+
+    }
+
+}
+
+
+async function deleteManagedRsvp(
+    row
+) {
+
+    if (
+        row.status ===
+        "Pending"
+    ) {
+
+        return;
+
+    }
+
+
+    const confirmed =
+        confirm(
+            `Delete the RSVP response for ${row.name}?\n\nThe invitation itself will remain active and their RSVP status will return to Pending.`
+        );
+
+
+    if (
+        !confirmed
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const result =
+            await apiRequest(
+                RSVP_API,
+                {
+                    method:
+                        "DELETE",
+
+                    body:
+                        JSON.stringify(
+                            {
+                                code:
+                                    row.code
+                            }
+                        )
+                }
+            );
+
+
+        rsvpRows =
+            result.rows ||
+            [];
+
+        rsvpSummaryData =
+            result.summary ||
+            {};
+
+
+        renderRsvpSummary();
+        renderRsvpRows();
+        renderRsvpManagerOptions();
+        renderOverview();
+
+
+        clearManagedRsvpForm();
+
+
+        await loadSeating();
+
+    } catch (
+        error
+    ) {
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+
 /* =========================
    RSVP RENDERING
 ========================= */
@@ -4397,12 +5045,114 @@ function renderRsvpRows() {
                 );
 
 
+            const actionCell =
+                document
+                    .createElement(
+                        "td"
+                    );
+
+
+            if (
+                row.status !==
+                "Pending"
+            ) {
+
+                const editButton =
+                    document
+                        .createElement(
+                            "button"
+                        );
+
+                editButton.type =
+                    "button";
+
+                editButton.className =
+                    "mini-button";
+
+                editButton.textContent =
+                    "Edit";
+
+                editButton.addEventListener(
+                    "click",
+                    () =>
+                        loadRsvpIntoManager(
+                            row
+                        )
+                );
+
+
+                const deleteButton =
+                    document
+                        .createElement(
+                            "button"
+                        );
+
+                deleteButton.type =
+                    "button";
+
+                deleteButton.className =
+                    "mini-button";
+
+                deleteButton.style.marginLeft =
+                    "6px";
+
+                deleteButton.textContent =
+                    "Delete";
+
+                deleteButton.addEventListener(
+                    "click",
+                    () =>
+                        deleteManagedRsvp(
+                            row
+                        )
+                );
+
+
+                actionCell.append(
+                    editButton,
+                    deleteButton
+                );
+
+            } else {
+
+                const addButton =
+                    document
+                        .createElement(
+                            "button"
+                        );
+
+                addButton.type =
+                    "button";
+
+                addButton.className =
+                    "mini-button";
+
+                addButton.textContent =
+                    "Add RSVP";
+
+                addButton.addEventListener(
+                    "click",
+                    () =>
+                        loadRsvpIntoManager(
+                            row
+                        )
+                );
+
+
+                actionCell.appendChild(
+                    addButton
+                );
+
+            }
+
+
             tr.append(
                 guestCell,
                 statusCell,
                 countCell,
                 messageCell,
-                updatedCell
+                updatedCell,
+                actionCell
             );
 
 
@@ -7288,6 +8038,36 @@ document
     .addEventListener(
         "input",
         renderTables
+    );
+
+
+document
+    .getElementById(
+        "saveManagedRsvpButton"
+    )
+    .addEventListener(
+        "click",
+        saveManagedRsvp
+    );
+
+
+document
+    .getElementById(
+        "clearManagedRsvpButton"
+    )
+    .addEventListener(
+        "click",
+        clearManagedRsvpForm
+    );
+
+
+document
+    .getElementById(
+        "rsvpManagerAttendance"
+    )
+    .addEventListener(
+        "change",
+        updateManagedRsvpGuestCountState
     );
 
 

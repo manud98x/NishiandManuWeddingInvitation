@@ -103,6 +103,42 @@ function isAuthorized(
 }
 
 
+function cleanText(
+    value,
+    maxLength = 1000
+) {
+
+    return String(
+        value || ""
+    )
+        .trim()
+        .slice(
+            0,
+            maxLength
+        );
+
+}
+
+
+function validGuestCount(
+    value
+) {
+
+    return [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5+"
+    ].includes(
+        String(
+            value
+        )
+    );
+
+}
+
+
 async function getInvitationRegistry() {
 
     const store =
@@ -269,6 +305,22 @@ function buildDashboard(
                                 )
                                 : "",
 
+                        adminNote:
+                            rsvp
+                                ? (
+                                    rsvp.adminNote ||
+                                    ""
+                                )
+                                : "",
+
+                        source:
+                            rsvp
+                                ? (
+                                    rsvp.source ||
+                                    "guest"
+                                )
+                                : "",
+
                         submittedAt:
                             rsvp
                                 ? (
@@ -402,38 +454,356 @@ export default async function (
 
 
     if (
-        request.method !==
+        request.method ===
         "GET"
     ) {
 
+        const [
+            invitationRegistry,
+            rsvpRegistry
+        ] =
+            await Promise.all(
+                [
+                    getInvitationRegistry(),
+                    getRsvpRegistry()
+                ]
+            );
+
+
         return jsonResponse(
-            {
-                error:
-                    "Method not allowed."
-            },
-            405
+            buildDashboard(
+                invitationRegistry,
+                rsvpRegistry
+            )
         );
 
     }
 
 
-    const [
-        invitationRegistry,
-        rsvpRegistry
-    ] =
-        await Promise.all(
-            [
-                getInvitationRegistry(),
-                getRsvpRegistry()
-            ]
+    if (
+        request.method ===
+        "POST"
+    ) {
+
+        let body;
+
+
+        try {
+
+            body =
+                await request.json();
+
+        } catch {
+
+            return jsonResponse(
+                {
+                    error:
+                        "Invalid JSON request."
+                },
+                400
+            );
+
+        }
+
+
+        const invitationCode =
+            cleanText(
+                body.code,
+                180
+            );
+
+        const attendance =
+            cleanText(
+                body.attendance,
+                10
+            );
+
+        const guests =
+            cleanText(
+                body.guests,
+                10
+            );
+
+        const message =
+            cleanText(
+                body.message,
+                2000
+            );
+
+        const adminNote =
+            cleanText(
+                body.adminNote,
+                1000
+            );
+
+
+        if (
+            !invitationCode
+        ) {
+
+            return jsonResponse(
+                {
+                    error:
+                        "Select an invitation."
+                },
+                400
+            );
+
+        }
+
+
+        if (
+            attendance !== "Yes" &&
+            attendance !== "No"
+        ) {
+
+            return jsonResponse(
+                {
+                    error:
+                        "Attendance must be Yes or No."
+                },
+                400
+            );
+
+        }
+
+
+        if (
+            attendance === "Yes" &&
+            !validGuestCount(
+                guests
+            )
+        ) {
+
+            return jsonResponse(
+                {
+                    error:
+                        "Choose the number of guests attending."
+                },
+                400
+            );
+
+        }
+
+
+        const [
+            invitationRegistry,
+            rsvpRegistry
+        ] =
+            await Promise.all(
+                [
+                    getInvitationRegistry(),
+                    getRsvpRegistry()
+                ]
+            );
+
+
+        const invitation =
+            invitationRegistry
+                .invitations[
+                    invitationCode
+                ];
+
+
+        if (
+            !invitation
+        ) {
+
+            return jsonResponse(
+                {
+                    error:
+                        "Invitation not found."
+                },
+                404
+            );
+
+        }
+
+
+        const existing =
+            rsvpRegistry.rsvps[
+                invitationCode
+            ] || null;
+
+        const now =
+            new Date()
+                .toISOString();
+
+
+        rsvpRegistry.rsvps[
+            invitationCode
+        ] = {
+
+            invitationCode,
+
+            guestName:
+                invitation.name,
+
+            attendance,
+
+            guests:
+                attendance === "Yes"
+                    ? guests
+                    : "0",
+
+            message,
+
+            adminNote,
+
+            source:
+                "manual-admin",
+
+            submittedAt:
+                existing &&
+                existing.submittedAt
+                    ? existing.submittedAt
+                    : now,
+
+            updatedAt:
+                now
+        };
+
+
+        const store =
+            getStore(
+                RSVP_STORE_NAME
+            );
+
+
+        await store.setJSON(
+            RSVP_REGISTRY_KEY,
+            rsvpRegistry
         );
 
 
-    return jsonResponse(
-        buildDashboard(
+        return jsonResponse(
+            {
+                saved: true,
+
+                ...buildDashboard(
+                    invitationRegistry,
+                    rsvpRegistry
+                )
+            }
+        );
+
+    }
+
+
+    if (
+        request.method ===
+        "DELETE"
+    ) {
+
+        let body;
+
+
+        try {
+
+            body =
+                await request.json();
+
+        } catch {
+
+            return jsonResponse(
+                {
+                    error:
+                        "Invalid JSON request."
+                },
+                400
+            );
+
+        }
+
+
+        const invitationCode =
+            cleanText(
+                body.code,
+                180
+            );
+
+
+        if (
+            !invitationCode
+        ) {
+
+            return jsonResponse(
+                {
+                    error:
+                        "Invitation code is required."
+                },
+                400
+            );
+
+        }
+
+
+        const [
             invitationRegistry,
             rsvpRegistry
-        )
+        ] =
+            await Promise.all(
+                [
+                    getInvitationRegistry(),
+                    getRsvpRegistry()
+                ]
+            );
+
+
+        if (
+            !rsvpRegistry.rsvps[
+                invitationCode
+            ]
+        ) {
+
+            return jsonResponse(
+                {
+                    error:
+                        "RSVP not found."
+                },
+                404
+            );
+
+        }
+
+
+        delete rsvpRegistry.rsvps[
+            invitationCode
+        ];
+
+
+        const store =
+            getStore(
+                RSVP_STORE_NAME
+            );
+
+
+        await store.setJSON(
+            RSVP_REGISTRY_KEY,
+            rsvpRegistry
+        );
+
+
+        return jsonResponse(
+            {
+                deleted: true,
+
+                ...buildDashboard(
+                    invitationRegistry,
+                    rsvpRegistry
+                )
+            }
+        );
+
+    }
+
+
+    return jsonResponse(
+        {
+            error:
+                "Method not allowed."
+        },
+        405
     );
 
 }
