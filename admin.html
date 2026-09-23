@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Nishi & Manu · Invitation Admin</title>
+<title>Nishi & Manu · Wedding Admin</title>
 
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#fdfaf6">
@@ -26,9 +26,7 @@ html {
 
 body {
     margin: 0;
-
     min-height: 100vh;
-
     background:
         radial-gradient(
             circle at top,
@@ -36,9 +34,7 @@ body {
             #fdfaf6 52%,
             #f4ead9 100%
         );
-
     color: #3c3028;
-
     font-family:
         "Cormorant Garamond",
         serif;
@@ -46,80 +42,63 @@ body {
 
 button,
 input,
-textarea {
+textarea,
+select {
     font-family: inherit;
 }
 
 button {
-    -webkit-tap-highlight-color:
-        transparent;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.hidden {
+    display: none !important;
 }
 
 .page {
-    width: min(920px, 100%);
-
+    width: min(1180px, 100%);
     margin: 0 auto;
-
-    padding:
-        35px 16px
-        70px;
+    padding: 35px 16px 70px;
 }
 
 .header {
     text-align: center;
-
-    margin-bottom: 28px;
+    margin-bottom: 24px;
 }
 
 .header-small {
     font-family:
         "Playfair Display",
         serif;
-
     font-size: 11px;
-
     letter-spacing: 4px;
-
-    text-transform:
-        uppercase;
-
+    text-transform: uppercase;
     color: #a67c00;
 }
 
 .header-title {
-    margin:
-        8px 0 0;
-
+    margin: 8px 0 0;
     font-family:
         "Great Vibes",
         cursive;
-
     font-size:
         clamp(
             54px,
             13vw,
             86px
         );
-
     font-weight: 400;
-
     color: #b08b32;
 }
 
 .header-subtitle {
     margin-top: 4px;
-
     font-family:
         "Playfair Display",
         serif;
-
     font-size: 12px;
-
     letter-spacing: 3px;
-
-    text-transform:
-        uppercase;
-
+    text-transform: uppercase;
     color: #806d5a;
 }
 
@@ -131,7 +110,6 @@ button {
             255,
             .83
         );
-
     border:
         1px solid
         rgba(
@@ -140,14 +118,9 @@ button {
             82,
             .28
         );
-
     border-radius: 8px;
-
-    padding:
-        28px 20px;
-
+    padding: 28px 20px;
     margin-bottom: 20px;
-
     box-shadow:
         0 15px 45px
         rgba(
@@ -159,39 +132,24 @@ button {
 }
 
 .panel-title {
-    margin:
-        0 0 18px;
-
+    margin: 0 0 18px;
     text-align: center;
-
     font-family:
         "Playfair Display",
         serif;
-
     font-size: 15px;
-
     font-weight: 500;
-
     letter-spacing: 4px;
-
-    text-transform:
-        uppercase;
-
+    text-transform: uppercase;
     color: #a67c00;
 }
 
 .panel-copy {
-    margin:
-        0 auto 20px;
-
-    max-width: 600px;
-
+    margin: 0 auto 20px;
+    max-width: 640px;
     text-align: center;
-
     font-size: 18px;
-
     line-height: 1.5;
-
     color: #6e5c4e;
 }
 
@@ -201,44 +159,28 @@ button {
 
 .field label {
     display: block;
-
     margin-bottom: 7px;
-
     font-family:
         "Playfair Display",
         serif;
-
     font-size: 11px;
-
     letter-spacing: 2px;
-
-    text-transform:
-        uppercase;
-
+    text-transform: uppercase;
     color: #806c58;
 }
 
 .field input,
-.field textarea {
+.field textarea,
+.toolbar input,
+.toolbar select {
     width: 100%;
-
-    border:
-        1px solid
-        #ddcda9;
-
+    border: 1px solid #ddcda9;
     border-radius: 5px;
-
-    padding:
-        14px 15px;
-
+    padding: 14px 15px;
     background: #fffdf9;
-
     color: #493b30;
-
     font-size: 17px;
-
     outline: none;
-
     transition:
         border .2s ease,
         box-shadow .2s ease;
@@ -246,14 +188,14 @@ button {
 
 .field textarea {
     min-height: 150px;
-
     resize: vertical;
 }
 
 .field input:focus,
-.field textarea:focus {
+.field textarea:focus,
+.toolbar input:focus,
+.toolbar select:focus {
     border-color: #c7a34d;
-
     box-shadow:
         0 0 0 3px
         rgba(
@@ -266,14 +208,9 @@ button {
 
 .button {
     width: 100%;
-
     border: 0;
-
     border-radius: 5px;
-
-    padding:
-        14px 16px;
-
+    padding: 14px 16px;
     background:
         linear-gradient(
             135deg,
@@ -281,25 +218,15 @@ button {
             #d4af37,
             #a67c00
         );
-
-    background-size:
-        200% auto;
-
+    background-size: 200% auto;
     color: #fff;
-
     font-family:
         "Playfair Display",
         serif;
-
     font-size: 12px;
-
     letter-spacing: 2px;
-
-    text-transform:
-        uppercase;
-
+    text-transform: uppercase;
     cursor: pointer;
-
     transition:
         background-position .3s ease,
         transform .15s ease,
@@ -307,27 +234,21 @@ button {
 }
 
 .button:hover {
-    background-position:
-        right center;
+    background-position: right center;
 }
 
 .button:active {
-    transform:
-        scale(.99);
+    transform: scale(.99);
 }
 
 .button:disabled {
     opacity: .55;
-
-    cursor:
-        not-allowed;
+    cursor: not-allowed;
 }
 
 .button.secondary {
     background: #fffaf0;
-
     color: #8b6a18;
-
     border:
         1px solid
         rgba(
@@ -340,9 +261,7 @@ button {
 
 .button.danger {
     background: #fff7f4;
-
     color: #8b4337;
-
     border:
         1px solid
         rgba(
@@ -355,7 +274,6 @@ button {
 
 .button-row {
     display: grid;
-
     grid-template-columns:
         repeat(
             2,
@@ -364,32 +282,20 @@ button {
                 1fr
             )
         );
-
     gap: 10px;
-}
-
-.hidden {
-    display:
-        none !important;
 }
 
 .status {
     margin-top: 14px;
-
     padding: 12px;
-
     border-radius: 5px;
-
     text-align: center;
-
     font-size: 16px;
-
     line-height: 1.4;
 }
 
 .status.success {
     background: #fffaf0;
-
     border:
         1px solid
         rgba(
@@ -398,13 +304,11 @@ button {
             55,
             .45
         );
-
     color: #80652d;
 }
 
 .status.error {
     background: #fff6f2;
-
     border:
         1px solid
         rgba(
@@ -413,66 +317,206 @@ button {
             61,
             .30
         );
-
     color: #8b4337;
 }
 
+
+/* =========================
+   DASHBOARD NAVIGATION
+========================= */
+
+.dashboard-nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: grid;
+    grid-template-columns:
+        repeat(
+            5,
+            minmax(
+                0,
+                1fr
+            )
+        );
+    gap: 7px;
+    margin-bottom: 20px;
+    padding: 10px;
+    background:
+        rgba(
+            253,
+            250,
+            246,
+            .94
+        );
+    backdrop-filter: blur(10px);
+    border:
+        1px solid
+        rgba(
+            198,
+            162,
+            82,
+            .25
+        );
+    border-radius: 9px;
+    box-shadow:
+        0 8px 28px
+        rgba(
+            74,
+            55,
+            30,
+            .06
+        );
+}
+
+.nav-button {
+    border:
+        1px solid
+        rgba(
+            166,
+            124,
+            0,
+            .20
+        );
+    border-radius: 5px;
+    padding: 12px 8px;
+    background: #fffdf9;
+    color: #806d5a;
+    font-family:
+        "Playfair Display",
+        serif;
+    font-size: 10px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.nav-button.active {
+    background:
+        linear-gradient(
+            135deg,
+            #a67c00,
+            #d4af37,
+            #a67c00
+        );
+    color: white;
+    border-color: transparent;
+}
+
+.tab-page {
+    display: none;
+}
+
+.tab-page.active {
+    display: block;
+}
+
+
+/* =========================
+   OVERVIEW
+========================= */
+
+.summary-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(
+                0,
+                1fr
+            )
+        );
+    gap: 12px;
+}
+
+.summary-card {
+    padding: 22px 12px;
+    background: #fffdf9;
+    border:
+        1px solid
+        rgba(
+            198,
+            162,
+            82,
+            .25
+        );
+    border-radius: 7px;
+    text-align: center;
+}
+
+.summary-number {
+    font-family:
+        "Playfair Display",
+        serif;
+    font-size: 30px;
+    color: #a67c00;
+}
+
+.summary-label {
+    margin-top: 7px;
+    font-size: 14px;
+    color: #806d5a;
+}
+
+.progress-line {
+    height: 8px;
+    margin-top: 18px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #eee3cf;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0;
+    background:
+        linear-gradient(
+            90deg,
+            #a67c00,
+            #d4af37
+        );
+    transition: width .4s ease;
+}
+
+.overview-note {
+    margin-top: 14px;
+    text-align: center;
+    color: #8b7766;
+    font-size: 16px;
+}
+
+
+/* =========================
+   INVITATIONS
+========================= */
+
 .toolbar {
     display: grid;
-
     grid-template-columns:
         1fr auto;
-
     gap: 10px;
-
     align-items: center;
-
     margin-bottom: 16px;
 }
 
 .search {
     width: 100%;
-
-    border:
-        1px solid
-        #ddcda9;
-
-    border-radius: 5px;
-
-    padding:
-        12px 14px;
-
-    background:
-        #fffdf9;
-
-    font-size: 16px;
-
-    color: #493b30;
-
-    outline: none;
 }
 
 .counter {
     white-space: nowrap;
-
     font-family:
         "Playfair Display",
         serif;
-
     font-size: 11px;
-
     letter-spacing: 2px;
-
-    text-transform:
-        uppercase;
-
+    text-transform: uppercase;
     color: #a67c00;
 }
 
 .guest-list {
     display: grid;
-
     gap: 12px;
+    margin-top: 16px;
 }
 
 .guest-card {
@@ -484,11 +528,8 @@ button {
             82,
             .25
         );
-
     border-radius: 7px;
-
     padding: 16px;
-
     background:
         rgba(
             255,
@@ -500,76 +541,201 @@ button {
 
 .guest-name {
     font-size: 22px;
-
     font-weight: 600;
-
     color: #493b30;
-
-    word-break:
-        break-word;
+    word-break: break-word;
 }
 
 .guest-link {
     margin-top: 6px;
-
     font-family:
         "Playfair Display",
         serif;
-
     font-size: 11px;
-
     line-height: 1.45;
-
     color: #8b7766;
-
-    word-break:
-        break-all;
+    word-break: break-all;
 }
 
 .guest-actions {
     display: grid;
-
     grid-template-columns:
         repeat(
-            3,
+            4,
             minmax(
                 0,
                 1fr
             )
         );
-
     gap: 8px;
-
     margin-top: 14px;
 }
 
 .guest-actions .button {
-    padding:
-        11px 8px;
-
+    padding: 11px 8px;
     font-size: 10px;
-
     letter-spacing: 1px;
 }
 
-.empty {
-    padding:
-        30px 10px;
 
+/* =========================
+   RSVP TABLE
+========================= */
+
+.rsvp-toolbar {
+    display: grid;
+    grid-template-columns:
+        minmax(
+            0,
+            2fr
+        )
+        minmax(
+            160px,
+            1fr
+        )
+        auto;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 13px 12px;
+    border-bottom:
+        1px solid
+        rgba(
+            198,
+            162,
+            82,
+            .18
+        );
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    font-family:
+        "Playfair Display",
+        serif;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #8b6a18;
+}
+
+td {
+    font-size: 16px;
+    color: #493b30;
+}
+
+.rsvp-guest-name {
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.muted {
+    color: #9a8879;
+}
+
+.badge {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-family:
+        "Playfair Display",
+        serif;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.badge.yes {
+    background: #f2f8ef;
+    color: #55734b;
+}
+
+.badge.no {
+    background: #fff1ed;
+    color: #8b4337;
+}
+
+.badge.pending {
+    background: #fff9e8;
+    color: #8b6a18;
+}
+
+.message-cell {
+    max-width: 320px;
+    line-height: 1.45;
+    white-space: normal;
+}
+
+
+/* =========================
+   FUTURE SEATING/TABLES
+========================= */
+
+.placeholder {
+    padding: 48px 20px;
     text-align: center;
+    border:
+        1px dashed
+        rgba(
+            166,
+            124,
+            0,
+            .35
+        );
+    border-radius: 8px;
+    background:
+        rgba(
+            255,
+            253,
+            249,
+            .65
+        );
+}
 
+.placeholder-title {
+    font-family:
+        "Playfair Display",
+        serif;
+    font-size: 17px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #a67c00;
+}
+
+.placeholder-copy {
+    max-width: 600px;
+    margin: 12px auto 0;
+    font-size: 18px;
+    line-height: 1.55;
+    color: #806d5a;
+}
+
+.empty {
+    padding: 30px 10px;
+    text-align: center;
     color: #8b7766;
-
     font-size: 18px;
 }
 
 .help {
     text-align: center;
-
     color: #8b7766;
-
     font-size: 15px;
-
     line-height: 1.5;
 }
 
@@ -580,8 +746,675 @@ code {
         Menlo,
         Consolas,
         monospace;
-
     font-size: .9em;
+}
+
+
+.table-card {
+    border:
+        1px solid
+        rgba(
+            198,
+            162,
+            82,
+            .25
+        );
+    border-radius: 7px;
+    padding: 16px;
+    background:
+        rgba(
+            255,
+            253,
+            249,
+            .92
+        );
+}
+
+.table-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.table-name {
+    font-size: 22px;
+    font-weight: 600;
+    color: #493b30;
+}
+
+.table-meta {
+    margin-top: 5px;
+    color: #8b7766;
+    font-size: 15px;
+}
+
+.table-shape-preview {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border:
+        1px solid
+        rgba(
+            166,
+            124,
+            0,
+            .32
+        );
+    background: #fffaf0;
+    color: #8b6a18;
+    font-family:
+        "Playfair Display",
+        serif;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.table-shape-preview.round {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+}
+
+.table-shape-preview.square {
+    width: 54px;
+    height: 54px;
+    border-radius: 4px;
+}
+
+.table-shape-preview.rectangle {
+    width: 72px;
+    height: 48px;
+    border-radius: 4px;
+}
+
+.table-shape-preview.banquet {
+    width: 92px;
+    height: 38px;
+    border-radius: 4px;
+}
+
+.table-actions {
+    display: grid;
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(
+                0,
+                1fr
+            )
+        );
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.table-actions .button {
+    padding: 11px 8px;
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+
+.publish-row {
+    margin-top: 16px;
+    text-align: center;
+    color: #8b7766;
+    font-size: 15px;
+}
+
+
+.table-assignment-box {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top:
+        1px solid
+        rgba(
+            198,
+            162,
+            82,
+            .18
+        );
+}
+
+.table-assignment-title {
+    margin-bottom: 8px;
+    font-family:
+        "Playfair Display",
+        serif;
+    font-size: 10px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: #8b6a18;
+}
+
+.table-assignment-row {
+    display: grid;
+    grid-template-columns:
+        minmax(
+            0,
+            1fr
+        )
+        auto;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.table-assignment-row select {
+    width: 100%;
+    border: 1px solid #ddcda9;
+    border-radius: 5px;
+    padding: 11px 12px;
+    background: #fffdf9;
+    color: #493b30;
+    font-size: 15px;
+}
+
+.assigned-list {
+    display: grid;
+    gap: 7px;
+    margin-top: 10px;
+}
+
+.assigned-item,
+.unassigned-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    background: #fffdf9;
+    border:
+        1px solid
+        rgba(
+            198,
+            162,
+            82,
+            .20
+        );
+    border-radius: 5px;
+}
+
+.assigned-name,
+.unassigned-name {
+    font-size: 17px;
+    color: #493b30;
+}
+
+.assigned-count,
+.unassigned-count {
+    color: #8b7766;
+    font-size: 14px;
+}
+
+.mini-button {
+    border:
+        1px solid
+        rgba(
+            139,
+            67,
+            55,
+            .22
+        );
+    border-radius: 4px;
+    padding: 7px 9px;
+    background: #fff7f4;
+    color: #8b4337;
+    font-family:
+        "Playfair Display",
+        serif;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.capacity-line {
+    margin-top: 8px;
+    font-family:
+        "Playfair Display",
+        serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: #8b6a18;
+}
+
+
+
+/* =========================
+   INTERACTIVE SEATING MAP
+========================= */
+
+
+.seating-publish-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 14px;
+    padding: 14px 16px;
+    border-radius: 9px;
+    border: 1px solid rgba(166, 124, 0, .24);
+    background: #fffaf0;
+}
+
+.seating-publish-banner.live {
+    border-color: rgba(85, 115, 75, .32);
+    background: #f2f8ef;
+}
+
+.seating-publish-banner.private {
+    border-color: rgba(166, 124, 0, .24);
+    background: #fffaf0;
+}
+
+.seating-publish-badge {
+    display: inline-block;
+    margin-bottom: 5px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-family: "Playfair Display", serif;
+    font-size: 9px;
+    letter-spacing: 1.4px;
+    font-weight: 600;
+    color: #8b6a18;
+    background: rgba(212, 175, 55, .13);
+}
+
+.seating-publish-banner.live .seating-publish-badge {
+    color: #55734b;
+    background: rgba(85, 115, 75, .12);
+}
+
+.seating-publish-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #493b30;
+}
+
+.seating-publish-copy {
+    margin-top: 2px;
+    color: #806d5a;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+.seating-publish-time {
+    flex: 0 0 auto;
+    text-align: right;
+    color: #8b7766;
+    font-family: "Playfair Display", serif;
+    font-size: 10px;
+    letter-spacing: .7px;
+    line-height: 1.5;
+}
+
+.seating-layout-grid {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1.7fr)
+        minmax(320px, .95fr);
+    gap: 16px;
+    align-items: start;
+}
+
+.seating-map-card,
+.seating-side-block {
+    background: #fffdf9;
+    border:
+        1px solid
+        rgba(
+            198,
+            162,
+            82,
+            .22
+        );
+    border-radius: 10px;
+    padding: 14px;
+}
+
+.seating-side-block + .seating-side-block {
+    margin-top: 14px;
+}
+
+.seating-map-toolbar {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        auto;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.seating-map-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.seating-map-buttons .button {
+    width: auto;
+    min-width: 150px;
+}
+
+.seating-map-shell {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border:
+        1px solid
+        rgba(
+            198,
+            162,
+            82,
+            .25
+        );
+    background: #f7f1e7;
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.4),
+        0 10px 30px rgba(74,55,30,.05);
+}
+
+.seating-floorplan {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1296 / 680;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.seating-empty-map {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    text-align: center;
+    color: #8b7766;
+    font-size: 18px;
+    background: rgba(255,253,249,.7);
+}
+
+.table-marker {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 6px;
+    background: rgba(255, 250, 240, .94);
+    border:
+        1px solid
+        rgba(
+            166,
+            124,
+            0,
+            .45
+        );
+    color: #6f5414;
+    box-shadow:
+        0 8px 18px rgba(74,55,30,.14),
+        inset 0 0 0 1px rgba(255,255,255,.55);
+    cursor: pointer;
+    user-select: none;
+    touch-action: none;
+    transform-origin: center center;
+    transition:
+        box-shadow .18s ease,
+        border-color .18s ease,
+        background .18s ease;
+}
+
+.table-marker.round {
+    border-radius: 50%;
+}
+
+.table-marker.square,
+.table-marker.rectangle,
+.table-marker.banquet {
+    border-radius: 10px;
+}
+
+.table-marker.selected {
+    background: #fff4d6;
+    border-color: #c79b2f;
+    box-shadow:
+        0 0 0 4px rgba(212,175,55,.18),
+        0 12px 22px rgba(74,55,30,.16);
+}
+
+.table-marker.dragging {
+    box-shadow:
+        0 0 0 5px rgba(212,175,55,.22),
+        0 14px 28px rgba(74,55,30,.22);
+}
+
+.table-marker-label {
+    text-align: center;
+    line-height: 1.1;
+    pointer-events: none;
+}
+
+.table-marker-name {
+    display: block;
+    font-family:
+        "Playfair Display",
+        serif;
+    font-size: 11px;
+    letter-spacing: .2px;
+}
+
+.table-marker-capacity {
+    display: block;
+    margin-top: 3px;
+    font-size: 10px;
+    color: #8b6a18;
+}
+
+.seating-side-title {
+    margin: 0 0 10px;
+    font-family:
+        "Playfair Display",
+        serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #8b6a18;
+}
+
+.seating-selected-card {
+    border:
+        1px solid
+        rgba(
+            198,
+            162,
+            82,
+            .22
+        );
+    border-radius: 8px;
+    padding: 14px;
+    background: #fffefb;
+}
+
+.seating-selected-name {
+    font-size: 24px;
+    font-weight: 600;
+    color: #493b30;
+}
+
+.seating-selected-meta {
+    margin-top: 6px;
+    color: #8b7766;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+.seating-selected-actions,
+.seating-adjust-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(
+                0,
+                1fr
+            )
+        );
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.seating-selected-actions .button,
+.seating-adjust-grid .button {
+    width: 100%;
+}
+
+.seating-small-note {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #8b7766;
+    line-height: 1.45;
+}
+
+.seating-map-legend {
+    margin-top: 10px;
+    font-size: 15px;
+    color: #8b7766;
+    line-height: 1.5;
+}
+
+.seating-unassigned-list,
+.seating-assigned-list {
+    display: grid;
+    gap: 8px;
+}
+
+.seating-guest-chip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    border:
+        1px solid
+        rgba(
+            198,
+            162,
+            82,
+            .18
+        );
+    border-radius: 7px;
+    background: #fffdf9;
+}
+
+.seating-guest-chip-name {
+    font-size: 17px;
+    color: #493b30;
+}
+
+.seating-guest-chip-meta {
+    font-size: 14px;
+    color: #8b7766;
+}
+
+.seating-empty-state {
+    padding: 16px 10px;
+    text-align: center;
+    color: #8b7766;
+    font-size: 16px;
+}
+
+.seating-map-summary {
+    display: grid;
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(
+                0,
+                1fr
+            )
+        );
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.seating-map-summary .summary-card {
+    padding: 14px 10px;
+}
+
+.seating-position-line {
+    margin-top: 8px;
+    font-family:
+        "Playfair Display",
+        serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: #8b6a18;
+}
+
+@media (max-width: 1000px) {
+
+    .seating-layout-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+@media (max-width: 700px) {
+
+    .seating-publish-banner {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .seating-publish-time {
+        text-align: left;
+    }
+
+    .seating-map-toolbar,
+    .seating-map-summary,
+    .seating-selected-actions,
+    .seating-adjust-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .table-marker-name {
+        font-size: 10px;
+    }
+
+    .table-marker-capacity {
+        font-size: 9px;
+    }
+
+}
+
+@media (max-width: 900px) {
+
+    .summary-grid {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(
+                    0,
+                    1fr
+                )
+            );
+    }
+
+    .dashboard-nav {
+        overflow-x: auto;
+        grid-template-columns:
+            repeat(
+                5,
+                minmax(
+                    135px,
+                    1fr
+                )
+            );
+    }
+
 }
 
 @media (max-width: 600px) {
@@ -591,10 +1424,16 @@ code {
     }
 
     .panel {
-        padding:
-            24px 16px;
+        padding: 24px 16px;
     }
 
+    .summary-grid {
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+    .toolbar,
+    .rsvp-toolbar,
     .button-row {
         grid-template-columns:
             1fr;
@@ -626,15 +1465,14 @@ code {
         </div>
 
         <h1 class="header-title">
-            Invitation Admin
+            Wedding Admin
         </h1>
 
         <div class="header-subtitle">
-            Mobile Guest Link Generator
+            Invitations · RSVPs · Seating
         </div>
 
     </header>
-
 
 
     <!-- LOGIN -->
@@ -673,7 +1511,7 @@ code {
             id="loginButton"
             type="button"
         >
-            Open Generator
+            Open Wedding Dashboard
         </button>
 
         <div
@@ -684,7 +1522,6 @@ code {
     </section>
 
 
-
     <!-- ADMIN APP -->
 
     <div
@@ -692,157 +1529,671 @@ code {
         class="hidden"
     >
 
-        <section class="panel">
-
-            <h2 class="panel-title">
-                Create Invitations
-            </h2>
-
-            <p class="panel-copy">
-                Add one name or paste multiple names,
-                one guest or household per line.
-                Existing names keep their existing links.
-            </p>
-
-            <div class="field">
-
-                <label for="guestNames">
-                    Guest Names
-                </label>
-
-                <textarea
-                    id="guestNames"
-                    placeholder="Sarah Smith&#10;John & Mary Perera&#10;David Silva"
-                ></textarea>
-
-            </div>
+        <nav
+            class="dashboard-nav"
+            aria-label="Wedding admin sections"
+        >
 
             <button
-                class="button"
-                id="generateButton"
+                class="nav-button active"
                 type="button"
+                data-tab="overview"
             >
-                Generate Invitations
+                Overview
             </button>
-
-            <div
-                id="generateStatus"
-                class="status success hidden"
-            ></div>
-
-        </section>
-
-
-
-        <section class="panel">
-
-            <h2 class="panel-title">
-                Add Existing / Manual Link
-            </h2>
-
-            <p class="panel-copy">
-                Use this when you need to restore a deleted invitation
-                or add a specific invitation code manually.
-            </p>
-
-            <div class="field">
-
-                <label for="manualGuestName">
-                    Guest Name
-                </label>
-
-                <input
-                    type="text"
-                    id="manualGuestName"
-                    placeholder="Guest Name"
-                >
-
-            </div>
-
-            <div class="field">
-
-                <label for="manualInvitationCode">
-                    Invitation Code
-                </label>
-
-                <input
-                    type="text"
-                    id="manualInvitationCode"
-                    placeholder="Invitation Code"
-                    autocomplete="off"
-                >
-
-            </div>
 
             <button
-                class="button"
-                id="manualAddButton"
+                class="nav-button"
                 type="button"
+                data-tab="invitations"
             >
-                Add Manual Invitation
+                Invitations
             </button>
 
-            <div
-                id="manualAddStatus"
-                class="status success hidden"
-            ></div>
+            <button
+                class="nav-button"
+                type="button"
+                data-tab="rsvps"
+            >
+                RSVPs
+            </button>
 
-        </section>
+            <button
+                class="nav-button"
+                type="button"
+                data-tab="seating"
+            >
+                Seating Plan
+            </button>
+
+            <button
+                class="nav-button"
+                type="button"
+                data-tab="tables"
+            >
+                Tables
+            </button>
+
+        </nav>
 
 
+        <!-- OVERVIEW -->
 
-        <section class="panel">
+        <div
+            class="tab-page active"
+            id="tab-overview"
+        >
 
-            <h2 class="panel-title">
-                Your Invitations
-            </h2>
+            <section class="panel">
 
-            <div class="toolbar">
-
-                <input
-                    class="search"
-                    type="search"
-                    id="searchGuests"
-                    placeholder="Search guests..."
-                >
+                <h2 class="panel-title">
+                    Wedding Overview
+                </h2>
 
                 <div
-                    class="counter"
-                    id="guestCount"
-                >
-                    0 Guests
+                    class="summary-grid"
+                    id="overviewSummary"
+                ></div>
+
+                <div class="progress-line">
+                    <div
+                        class="progress-fill"
+                        id="responseProgress"
+                    ></div>
                 </div>
 
-            </div>
+                <div
+                    class="overview-note"
+                    id="responseProgressText"
+                >
+                    Loading RSVP progress...
+                </div>
 
-            <div class="button-row">
+            </section>
+
+
+            <section class="panel">
+
+                <h2 class="panel-title">
+                    Seating Status
+                </h2>
+
+                <div class="summary-grid">
+
+                    <div class="summary-card">
+                        <div
+                            class="summary-number"
+                            id="overviewTables"
+                        >
+                            0
+                        </div>
+                        <div class="summary-label">
+                            Tables
+                        </div>
+                    </div>
+
+                    <div class="summary-card">
+                        <div
+                            class="summary-number"
+                            id="overviewAllocated"
+                        >
+                            0
+                        </div>
+                        <div class="summary-label">
+                            Allocated
+                        </div>
+                    </div>
+
+                    <div class="summary-card">
+                        <div
+                            class="summary-number"
+                            id="overviewUnallocated"
+                        >
+                            0
+                        </div>
+                        <div class="summary-label">
+                            Unallocated
+                        </div>
+                    </div>
+
+                    <div class="summary-card">
+                        <div
+                            class="summary-number"
+                            id="overviewCapacity"
+                        >
+                            0
+                        </div>
+                        <div class="summary-label">
+                            Capacity
+                        </div>
+                    </div>
+
+                </div>
+
+                <p
+                    class="overview-note"
+                    id="seatingOverviewNote"
+                >
+                    Table setup is ready. Guest allocation will be added in the next stage.
+                </p>
+
+            </section>
+
+        </div>
+
+
+        <!-- INVITATIONS -->
+
+        <div
+            class="tab-page"
+            id="tab-invitations"
+        >
+
+            <section class="panel">
+
+                <h2 class="panel-title">
+                    Create Invitations
+                </h2>
+
+                <p class="panel-copy">
+                    Add one name or paste multiple names,
+                    one guest or household per line.
+                    Existing names keep their existing links.
+                </p>
+
+                <div class="field">
+
+                    <label for="guestNames">
+                        Guest Names
+                    </label>
+
+                    <textarea
+                        id="guestNames"
+                        placeholder="Sarah Smith&#10;John & Mary Perera&#10;David Silva"
+                    ></textarea>
+
+                </div>
 
                 <button
-                    class="button secondary"
-                    id="refreshButton"
+                    class="button"
+                    id="generateButton"
                     type="button"
                 >
-                    Refresh
+                    Generate Invitations
                 </button>
+
+                <div
+                    id="generateStatus"
+                    class="status success hidden"
+                ></div>
+
+            </section>
+
+
+            <section class="panel">
+
+                <h2 class="panel-title">
+                    Add Existing / Manual Link
+                </h2>
+
+                <p class="panel-copy">
+                    Restore a deleted invitation or add a specific invitation code manually.
+                </p>
+
+                <div class="field">
+
+                    <label for="manualGuestName">
+                        Guest Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="manualGuestName"
+                        placeholder="Guest Name"
+                        autocomplete="off"
+                    >
+
+                </div>
+
+                <div class="field">
+
+                    <label for="manualInvitationCode">
+                        Invitation Code
+                    </label>
+
+                    <input
+                        type="text"
+                        id="manualInvitationCode"
+                        placeholder="Invitation Code"
+                        autocomplete="off"
+                    >
+
+                </div>
 
                 <button
-                    class="button secondary"
-                    id="downloadCsvButton"
+                    class="button"
+                    id="manualAddButton"
                     type="button"
                 >
-                    Download CSV
+                    Add Manual Invitation
                 </button>
 
-            </div>
+                <div
+                    id="manualAddStatus"
+                    class="status success hidden"
+                ></div>
 
-            <div
-                class="guest-list"
-                id="guestList"
-            ></div>
-
-        </section>
+            </section>
 
 
+            <section class="panel">
+
+                <h2 class="panel-title">
+                    Your Invitations
+                </h2>
+
+                <div class="toolbar">
+
+                    <input
+                        class="search"
+                        type="search"
+                        id="searchGuests"
+                        placeholder="Search guests..."
+                    >
+
+                    <div
+                        class="counter"
+                        id="guestCount"
+                    >
+                        0 Guests
+                    </div>
+
+                </div>
+
+                <div class="button-row">
+
+                    <button
+                        class="button secondary"
+                        id="refreshInvitationsButton"
+                        type="button"
+                    >
+                        Refresh
+                    </button>
+
+                    <button
+                        class="button secondary"
+                        id="downloadInvitationCsvButton"
+                        type="button"
+                    >
+                        Download CSV
+                    </button>
+
+                </div>
+
+                <div
+                    class="guest-list"
+                    id="guestList"
+                ></div>
+
+            </section>
+
+        </div>
+
+
+        <!-- RSVPS -->
+
+        <div
+            class="tab-page"
+            id="tab-rsvps"
+        >
+
+            <section class="panel">
+
+                <h2 class="panel-title">
+                    RSVP Overview
+                </h2>
+
+                <div
+                    class="summary-grid"
+                    id="rsvpSummary"
+                ></div>
+
+            </section>
+
+
+            <section class="panel">
+
+                <h2 class="panel-title">
+                    Guest Responses
+                </h2>
+
+                <div class="rsvp-toolbar">
+
+                    <input
+                        type="search"
+                        id="rsvpSearch"
+                        placeholder="Search guest name or message..."
+                    >
+
+                    <select
+                        id="rsvpStatusFilter"
+                    >
+
+                        <option value="all">
+                            All Responses
+                        </option>
+
+                        <option value="Yes">
+                            Attending
+                        </option>
+
+                        <option value="No">
+                            Declined
+                        </option>
+
+                        <option value="Pending">
+                            Not Responded
+                        </option>
+
+                    </select>
+
+                    <button
+                        class="button secondary"
+                        id="refreshRsvpButton"
+                        type="button"
+                    >
+                        Refresh
+                    </button>
+
+                </div>
+
+                <div class="table-wrap">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Guest</th>
+                                <th>Status</th>
+                                <th>Guests</th>
+                                <th>Message</th>
+                                <th>Last Updated</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody
+                            id="rsvpRows"
+                        ></tbody>
+
+                    </table>
+
+                </div>
+
+                <div
+                    class="empty hidden"
+                    id="rsvpEmpty"
+                >
+                    No matching guests.
+                </div>
+
+                <div
+                    class="button-row"
+                    style="margin-top: 16px;"
+                >
+
+                    <button
+                        class="button secondary"
+                        id="downloadRsvpCsvButton"
+                        type="button"
+                    >
+                        Download RSVP CSV
+                    </button>
+
+                    <button
+                        class="button secondary"
+                        id="refreshAllButton"
+                        type="button"
+                    >
+                        Refresh Everything
+                    </button>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <!-- SEATING -->
+
+        <div
+            class="tab-page"
+            id="tab-seating"
+        >
+
+            <section class="panel">
+
+                <h2 class="panel-title">
+                    Seating Plan
+                </h2>
+
+                <p class="panel-copy">
+                    Use your venue layout as the working map. Turn on layout editing to drag tables into place,
+                    then click a table to manage assignments.
+                </p>
+
+                <div class="seating-layout-grid">
+
+                    <div class="seating-map-card">
+
+                        <div class="seating-map-summary">
+
+                            <div class="summary-card">
+                                <div class="summary-number" id="seatingMapTableCount">0</div>
+                                <div class="summary-label">Tables on Map</div>
+                            </div>
+
+                            <div class="summary-card">
+                                <div class="summary-number" id="seatingMapAssignedCount">0</div>
+                                <div class="summary-label">People Seated</div>
+                            </div>
+
+                            <div class="summary-card">
+                                <div class="summary-number" id="seatingMapUnassignedCount">0</div>
+                                <div class="summary-label">Still Unassigned</div>
+                            </div>
+
+                        </div>
+
+                        <div class="seating-map-toolbar">
+
+                            <div class="counter" id="seatingMapStatus">Floor plan ready</div>
+
+                            <div class="seating-map-buttons">
+                                <button class="button secondary" id="toggleLayoutModeButton" type="button">Enable Layout Editing</button>
+                                <button class="button secondary" id="publishSeatingButton" type="button">Publish Seating</button>
+                                <button class="button secondary" id="refreshSeatingMapButton" type="button">Refresh Map</button>
+                            </div>
+
+                        </div>
+
+                        <div class="seating-publish-banner private" id="seatingPublishBanner">
+                            <div>
+                                <div class="seating-publish-badge" id="seatingPublishBadge">PRIVATE</div>
+                                <div class="seating-publish-title" id="seatingPublishTitle">Guest table assignments are hidden</div>
+                                <div class="seating-publish-copy" id="seatingPublishCopy">You can keep arranging tables and assigning guests without changing what guests see.</div>
+                            </div>
+                            <div class="seating-publish-time" id="seatingPublishTime">No seating changes saved yet.</div>
+                        </div>
+
+                        <div class="seating-map-shell">
+                            <div class="seating-floorplan" id="seatingFloorplan"></div>
+                        </div>
+
+                        <div class="seating-map-legend">
+                            Tip: tap or click a table to select it. When layout editing is enabled,
+                            drag tables directly on the plan to place them.
+                        </div>
+
+                    </div>
+
+                    <div class="seating-sidebar">
+
+                        <div class="seating-side-block">
+                            <h3 class="seating-side-title">Selected Table</h3>
+                            <div id="selectedTablePanel"></div>
+                        </div>
+
+                        <div class="seating-side-block">
+                            <h3 class="seating-side-title">Unassigned Attending Guests</h3>
+                            <div id="seatingUnassignedList" class="seating-unassigned-list"></div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <!-- TABLES -->
+
+        <div
+            class="tab-page"
+            id="tab-tables"
+        >
+
+            <section class="panel">
+
+                <h2 class="panel-title">
+                    Create Table
+                </h2>
+
+                <p class="panel-copy">
+                    Add the tables you plan to use at the reception.
+                    Each table can have its own shape and capacity.
+                </p>
+
+                <div class="field">
+
+                    <label for="tableName">
+                        Table Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="tableName"
+                        placeholder="e.g. Table 1 or Head Table"
+                    >
+
+                </div>
+
+                <div class="field">
+
+                    <label for="tableShape">
+                        Table Shape
+                    </label>
+
+                    <select id="tableShape">
+                        <option value="round">Round</option>
+                        <option value="square">Square</option>
+                        <option value="rectangle">Rectangle</option>
+                        <option value="banquet">Long / Banquet</option>
+                    </select>
+
+                </div>
+
+                <div class="field">
+
+                    <label for="tableCapacity">
+                        Capacity
+                    </label>
+
+                    <input
+                        type="number"
+                        id="tableCapacity"
+                        min="1"
+                        max="100"
+                        step="1"
+                        value="10"
+                    >
+
+                </div>
+
+                <button
+                    class="button"
+                    id="createTableButton"
+                    type="button"
+                >
+                    Add Table
+                </button>
+
+                <div
+                    id="tableStatus"
+                    class="status success hidden"
+                ></div>
+
+            </section>
+
+
+            <section class="panel">
+
+                <h2 class="panel-title">
+                    Your Tables
+                </h2>
+
+                <div class="toolbar">
+
+                    <input
+                        class="search"
+                        type="search"
+                        id="tableSearch"
+                        placeholder="Search tables..."
+                    >
+
+                    <div
+                        class="counter"
+                        id="tableCount"
+                    >
+                        0 Tables
+                    </div>
+
+                </div>
+
+                <div
+                    class="guest-list"
+                    id="tableList"
+                ></div>
+
+            </section>
+
+
+            <section class="panel">
+
+                <h2 class="panel-title">
+                    Unassigned Attending Guests
+                </h2>
+
+                <p class="panel-copy">
+                    Only invitations that RSVP'd Attending appear here.
+                    Assign the whole invitation group to one table.
+                </p>
+
+                <div
+                    class="guest-list"
+                    id="unassignedGuestList"
+                ></div>
+
+            </section>
+
+        </div>
+
+
+        <!-- SESSION -->
 
         <section class="panel">
 
@@ -853,8 +2204,7 @@ code {
             <p class="help">
                 The admin password is stored in
                 <code>sessionStorage</code>,
-                so it is cleared when the browser
-                session ends.
+                so it is cleared when the browser session ends.
             </p>
 
             <button
@@ -872,17 +2222,50 @@ code {
 </div>
 
 
-
 <script>
 
-const API =
+const INVITATION_API =
     "/.netlify/functions/admin-invitations";
 
+const RSVP_API =
+    "/.netlify/functions/admin-rsvps";
+
+const SEATING_API =
+    "/.netlify/functions/admin-seating";
 
 
 let invitations =
     [];
 
+let rsvpRows =
+    [];
+
+let rsvpSummaryData =
+    {};
+
+let seatingTables =
+    [];
+
+let seatingPublished =
+    false;
+
+let seatingUpdatedAt =
+    null;
+
+let attendingGuests =
+    [];
+
+let seatingEditMode =
+    false;
+
+let selectedSeatingTableId =
+    null;
+
+let activeTableDrag =
+    null;
+
+const FLOORPLAN_IMAGE =
+    "/images/seating-plan.png";
 
 
 function getSecret() {
@@ -895,7 +2278,6 @@ function getSecret() {
     );
 
 }
-
 
 
 function setSecret(
@@ -911,7 +2293,6 @@ function setSecret(
 }
 
 
-
 function clearSecret() {
 
     sessionStorage
@@ -922,20 +2303,15 @@ function clearSecret() {
 }
 
 
-
-async function adminRequest(
+async function apiRequest(
+    url,
     options = {}
 ) {
-
-    const secret =
-        getSecret();
-
-
 
     const headers = {
 
         "x-admin-secret":
-            secret,
+            getSecret(),
 
         ...(
             options.headers ||
@@ -943,7 +2319,6 @@ async function adminRequest(
         )
 
     };
-
 
 
     if (
@@ -961,21 +2336,20 @@ async function adminRequest(
     }
 
 
-
     const response =
         await fetch(
-            API,
+            url,
             {
                 ...options,
-                headers
+                headers,
+                cache:
+                    "no-store"
             }
         );
 
 
-
     let data =
         {};
-
 
 
     try {
@@ -985,10 +2359,10 @@ async function adminRequest(
 
     } catch {
 
-        data = {};
+        data =
+            {};
 
     }
-
 
 
     if (
@@ -1009,11 +2383,9 @@ async function adminRequest(
     }
 
 
-
     return data;
 
 }
-
 
 
 function showStatus(
@@ -1031,44 +2403,224 @@ function showStatus(
 }
 
 
-
 function hideStatus(
     element
 ) {
 
-    element.classList.add(
-        "hidden"
-    );
+    element.classList
+        .add(
+            "hidden"
+        );
 
 }
 
+
+/* =========================
+   TABS
+========================= */
+
+function openTab(
+    tabName
+) {
+
+    document
+        .querySelectorAll(
+            ".tab-page"
+        )
+        .forEach(
+            page =>
+                page.classList
+                    .remove(
+                        "active"
+                    )
+        );
+
+
+    document
+        .querySelectorAll(
+            ".nav-button"
+        )
+        .forEach(
+            button =>
+                button.classList
+                    .remove(
+                        "active"
+                    )
+        );
+
+
+    const page =
+        document
+            .getElementById(
+                `tab-${tabName}`
+            );
+
+
+    const button =
+        document
+            .querySelector(
+                `[data-tab="${tabName}"]`
+            );
+
+
+    if (
+        page
+    ) {
+
+        page.classList
+            .add(
+                "active"
+            );
+
+    }
+
+
+    if (
+        button
+    ) {
+
+        button.classList
+            .add(
+                "active"
+            );
+
+    }
+
+    if (
+        tabName ===
+        "seating"
+    ) {
+
+        renderSeatingPlanner();
+
+    }
+
+}
+
+
+/* =========================
+   LOGIN + LOAD
+========================= */
+
+async function loadInvitations() {
+
+    const result =
+        await apiRequest(
+            INVITATION_API
+        );
+
+
+    invitations =
+        result.invitations ||
+        [];
+
+
+    renderInvitations();
+
+}
+
+
+async function loadRsvps() {
+
+    const result =
+        await apiRequest(
+            RSVP_API
+        );
+
+
+    rsvpRows =
+        result.rows ||
+        [];
+
+    rsvpSummaryData =
+        result.summary ||
+        {};
+
+
+    renderRsvpSummary();
+    renderRsvpRows();
+    renderOverview();
+
+}
+
+
+async function loadSeating() {
+
+    const result =
+        await apiRequest(
+            SEATING_API
+        );
+
+
+    seatingTables =
+        result.tables ||
+        [];
+
+    seatingPublished =
+        Boolean(
+            result.published
+        );
+
+    seatingUpdatedAt =
+        result.updatedAt ||
+        null;
+
+    attendingGuests =
+        result.attendingGuests ||
+        [];
+
+
+    renderTables();
+    renderSeatingPlanner();
+    renderOverview();
+
+}
+
+
+async function loadEverything() {
+
+    await Promise.all(
+        [
+            loadInvitations(),
+            loadRsvps(),
+            loadSeating()
+        ]
+    );
+
+
+    renderOverview();
+
+}
 
 
 async function login() {
 
     const input =
-        document.getElementById(
-            "adminSecret"
-        );
+        document
+            .getElementById(
+                "adminSecret"
+            );
 
     const button =
-        document.getElementById(
-            "loginButton"
-        );
+        document
+            .getElementById(
+                "loginButton"
+            );
 
     const status =
-        document.getElementById(
-            "loginStatus"
-        );
-
+        document
+            .getElementById(
+                "loginStatus"
+            );
 
 
     const secret =
         input.value.trim();
 
 
-
-    if (!secret) {
+    if (
+        !secret
+    ) {
 
         showStatus(
             status,
@@ -1081,11 +2633,9 @@ async function login() {
     }
 
 
-
     setSecret(
         secret
     );
-
 
 
     button.disabled =
@@ -1095,10 +2645,10 @@ async function login() {
         "Checking...";
 
 
-
     try {
 
-        await loadInvitations();
+        await loadEverything();
+
 
         document
             .getElementById(
@@ -1109,6 +2659,7 @@ async function login() {
                 "hidden"
             );
 
+
         document
             .getElementById(
                 "adminApp"
@@ -1117,6 +2668,7 @@ async function login() {
             .remove(
                 "hidden"
             );
+
 
         hideStatus(
             status
@@ -1142,32 +2694,285 @@ async function login() {
             false;
 
         button.textContent =
-            "Open Generator";
+            "Open Wedding Dashboard";
 
     }
 
 }
 
 
+/* =========================
+   OVERVIEW
+========================= */
 
-async function loadInvitations() {
+function renderOverview() {
 
-    const result =
-        await adminRequest();
-
-
-
-    invitations =
-        result.invitations ||
-        [];
+    const grid =
+        document
+            .getElementById(
+                "overviewSummary"
+            );
 
 
+    const totalInvitations =
+        rsvpSummaryData
+            .invitations ??
+        invitations.length;
 
-    renderInvitations();
+    const responded =
+        rsvpSummaryData
+            .responded || 0;
+
+    const attendingPeople =
+        rsvpSummaryData
+            .attendingPeople || 0;
+
+    const declined =
+        rsvpSummaryData
+            .declinedInvitations || 0;
+
+    const pending =
+        rsvpSummaryData
+            .pendingInvitations ??
+        Math.max(
+            0,
+            totalInvitations -
+            responded
+        );
+
+
+    const cards = [
+
+        [
+            totalInvitations,
+            "Invitations"
+        ],
+
+        [
+            responded,
+            "RSVP Received"
+        ],
+
+        [
+            attendingPeople,
+            "People Attending"
+        ],
+
+        [
+            pending,
+            "Awaiting Response"
+        ],
+
+        [
+            rsvpSummaryData
+                .attendingInvitations || 0,
+            "Attending Households"
+        ],
+
+        [
+            declined,
+            "Declined"
+        ],
+
+        [
+            totalGuestCount(),
+            "Invited Estimate"
+        ],
+
+        [
+            invitations.length,
+            "Active Links"
+        ]
+
+    ];
+
+
+    grid.innerHTML =
+        "";
+
+
+    cards.forEach(
+        (
+            [
+                number,
+                label
+            ]
+        ) => {
+
+            const card =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            card.className =
+                "summary-card";
+
+
+            const numberElement =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            numberElement
+                .className =
+                "summary-number";
+
+            numberElement
+                .textContent =
+                number;
+
+
+            const labelElement =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            labelElement
+                .className =
+                "summary-label";
+
+            labelElement
+                .textContent =
+                label;
+
+
+            card.append(
+                numberElement,
+                labelElement
+            );
+
+            grid.appendChild(
+                card
+            );
+
+        }
+    );
+
+
+    const percentage =
+        totalInvitations > 0
+            ? Math.min(
+                100,
+                Math.round(
+                    (
+                        responded /
+                        totalInvitations
+                    ) * 100
+                )
+            )
+            : 0;
+
+
+    document
+        .getElementById(
+            "responseProgress"
+        )
+        .style
+        .width =
+        `${percentage}%`;
+
+
+    document
+        .getElementById(
+            "responseProgressText"
+        )
+        .textContent =
+        `${responded} of ${totalInvitations} invitations have responded (${percentage}%).`;
+
+
+    const totalCapacity =
+        seatingTables
+            .reduce(
+                (
+                    total,
+                    table
+                ) =>
+                    total +
+                    Number(
+                        table.capacity ||
+                        0
+                    ),
+                0
+            );
+
+    const allocatedPeople =
+        seatingTables
+            .reduce(
+                (
+                    total,
+                    table
+                ) =>
+                    total +
+                    Number(
+                        table.assignedPeople ||
+                        0
+                    ),
+                0
+            );
+
+    const totalAttendingPeople =
+        rsvpSummaryData
+            .attendingPeople || 0;
+
+
+    const unallocatedPeople =
+        Math.max(
+            0,
+            totalAttendingPeople -
+            allocatedPeople
+        );
+
+
+    document
+        .getElementById(
+            "overviewTables"
+        )
+        .textContent =
+        seatingTables.length;
+
+
+    document
+        .getElementById(
+            "overviewAllocated"
+        )
+        .textContent =
+        allocatedPeople;
+
+
+    document
+        .getElementById(
+            "overviewUnallocated"
+        )
+        .textContent =
+        unallocatedPeople;
+
+
+    document
+        .getElementById(
+            "overviewCapacity"
+        )
+        .textContent =
+        totalCapacity;
+
+
+    document
+        .getElementById(
+            "seatingOverviewNote"
+        )
+        .textContent =
+        seatingPublished
+            ? "Seating is currently published to guests."
+            : "Seating is not published to guests.";
 
 }
 
 
+/* =========================
+   INVITATION CREATION
+========================= */
 
 function normalizeInputNames(
     value
@@ -1175,7 +2980,6 @@ function normalizeInputNames(
 
     const seen =
         new Set();
-
 
 
     return value
@@ -1194,18 +2998,18 @@ function normalizeInputNames(
         .filter(
             name => {
 
-                if (!name) {
+                if (
+                    !name
+                ) {
 
                     return false;
 
                 }
 
 
-
                 const key =
                     name
                         .toLocaleLowerCase();
-
 
 
                 if (
@@ -1217,7 +3021,6 @@ function normalizeInputNames(
                     return false;
 
                 }
-
 
 
                 seen.add(
@@ -1232,24 +3035,25 @@ function normalizeInputNames(
 }
 
 
-
 async function generateInvitations() {
 
     const textarea =
-        document.getElementById(
-            "guestNames"
-        );
+        document
+            .getElementById(
+                "guestNames"
+            );
 
     const button =
-        document.getElementById(
-            "generateButton"
-        );
+        document
+            .getElementById(
+                "generateButton"
+            );
 
     const status =
-        document.getElementById(
-            "generateStatus"
-        );
-
+        document
+            .getElementById(
+                "generateStatus"
+            );
 
 
     const names =
@@ -1258,9 +3062,9 @@ async function generateInvitations() {
         );
 
 
-
     if (
-        names.length === 0
+        names.length ===
+        0
     ) {
 
         showStatus(
@@ -1274,7 +3078,6 @@ async function generateInvitations() {
     }
 
 
-
     button.disabled =
         true;
 
@@ -1282,11 +3085,11 @@ async function generateInvitations() {
         "Generating...";
 
 
-
     try {
 
         const result =
-            await adminRequest(
+            await apiRequest(
+                INVITATION_API,
                 {
                     method:
                         "POST",
@@ -1301,15 +3104,13 @@ async function generateInvitations() {
             );
 
 
-
         invitations =
             result.invitations ||
             invitations;
 
 
-
         renderInvitations();
-
+        renderOverview();
 
 
         const created =
@@ -1321,7 +3122,6 @@ async function generateInvitations() {
             0;
 
 
-
         showStatus(
             status,
             `${created} new invitation${created === 1 ? "" : "s"} created. ${existing} existing invitation${existing === 1 ? "" : "s"} kept unchanged.`,
@@ -1329,11 +3129,11 @@ async function generateInvitations() {
         );
 
 
-
         textarea.value =
             "";
 
 
+        await loadRsvps();
 
     } catch (
         error
@@ -1358,6 +3158,9 @@ async function generateInvitations() {
 }
 
 
+/* =========================
+   INVITATION HELPERS
+========================= */
 
 function invitationUrl(
     code
@@ -1368,7 +3171,6 @@ function invitationUrl(
     );
 
 }
-
 
 
 async function copyText(
@@ -1391,13 +3193,11 @@ async function copyText(
     }
 
 
-
     const textarea =
         document
             .createElement(
                 "textarea"
             );
-
 
 
     textarea.value =
@@ -1410,16 +3210,13 @@ async function copyText(
         "0";
 
 
-
     document.body
         .appendChild(
             textarea
         );
 
 
-
     textarea.select();
-
 
 
     document
@@ -1428,11 +3225,9 @@ async function copyText(
         );
 
 
-
     textarea.remove();
 
 }
-
 
 
 async function copyInvitation(
@@ -1446,21 +3241,17 @@ async function copyInvitation(
         );
 
 
-
     await copyText(
         link
     );
-
 
 
     const old =
         button.textContent;
 
 
-
     button.textContent =
         "Copied";
-
 
 
     setTimeout(
@@ -1476,7 +3267,6 @@ async function copyInvitation(
 }
 
 
-
 async function shareInvitation(
     invitation
 ) {
@@ -1485,7 +3275,6 @@ async function shareInvitation(
         invitationUrl(
             invitation.code
         );
-
 
 
     const text =
@@ -1498,7 +3287,6 @@ ${link}
 
 Can’t wait to celebrate with you!
 Nishi & Manu ✨`;
-
 
 
     if (
@@ -1537,11 +3325,9 @@ Nishi & Manu ✨`;
     }
 
 
-
     await copyText(
         text
     );
-
 
 
     alert(
@@ -1551,36 +3337,49 @@ Nishi & Manu ✨`;
 }
 
 
+/* =========================
+   MANUAL LINK
+========================= */
 
 async function addManualInvitation() {
 
     const nameInput =
-        document.getElementById(
-            "manualGuestName"
-        );
+        document
+            .getElementById(
+                "manualGuestName"
+            );
 
     const codeInput =
-        document.getElementById(
-            "manualInvitationCode"
-        );
+        document
+            .getElementById(
+                "manualInvitationCode"
+            );
 
     const button =
-        document.getElementById(
-            "manualAddButton"
-        );
+        document
+            .getElementById(
+                "manualAddButton"
+            );
 
     const status =
-        document.getElementById(
-            "manualAddStatus"
-        );
+        document
+            .getElementById(
+                "manualAddStatus"
+            );
+
 
     const restoreName =
         nameInput.value
-            .replace(/\s+/g, " ")
+            .replace(
+                /\s+/g,
+                " "
+            )
             .trim();
 
     const restoreCode =
-        codeInput.value.trim();
+        codeInput.value
+            .trim();
+
 
     if (
         !restoreName ||
@@ -1597,29 +3396,42 @@ async function addManualInvitation() {
 
     }
 
-    button.disabled = true;
-    button.textContent = "Adding...";
+
+    button.disabled =
+        true;
+
+    button.textContent =
+        "Adding...";
+
 
     try {
 
         const result =
-            await adminRequest(
+            await apiRequest(
+                INVITATION_API,
                 {
-                    method: "POST",
-                    body: JSON.stringify(
-                        {
-                            restoreCode,
-                            restoreName
-                        }
-                    )
+                    method:
+                        "POST",
+
+                    body:
+                        JSON.stringify(
+                            {
+                                restoreCode,
+                                restoreName
+                            }
+                        )
                 }
             );
+
 
         invitations =
             result.invitations ||
             invitations;
 
+
         renderInvitations();
+        renderOverview();
+
 
         showStatus(
             status,
@@ -1627,10 +3439,19 @@ async function addManualInvitation() {
             "success"
         );
 
-        nameInput.value = "";
-        codeInput.value = "";
 
-    } catch (error) {
+        nameInput.value =
+            "";
+
+        codeInput.value =
+            "";
+
+
+        await loadRsvps();
+
+    } catch (
+        error
+    ) {
 
         showStatus(
             status,
@@ -1640,7 +3461,9 @@ async function addManualInvitation() {
 
     } finally {
 
-        button.disabled = false;
+        button.disabled =
+            false;
+
         button.textContent =
             "Add Manual Invitation";
 
@@ -1649,6 +3472,9 @@ async function addManualInvitation() {
 }
 
 
+/* =========================
+   EDIT NAME
+========================= */
 
 async function editInvitationName(
     invitation
@@ -1660,54 +3486,99 @@ async function editInvitationName(
             invitation.name
         );
 
-    if (newName === null) {
+
+    if (
+        newName ===
+        null
+    ) {
+
         return;
+
     }
+
 
     const cleanedName =
         newName
-            .replace(/\s+/g, " ")
+            .replace(
+                /\s+/g,
+                " "
+            )
             .trim();
 
-    if (!cleanedName) {
-        alert("Guest name cannot be empty.");
+
+    if (
+        !cleanedName
+    ) {
+
+        alert(
+            "Guest name cannot be empty."
+        );
+
         return;
+
     }
 
-    if (cleanedName === invitation.name) {
+
+    if (
+        cleanedName ===
+        invitation.name
+    ) {
+
         return;
+
     }
+
 
     try {
 
         const result =
-            await adminRequest(
+            await apiRequest(
+                INVITATION_API,
                 {
-                    method: "POST",
-                    body: JSON.stringify(
-                        {
-                            editCode: invitation.code,
-                            editName: cleanedName
-                        }
-                    )
+                    method:
+                        "POST",
+
+                    body:
+                        JSON.stringify(
+                            {
+                                editCode:
+                                    invitation.code,
+
+                                editName:
+                                    cleanedName
+                            }
+                        )
                 }
             );
+
 
         invitations =
             result.invitations ||
             invitations;
 
+
         renderInvitations();
+        renderOverview();
 
-    } catch (error) {
 
-        alert(error.message);
+        await loadRsvps();
+
+    } catch (
+        error
+    ) {
+
+        alert(
+            error.message
+        );
 
     }
 
 }
 
 
+/* =========================
+   DELETE
+========================= */
 
 async function deleteInvitation(
     invitation
@@ -1719,7 +3590,6 @@ async function deleteInvitation(
         );
 
 
-
     if (
         !confirmed
     ) {
@@ -1729,11 +3599,11 @@ async function deleteInvitation(
     }
 
 
-
     try {
 
         const result =
-            await adminRequest(
+            await apiRequest(
+                INVITATION_API,
                 {
                     method:
                         "DELETE",
@@ -1749,16 +3619,16 @@ async function deleteInvitation(
             );
 
 
-
         invitations =
             result.invitations ||
             [];
 
 
-
         renderInvitations();
+        renderOverview();
 
 
+        await loadRsvps();
 
     } catch (
         error
@@ -1773,13 +3643,19 @@ async function deleteInvitation(
 }
 
 
+/* =========================
+   GUEST ESTIMATE
+========================= */
 
 function countPeopleInInvitationName(
     name
 ) {
 
     const cleaned =
-        String(name || "")
+        String(
+            name ||
+            ""
+        )
             .replace(
                 /\s+/g,
                 " "
@@ -1787,24 +3663,14 @@ function countPeopleInInvitationName(
             .trim();
 
 
-
-    if (!cleaned) {
+    if (
+        !cleaned
+    ) {
 
         return 0;
 
     }
 
-
-
-    /*
-        Counting rules:
-        John Smith = 1
-        John & Mary Smith = 2
-        John and Mary Smith = 2
-        John & Mary & David = 3
-        John and Family = 3 total
-        John & Family = 3 total
-    */
 
     if (
         /\bfamily\b/i
@@ -1816,7 +3682,6 @@ function countPeopleInInvitationName(
         return 3;
 
     }
-
 
 
     const people =
@@ -1833,14 +3698,12 @@ function countPeopleInInvitationName(
             );
 
 
-
     return Math.max(
         1,
         people.length
     );
 
 }
-
 
 
 function totalGuestCount() {
@@ -1861,27 +3724,32 @@ function totalGuestCount() {
 }
 
 
+/* =========================
+   RENDER INVITATIONS
+========================= */
 
 function renderInvitations() {
 
     const list =
-        document.getElementById(
-            "guestList"
-        );
+        document
+            .getElementById(
+                "guestList"
+            );
 
     const count =
-        document.getElementById(
-            "guestCount"
-        );
+        document
+            .getElementById(
+                "guestCount"
+            );
 
     const search =
-        document.getElementById(
-            "searchGuests"
-        )
-        .value
-        .trim()
-        .toLocaleLowerCase();
-
+        document
+            .getElementById(
+                "searchGuests"
+            )
+            .value
+            .trim()
+            .toLocaleLowerCase();
 
 
     const filtered =
@@ -1897,24 +3765,21 @@ function renderInvitations() {
             );
 
 
-
     const totalGuests =
         totalGuestCount();
-
 
 
     count.textContent =
         `${totalGuests} Guest${totalGuests === 1 ? "" : "s"}`;
 
 
-
     list.innerHTML =
         "";
 
 
-
     if (
-        filtered.length === 0
+        filtered.length ===
+        0
     ) {
 
         const empty =
@@ -1922,7 +3787,6 @@ function renderInvitations() {
                 .createElement(
                     "div"
                 );
-
 
 
         empty.className =
@@ -1934,7 +3798,6 @@ function renderInvitations() {
                 : "No invitations yet. Add your first guest above.";
 
 
-
         list.appendChild(
             empty
         );
@@ -1942,7 +3805,6 @@ function renderInvitations() {
         return;
 
     }
-
 
 
     filtered.forEach(
@@ -1955,10 +3817,8 @@ function renderInvitations() {
                     );
 
 
-
             card.className =
                 "guest-card";
-
 
 
             const name =
@@ -1968,7 +3828,6 @@ function renderInvitations() {
                     );
 
 
-
             name.className =
                 "guest-name";
 
@@ -1976,13 +3835,11 @@ function renderInvitations() {
                 invitation.name;
 
 
-
             const link =
                 document
                     .createElement(
                         "div"
                     );
-
 
 
             link.className =
@@ -1994,7 +3851,6 @@ function renderInvitations() {
                 );
 
 
-
             const actions =
                 document
                     .createElement(
@@ -2002,10 +3858,8 @@ function renderInvitations() {
                     );
 
 
-
             actions.className =
                 "guest-actions";
-
 
 
             const copyButton =
@@ -2013,8 +3867,6 @@ function renderInvitations() {
                     .createElement(
                         "button"
                     );
-
-
 
             copyButton.type =
                 "button";
@@ -2035,14 +3887,11 @@ function renderInvitations() {
             );
 
 
-
             const shareButton =
                 document
                     .createElement(
                         "button"
                     );
-
-
 
             shareButton.type =
                 "button";
@@ -2062,14 +3911,11 @@ function renderInvitations() {
             );
 
 
-
             const editButton =
                 document
                     .createElement(
                         "button"
                     );
-
-
 
             editButton.type =
                 "button";
@@ -2089,14 +3935,11 @@ function renderInvitations() {
             );
 
 
-
             const deleteButton =
                 document
                     .createElement(
                         "button"
                     );
-
-
 
             deleteButton.type =
                 "button";
@@ -2116,7 +3959,6 @@ function renderInvitations() {
             );
 
 
-
             actions.append(
                 copyButton,
                 shareButton,
@@ -2125,13 +3967,11 @@ function renderInvitations() {
             );
 
 
-
             card.append(
                 name,
                 link,
                 actions
             );
-
 
 
             list.appendChild(
@@ -2144,6 +3984,2779 @@ function renderInvitations() {
 }
 
 
+/* =========================
+   RSVP RENDERING
+========================= */
+
+function renderRsvpSummary() {
+
+    const grid =
+        document
+            .getElementById(
+                "rsvpSummary"
+            );
+
+
+    const cards = [
+
+        [
+            rsvpSummaryData
+                .responded || 0,
+            "RSVP Received"
+        ],
+
+        [
+            rsvpSummaryData
+                .attendingInvitations || 0,
+            "Attending Invitations"
+        ],
+
+        [
+            rsvpSummaryData
+                .attendingPeople || 0,
+            "People Attending"
+        ],
+
+        [
+            rsvpSummaryData
+                .declinedInvitations || 0,
+            "Declined"
+        ],
+
+        [
+            rsvpSummaryData
+                .pendingInvitations || 0,
+            "Not Responded"
+        ],
+
+        [
+            rsvpSummaryData
+                .invitations || 0,
+            "Total Invitations"
+        ]
+
+    ];
+
+
+    grid.innerHTML =
+        "";
+
+
+    cards.forEach(
+        (
+            [
+                number,
+                label
+            ]
+        ) => {
+
+            const card =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            card.className =
+                "summary-card";
+
+
+            const numberElement =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            numberElement.className =
+                "summary-number";
+
+            numberElement.textContent =
+                number;
+
+
+            const labelElement =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            labelElement.className =
+                "summary-label";
+
+            labelElement.textContent =
+                label;
+
+
+            card.append(
+                numberElement,
+                labelElement
+            );
+
+            grid.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+function rsvpStatusBadge(
+    status
+) {
+
+    const span =
+        document
+            .createElement(
+                "span"
+            );
+
+
+    const className =
+        status === "Yes"
+            ? "yes"
+            : (
+                status === "No"
+                    ? "no"
+                    : "pending"
+            );
+
+
+    const label =
+        status === "Yes"
+            ? "Attending"
+            : (
+                status === "No"
+                    ? "Declined"
+                    : "Pending"
+            );
+
+
+    span.className =
+        `badge ${className}`;
+
+    span.textContent =
+        label;
+
+
+    return span;
+
+}
+
+
+function filteredRsvpRows() {
+
+    const search =
+        document
+            .getElementById(
+                "rsvpSearch"
+            )
+            .value
+            .trim()
+            .toLocaleLowerCase();
+
+    const status =
+        document
+            .getElementById(
+                "rsvpStatusFilter"
+            )
+            .value;
+
+
+    return rsvpRows
+        .filter(
+            row => {
+
+                if (
+                    status !== "all" &&
+                    row.status !== status
+                ) {
+
+                    return false;
+
+                }
+
+
+                if (
+                    !search
+                ) {
+
+                    return true;
+
+                }
+
+
+                return (
+                    row.name
+                        .toLocaleLowerCase()
+                        .includes(
+                            search
+                        ) ||
+
+                    (
+                        row.message ||
+                        ""
+                    )
+                        .toLocaleLowerCase()
+                        .includes(
+                            search
+                        )
+                );
+
+            }
+        );
+
+}
+
+
+function formatDate(
+    value
+) {
+
+    if (
+        !value
+    ) {
+
+        return "—";
+
+    }
+
+
+    const date =
+        new Date(
+            value
+        );
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "—";
+
+    }
+
+
+    return date
+        .toLocaleString(
+            undefined,
+            {
+                dateStyle:
+                    "medium",
+
+                timeStyle:
+                    "short"
+            }
+        );
+
+}
+
+
+function renderRsvpRows() {
+
+    const tbody =
+        document
+            .getElementById(
+                "rsvpRows"
+            );
+
+    const empty =
+        document
+            .getElementById(
+                "rsvpEmpty"
+            );
+
+    const rows =
+        filteredRsvpRows();
+
+
+    tbody.innerHTML =
+        "";
+
+
+    if (
+        rows.length ===
+        0
+    ) {
+
+        empty.classList
+            .remove(
+                "hidden"
+            );
+
+        return;
+
+    }
+
+
+    empty.classList
+        .add(
+            "hidden"
+        );
+
+
+    rows.forEach(
+        row => {
+
+            const tr =
+                document
+                    .createElement(
+                        "tr"
+                    );
+
+
+            const guestCell =
+                document
+                    .createElement(
+                        "td"
+                    );
+
+
+            const guestName =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            guestName.className =
+                "rsvp-guest-name";
+
+            guestName.textContent =
+                row.name;
+
+
+            const code =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            code.className =
+                "muted";
+
+            code.textContent =
+                row.code;
+
+
+            guestCell.append(
+                guestName,
+                code
+            );
+
+
+            const statusCell =
+                document
+                    .createElement(
+                        "td"
+                    );
+
+            statusCell.appendChild(
+                rsvpStatusBadge(
+                    row.status
+                )
+            );
+
+
+            const countCell =
+                document
+                    .createElement(
+                        "td"
+                    );
+
+            countCell.textContent =
+                row.guestCount ||
+                "—";
+
+
+            const messageCell =
+                document
+                    .createElement(
+                        "td"
+                    );
+
+            messageCell.className =
+                "message-cell";
+
+            messageCell.textContent =
+                row.message ||
+                "—";
+
+
+            const updatedCell =
+                document
+                    .createElement(
+                        "td"
+                    );
+
+            updatedCell.textContent =
+                formatDate(
+                    row.updatedAt ||
+                    row.submittedAt
+                );
+
+
+            tr.append(
+                guestCell,
+                statusCell,
+                countCell,
+                messageCell,
+                updatedCell
+            );
+
+
+            tbody.appendChild(
+                tr
+            );
+
+        }
+    );
+
+}
+
+
+
+/* =========================
+   TABLE MANAGEMENT
+========================= */
+
+function humanTableShape(
+    shape
+) {
+
+    const labels = {
+        round:
+            "Round",
+        square:
+            "Square",
+        rectangle:
+            "Rectangle",
+        banquet:
+            "Long / Banquet"
+    };
+
+
+    return labels[
+        shape
+    ] || "Round";
+
+}
+
+
+function filteredTables() {
+
+    const input =
+        document
+            .getElementById(
+                "tableSearch"
+            );
+
+
+    if (
+        !input
+    ) {
+
+        return seatingTables;
+
+    }
+
+
+    const search =
+        input.value
+            .trim()
+            .toLocaleLowerCase();
+
+
+    if (
+        !search
+    ) {
+
+        return seatingTables;
+
+    }
+
+
+    return seatingTables
+        .filter(
+            table =>
+                table.name
+                    .toLocaleLowerCase()
+                    .includes(
+                        search
+                    )
+        );
+
+}
+
+
+function guestByCode(
+    invitationCode
+) {
+
+    return attendingGuests
+        .find(
+            guest =>
+                guest.invitationCode ===
+                    invitationCode
+        ) || null;
+
+}
+
+
+function unassignedGuests() {
+
+    return attendingGuests
+        .filter(
+            guest =>
+                !guest.tableId
+        );
+
+}
+
+
+function renderUnassignedGuests() {
+
+    const list =
+        document
+            .getElementById(
+                "unassignedGuestList"
+            );
+
+
+    if (
+        !list
+    ) {
+
+        return;
+
+    }
+
+
+    const guests =
+        unassignedGuests();
+
+
+    list.innerHTML =
+        "";
+
+
+    if (
+        guests.length ===
+        0
+    ) {
+
+        const empty =
+            document
+                .createElement(
+                    "div"
+                );
+
+        empty.className =
+            "empty";
+
+        empty.textContent =
+            attendingGuests.length
+                ? "All attending guests have been assigned."
+                : "No attending RSVPs yet.";
+
+        list.appendChild(
+            empty
+        );
+
+        return;
+
+    }
+
+
+    guests.forEach(
+        guest => {
+
+            const item =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            item.className =
+                "unassigned-item";
+
+
+            const left =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+
+            const name =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            name.className =
+                "unassigned-name";
+
+            name.textContent =
+                guest.guestName;
+
+
+            const count =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            count.className =
+                "unassigned-count";
+
+            count.textContent =
+                `${guest.guestCount} attending`;
+
+
+            left.append(
+                name,
+                count
+            );
+
+
+            const badge =
+                document
+                    .createElement(
+                        "span"
+                    );
+
+            badge.className =
+                "badge pending";
+
+            badge.textContent =
+                "Unassigned";
+
+
+            item.append(
+                left,
+                badge
+            );
+
+
+            list.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+
+function getTableById(
+    tableId
+) {
+
+    return seatingTables
+        .find(
+            table =>
+                table.id ===
+                    tableId
+        ) || null;
+
+}
+
+
+function assignedGuestsForTable(
+    tableId
+) {
+
+    const table =
+        getTableById(
+            tableId
+        );
+
+
+    const codes =
+        Array.isArray(
+            table?.assignedCodes
+        )
+            ? table.assignedCodes
+            : [];
+
+
+    return codes
+        .map(
+            code =>
+                guestByCode(
+                    code
+                )
+        )
+        .filter(
+            Boolean
+        );
+
+}
+
+
+function clamp(
+    value,
+    min,
+    max
+) {
+
+    return Math.min(
+        max,
+        Math.max(
+            min,
+            value
+        )
+    );
+
+}
+
+
+function ensureSelectedSeatingTable() {
+
+    if (
+        selectedSeatingTableId &&
+        getTableById(
+            selectedSeatingTableId
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    selectedSeatingTableId =
+        seatingTables[0]
+            ? seatingTables[0].id
+            : null;
+
+}
+
+
+function tableTransform(
+    table
+) {
+
+    return `translate(-50%, -50%) rotate(${table.rotation || 0}deg)`;
+
+}
+
+
+function renderSeatingMapCounters() {
+
+    const allocated =
+        seatingTables.reduce(
+            (
+                total,
+                table
+            ) =>
+                total +
+                Number(
+                    table.assignedPeople ||
+                    0
+                ),
+            0
+        );
+
+    const attending =
+        rsvpSummaryData.attendingPeople ||
+        0;
+
+    const unassigned =
+        Math.max(
+            0,
+            attending -
+            allocated
+        );
+
+
+    const tableCountEl =
+        document.getElementById(
+            "seatingMapTableCount"
+        );
+
+    const assignedCountEl =
+        document.getElementById(
+            "seatingMapAssignedCount"
+        );
+
+    const unassignedCountEl =
+        document.getElementById(
+            "seatingMapUnassignedCount"
+        );
+
+    const statusEl =
+        document.getElementById(
+            "seatingMapStatus"
+        );
+
+    const toggleButton =
+        document.getElementById(
+            "toggleLayoutModeButton"
+        );
+
+    const publishButton =
+        document.getElementById(
+            "publishSeatingButton"
+        );
+
+    const publishBanner =
+        document.getElementById(
+            "seatingPublishBanner"
+        );
+
+    const publishBadge =
+        document.getElementById(
+            "seatingPublishBadge"
+        );
+
+    const publishTitle =
+        document.getElementById(
+            "seatingPublishTitle"
+        );
+
+    const publishCopy =
+        document.getElementById(
+            "seatingPublishCopy"
+        );
+
+    const publishTime =
+        document.getElementById(
+            "seatingPublishTime"
+        );
+
+
+    if (tableCountEl) tableCountEl.textContent = seatingTables.length;
+    if (assignedCountEl) assignedCountEl.textContent = allocated;
+    if (unassignedCountEl) unassignedCountEl.textContent = unassigned;
+
+    if (statusEl) {
+        statusEl.textContent = seatingEditMode
+            ? "Layout editing is ON · drag tables to reposition them"
+            : "Layout editing is OFF · select a table to manage guests";
+    }
+
+    if (toggleButton) {
+        toggleButton.textContent = seatingEditMode
+            ? "Disable Layout Editing"
+            : "Enable Layout Editing";
+    }
+
+    if (publishButton) {
+        publishButton.textContent = seatingPublished
+            ? "Unpublish Seating"
+            : "Publish Seating";
+
+        publishButton.className = seatingPublished
+            ? "button danger"
+            : "button secondary";
+    }
+
+    if (publishBanner) {
+        publishBanner.className =
+            `seating-publish-banner ${seatingPublished ? "live" : "private"}`;
+    }
+
+    if (publishBadge) {
+        publishBadge.textContent =
+            seatingPublished
+                ? "LIVE"
+                : "PRIVATE";
+    }
+
+    if (publishTitle) {
+        publishTitle.textContent =
+            seatingPublished
+                ? "Guest table assignments are visible"
+                : "Guest table assignments are hidden";
+    }
+
+    if (publishCopy) {
+        publishCopy.textContent =
+            seatingPublished
+                ? "Assigned guests can now see their table on their personal invitation. Unassigned guests still see the waiting message."
+                : "You can keep arranging tables and assigning guests without changing what guests see.";
+    }
+
+    if (publishTime) {
+        publishTime.textContent =
+            seatingUpdatedAt
+                ? `Last seating change: ${new Date(seatingUpdatedAt).toLocaleString()}`
+                : "No seating changes saved yet.";
+    }
+
+}
+
+
+function renderSeatingPlanner() {
+
+    const floorplan =
+        document.getElementById(
+            "seatingFloorplan"
+        );
+
+    const selectedPanel =
+        document.getElementById(
+            "selectedTablePanel"
+        );
+
+    const unassignedPanel =
+        document.getElementById(
+            "seatingUnassignedList"
+        );
+
+
+    if (
+        !floorplan ||
+        !selectedPanel ||
+        !unassignedPanel
+    ) {
+
+        return;
+
+    }
+
+
+    ensureSelectedSeatingTable();
+    renderSeatingMapCounters();
+
+    floorplan.style.backgroundImage = `url(${FLOORPLAN_IMAGE})`;
+    floorplan.innerHTML = "";
+
+
+    if (
+        seatingTables.length ===
+        0
+    ) {
+
+        const empty =
+            document.createElement(
+                "div"
+            );
+
+        empty.className =
+            "seating-empty-map";
+
+        empty.textContent =
+            "Add tables in the Tables tab and they will appear here on the venue map.";
+
+        floorplan.appendChild(
+            empty
+        );
+
+    } else {
+
+        seatingTables.forEach(
+            table => {
+
+                const marker =
+                    document.createElement(
+                        "button"
+                    );
+
+                marker.type =
+                    "button";
+
+                marker.className =
+                    `table-marker ${table.shape}${selectedSeatingTableId === table.id ? " selected" : ""}`;
+
+                marker.style.left =
+                    `${table.x}%`;
+
+                marker.style.top =
+                    `${table.y}%`;
+
+                marker.style.width =
+                    `${table.width}%`;
+
+                marker.style.height =
+                    `${table.height}%`;
+
+                marker.style.transform =
+                    tableTransform(
+                        table
+                    );
+
+                marker.setAttribute(
+                    "aria-label",
+                    `${table.name}, ${table.assignedPeople || 0} of ${table.capacity} seated`
+                );
+
+                marker.innerHTML =
+                    `<span class="table-marker-label"><span class="table-marker-name">${table.name}</span><span class="table-marker-capacity">${table.assignedPeople || 0}/${table.capacity}</span></span>`;
+
+                marker.addEventListener(
+                    "click",
+                    event => {
+                        event.stopPropagation();
+                        selectedSeatingTableId = table.id;
+                        renderSeatingPlanner();
+                    }
+                );
+
+                marker.addEventListener(
+                    "pointerdown",
+                    event => startTableDrag(
+                        event,
+                        table,
+                        marker,
+                        floorplan
+                    )
+                );
+
+                floorplan.appendChild(
+                    marker
+                );
+
+            }
+        );
+
+    }
+
+    floorplan.onclick = () => {
+        if (
+            activeTableDrag
+        ) {
+            return;
+        }
+
+        selectedSeatingTableId = null;
+        renderSeatingPlanner();
+    };
+
+    renderSelectedTablePanel();
+    renderSeatingUnassignedPanel();
+
+}
+
+
+function startTableDrag(
+    event,
+    table,
+    marker,
+    floorplan
+) {
+
+    if (
+        !seatingEditMode
+    ) {
+
+        return;
+
+    }
+
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const rect =
+        floorplan.getBoundingClientRect();
+
+    activeTableDrag = {
+        id: table.id,
+        marker,
+        floorplan,
+        rect,
+        pointerId: event.pointerId,
+        offsetX: event.clientX,
+        offsetY: event.clientY,
+        startX: Number(
+            table.x
+        ),
+        startY: Number(
+            table.y
+        ),
+        width: Number(
+            table.width
+        ) || 10,
+        height: Number(
+            table.height
+        ) || 10,
+        currentX: Number(
+            table.x
+        ),
+        currentY: Number(
+            table.y
+        )
+    };
+
+    selectedSeatingTableId =
+        table.id;
+
+    marker.classList.add(
+        "dragging"
+    );
+
+    marker.setPointerCapture?.(
+        event.pointerId
+    );
+
+}
+
+
+function handleTableDragMove(
+    event
+) {
+
+    if (
+        !activeTableDrag
+    ) {
+
+        return;
+
+    }
+
+
+    const drag =
+        activeTableDrag;
+
+    const deltaX =
+        event.clientX -
+        drag.offsetX;
+
+    const deltaY =
+        event.clientY -
+        drag.offsetY;
+
+    const percentX =
+        drag.startX +
+        (deltaX / drag.rect.width) * 100;
+
+    const percentY =
+        drag.startY +
+        (deltaY / drag.rect.height) * 100;
+
+    const halfWidth =
+        drag.width / 2;
+
+    const halfHeight =
+        drag.height / 2;
+
+    drag.currentX =
+        clamp(
+            percentX,
+            halfWidth,
+            100 - halfWidth
+        );
+
+    drag.currentY =
+        clamp(
+            percentY,
+            halfHeight,
+            100 - halfHeight
+        );
+
+    drag.marker.style.left =
+        `${drag.currentX}%`;
+
+    drag.marker.style.top =
+        `${drag.currentY}%`;
+
+}
+
+
+async function handleTableDragEnd() {
+
+    if (
+        !activeTableDrag
+    ) {
+
+        return;
+
+    }
+
+
+    const drag =
+        activeTableDrag;
+
+    activeTableDrag =
+        null;
+
+    drag.marker.classList.remove(
+        "dragging"
+    );
+
+    const table =
+        getTableById(
+            drag.id
+        );
+
+    if (
+        !table
+    ) {
+        return;
+    }
+
+    if (
+        Math.abs(drag.currentX - table.x) < 0.01 &&
+        Math.abs(drag.currentY - table.y) < 0.01
+    ) {
+        renderSeatingPlanner();
+        return;
+    }
+
+    await saveTableLayout(
+        table,
+        {
+            x: drag.currentX,
+            y: drag.currentY
+        }
+    );
+
+}
+
+
+document.addEventListener(
+    "pointermove",
+    handleTableDragMove
+);
+
+document.addEventListener(
+    "pointerup",
+    handleTableDragEnd
+);
+
+document.addEventListener(
+    "pointercancel",
+    handleTableDragEnd
+);
+
+
+function renderSelectedTablePanel() {
+
+    const panel =
+        document.getElementById(
+            "selectedTablePanel"
+        );
+
+    if (!panel) return;
+
+    const table =
+        selectedSeatingTableId
+            ? getTableById(
+                selectedSeatingTableId
+            )
+            : null;
+
+    panel.innerHTML = "";
+
+    if (!table) {
+        const empty = document.createElement("div");
+        empty.className = "seating-empty-state";
+        empty.textContent = "Select a table on the map to view and manage it.";
+        panel.appendChild(empty);
+        return;
+    }
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "seating-selected-card";
+
+    const title = document.createElement("div");
+    title.className = "seating-selected-name";
+    title.textContent = table.name;
+
+    const meta = document.createElement("div");
+    meta.className = "seating-selected-meta";
+    meta.textContent = `${humanTableShape(table.shape)} · ${table.assignedPeople || 0} / ${table.capacity} people seated`;
+
+    const position = document.createElement("div");
+    position.className = "seating-position-line";
+    position.textContent = `Map position: ${Number(table.x).toFixed(1)}% · ${Number(table.y).toFixed(1)}%`;
+
+    const controls = document.createElement("div");
+    controls.className = "seating-adjust-grid";
+
+    const rotateLeft = document.createElement("button");
+    rotateLeft.type = "button";
+    rotateLeft.className = "button secondary";
+    rotateLeft.textContent = "Rotate Left";
+    rotateLeft.addEventListener("click", () => adjustTableLayout(table, "rotateLeft"));
+
+    const rotateRight = document.createElement("button");
+    rotateRight.type = "button";
+    rotateRight.className = "button secondary";
+    rotateRight.textContent = "Rotate Right";
+    rotateRight.addEventListener("click", () => adjustTableLayout(table, "rotateRight"));
+
+    const smaller = document.createElement("button");
+    smaller.type = "button";
+    smaller.className = "button secondary";
+    smaller.textContent = "Make Smaller";
+    smaller.addEventListener("click", () => adjustTableLayout(table, "smaller"));
+
+    const larger = document.createElement("button");
+    larger.type = "button";
+    larger.className = "button secondary";
+    larger.textContent = "Make Larger";
+    larger.addEventListener("click", () => adjustTableLayout(table, "larger"));
+
+    controls.append(rotateLeft, rotateRight, smaller, larger);
+
+    const assignmentTitle = document.createElement("div");
+    assignmentTitle.className = "table-assignment-title";
+    assignmentTitle.style.marginTop = "14px";
+    assignmentTitle.textContent = "Assign Attending Guests";
+
+    const assignmentRow = document.createElement("div");
+    assignmentRow.className = "table-assignment-row";
+
+    const select = document.createElement("select");
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "Select an unassigned guest...";
+    select.appendChild(placeholder);
+
+    unassignedGuests()
+        .filter(guest => guest.guestCount <= (table.remainingCapacity ?? table.capacity))
+        .forEach(guest => {
+            const option = document.createElement("option");
+            option.value = guest.invitationCode;
+            option.textContent = `${guest.guestName} (${guest.guestCount})`;
+            select.appendChild(option);
+        });
+
+    const assignButton = document.createElement("button");
+    assignButton.type = "button";
+    assignButton.className = "button secondary";
+    assignButton.textContent = "Assign";
+    assignButton.addEventListener("click", () => {
+        if (!select.value) {
+            alert("Select a guest first.");
+            return;
+        }
+        assignGuestToTable(select.value, table.id);
+    });
+
+    assignmentRow.append(select, assignButton);
+
+    const assignedTitle = document.createElement("div");
+    assignedTitle.className = "table-assignment-title";
+    assignedTitle.style.marginTop = "14px";
+    assignedTitle.textContent = "Assigned to This Table";
+
+    const assignedList = document.createElement("div");
+    assignedList.className = "seating-assigned-list";
+
+    const assignedGuests = assignedGuestsForTable(table.id);
+
+    if (assignedGuests.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "seating-empty-state";
+        empty.textContent = "No guests assigned yet.";
+        assignedList.appendChild(empty);
+    } else {
+        assignedGuests.forEach(guest => {
+            const row = document.createElement("div");
+            row.className = "seating-guest-chip";
+
+            const left = document.createElement("div");
+            left.innerHTML = `<div class="seating-guest-chip-name">${guest.guestName}</div><div class="seating-guest-chip-meta">${guest.guestCount} attending</div>`;
+
+            const remove = document.createElement("button");
+            remove.type = "button";
+            remove.className = "mini-button";
+            remove.textContent = "Remove";
+            remove.addEventListener("click", () => unassignGuest(guest.invitationCode));
+
+            row.append(left, remove);
+            assignedList.appendChild(row);
+        });
+    }
+
+    const actions = document.createElement("div");
+    actions.className = "seating-selected-actions";
+
+    const editButton = document.createElement("button");
+    editButton.type = "button";
+    editButton.className = "button secondary";
+    editButton.textContent = "Edit Table Details";
+    editButton.addEventListener("click", () => editTable(table));
+
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.className = "button danger";
+    deleteButton.textContent = "Delete Table";
+    deleteButton.addEventListener("click", () => deleteTable(table));
+
+    actions.append(editButton, deleteButton);
+
+    const note = document.createElement("div");
+    note.className = "seating-small-note";
+    note.textContent = "Table movements are saved after you finish dragging. Use the controls above to fine-tune the layout.";
+
+    wrapper.append(title, meta, position, controls, assignmentTitle, assignmentRow, assignedTitle, assignedList, actions, note);
+    panel.appendChild(wrapper);
+
+}
+
+
+function renderSeatingUnassignedPanel() {
+
+    const panel =
+        document.getElementById(
+            "seatingUnassignedList"
+        );
+
+    if (!panel) return;
+
+    panel.innerHTML = "";
+
+    const guests = unassignedGuests();
+
+    if (guests.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "seating-empty-state";
+        empty.textContent = "Everyone attending is currently assigned to a table.";
+        panel.appendChild(empty);
+        return;
+    }
+
+    guests.forEach(guest => {
+        const row = document.createElement("div");
+        row.className = "seating-guest-chip";
+
+        const left = document.createElement("div");
+        left.innerHTML = `<div class="seating-guest-chip-name">${guest.guestName}</div><div class="seating-guest-chip-meta">${guest.guestCount} attending</div>`;
+
+        row.appendChild(left);
+
+        if (selectedSeatingTableId) {
+            const table = getTableById(selectedSeatingTableId);
+            if (table && guest.guestCount <= (table.remainingCapacity ?? table.capacity)) {
+                const assign = document.createElement("button");
+                assign.type = "button";
+                assign.className = "mini-button";
+                assign.textContent = `Assign to ${table.name}`;
+                assign.addEventListener("click", () => assignGuestToTable(guest.invitationCode, table.id));
+                row.appendChild(assign);
+            }
+        }
+
+        panel.appendChild(row);
+    });
+
+}
+
+
+async function setSeatingPublished(
+    published
+) {
+
+    if (
+        published
+    ) {
+
+        const allocatedPeople =
+            seatingTables.reduce(
+                (total, table) =>
+                    total +
+                    Number(table.assignedPeople || 0),
+                0
+            );
+
+        const attendingPeople =
+            Number(
+                rsvpSummaryData.attendingPeople ||
+                0
+            );
+
+        const unassignedPeople =
+            Math.max(
+                0,
+                attendingPeople -
+                allocatedPeople
+            );
+
+        const confirmed =
+            confirm(
+                `Publish the current table assignments to guest invitations?\n\n${allocatedPeople} attending people are currently seated.${unassignedPeople > 0 ? `\n${unassignedPeople} attending people are still unassigned and will continue to see the waiting message.` : "\nEveryone attending is currently assigned."}\n\nGuests with assigned tables will be able to see their table immediately.`
+            );
+
+        if (
+            !confirmed
+        ) {
+
+            return;
+
+        }
+
+    } else {
+
+        const confirmed =
+            confirm(
+                "Unpublish seating? Guests will stop seeing their table assignments until you publish again."
+            );
+
+        if (
+            !confirmed
+        ) {
+
+            return;
+
+        }
+
+    }
+
+
+    try {
+
+        const result =
+            await apiRequest(
+                SEATING_API,
+                {
+                    method:
+                        "POST",
+
+                    body:
+                        JSON.stringify(
+                            {
+                                action:
+                                    "setPublished",
+
+                                published
+                            }
+                        )
+                }
+            );
+
+
+        seatingPublished =
+            Boolean(
+                result.published
+            );
+
+        seatingUpdatedAt =
+            result.updatedAt ||
+            seatingUpdatedAt;
+
+        seatingTables =
+            result.tables ||
+            seatingTables;
+
+        attendingGuests =
+            result.attendingGuests ||
+            attendingGuests;
+
+
+        renderTables();
+        renderSeatingPlanner();
+        renderOverview();
+
+    } catch (
+        error
+    ) {
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+
+async function saveTableLayout(
+    table,
+    overrides = {}
+) {
+
+    try {
+        const result =
+            await apiRequest(
+                SEATING_API,
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        action: "updateTable",
+                        id: table.id,
+                        name: table.name,
+                        shape: table.shape,
+                        capacity: table.capacity,
+                        x: overrides.x ?? table.x,
+                        y: overrides.y ?? table.y,
+                        rotation: overrides.rotation ?? table.rotation,
+                        width: overrides.width ?? table.width,
+                        height: overrides.height ?? table.height
+                    })
+                }
+            );
+
+        seatingTables = result.tables || [];
+        seatingPublished = Boolean(result.published);
+
+        seatingUpdatedAt =
+            result.updatedAt ||
+            seatingUpdatedAt;
+        attendingGuests = result.attendingGuests || attendingGuests;
+        renderTables();
+        renderSeatingPlanner();
+        renderOverview();
+    } catch (error) {
+        alert(error.message);
+        renderSeatingPlanner();
+    }
+
+}
+
+
+function adjustTableLayout(
+    table,
+    action
+) {
+
+    let width = Number(table.width) || 10;
+    let height = Number(table.height) || 10;
+    let rotation = Number(table.rotation) || 0;
+
+    if (action === "rotateLeft") {
+        rotation -= 15;
+    }
+
+    if (action === "rotateRight") {
+        rotation += 15;
+    }
+
+    if (action === "smaller") {
+        width *= 0.92;
+        height *= 0.92;
+    }
+
+    if (action === "larger") {
+        width *= 1.08;
+        height *= 1.08;
+    }
+
+    width = clamp(width, 6, 28);
+    height = clamp(height, 5, 24);
+
+    const x = clamp(Number(table.x), width / 2, 100 - width / 2);
+    const y = clamp(Number(table.y), height / 2, 100 - height / 2);
+
+    saveTableLayout(table, { width, height, rotation, x, y });
+
+}
+
+function renderTables() {
+
+    const list =
+        document
+            .getElementById(
+                "tableList"
+            );
+
+    const count =
+        document
+            .getElementById(
+                "tableCount"
+            );
+
+
+    if (
+        !list ||
+        !count
+    ) {
+
+        return;
+
+    }
+
+
+    const tables =
+        filteredTables();
+
+
+    count.textContent =
+        `${seatingTables.length} Table${seatingTables.length === 1 ? "" : "s"}`;
+
+
+    list.innerHTML =
+        "";
+
+
+    if (
+        tables.length ===
+        0
+    ) {
+
+        const empty =
+            document
+                .createElement(
+                    "div"
+                );
+
+        empty.className =
+            "empty";
+
+        empty.textContent =
+            seatingTables.length
+                ? "No tables match your search."
+                : "No tables yet. Add your first table above.";
+
+        list.appendChild(
+            empty
+        );
+
+
+        renderUnassignedGuests();
+
+        return;
+
+    }
+
+
+    tables.forEach(
+        table => {
+
+            const card =
+                document
+                    .createElement(
+                        "article"
+                    );
+
+            card.className =
+                "table-card";
+
+
+            const top =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            top.className =
+                "table-card-top";
+
+
+            const copy =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+
+            const name =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            name.className =
+                "table-name";
+
+            name.textContent =
+                table.name;
+
+
+            const meta =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            meta.className =
+                "table-meta";
+
+            meta.textContent =
+                `${humanTableShape(table.shape)} · ${table.assignedPeople || 0} / ${table.capacity} people`;
+
+
+            const capacityLine =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            capacityLine.className =
+                "capacity-line";
+
+            capacityLine.textContent =
+                `${table.remainingCapacity ?? table.capacity} seat${(table.remainingCapacity ?? table.capacity) === 1 ? "" : "s"} remaining`;
+
+
+            copy.append(
+                name,
+                meta,
+                capacityLine
+            );
+
+
+            const preview =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            preview.className =
+                `table-shape-preview ${table.shape}`;
+
+            preview.textContent =
+                humanTableShape(
+                    table.shape
+                );
+
+
+            top.append(
+                copy,
+                preview
+            );
+
+
+            const actions =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            actions.className =
+                "table-actions";
+
+
+            const editButton =
+                document
+                    .createElement(
+                        "button"
+                    );
+
+            editButton.type =
+                "button";
+
+            editButton.className =
+                "button secondary";
+
+            editButton.textContent =
+                "Edit Table";
+
+            editButton.addEventListener(
+                "click",
+                () =>
+                    editTable(
+                        table
+                    )
+            );
+
+
+            const deleteButton =
+                document
+                    .createElement(
+                        "button"
+                    );
+
+            deleteButton.type =
+                "button";
+
+            deleteButton.className =
+                "button danger";
+
+            deleteButton.textContent =
+                "Delete Table";
+
+            deleteButton.addEventListener(
+                "click",
+                () =>
+                    deleteTable(
+                        table
+                    )
+            );
+
+
+            actions.append(
+                editButton,
+                deleteButton
+            );
+
+
+            const assignmentBox =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            assignmentBox.className =
+                "table-assignment-box";
+
+
+            const assignmentTitle =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            assignmentTitle.className =
+                "table-assignment-title";
+
+            assignmentTitle.textContent =
+                "Assign Attending Guests";
+
+
+            const assignmentRow =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            assignmentRow.className =
+                "table-assignment-row";
+
+
+            const select =
+                document
+                    .createElement(
+                        "select"
+                    );
+
+
+            const placeholder =
+                document
+                    .createElement(
+                        "option"
+                    );
+
+            placeholder.value =
+                "";
+
+            placeholder.textContent =
+                "Select an unassigned guest...";
+
+            select.appendChild(
+                placeholder
+            );
+
+
+            const available =
+                unassignedGuests()
+                    .filter(
+                        guest =>
+                            guest.guestCount <=
+                            (
+                                table.remainingCapacity ??
+                                table.capacity
+                            )
+                    );
+
+
+            available.forEach(
+                guest => {
+
+                    const option =
+                        document
+                            .createElement(
+                                "option"
+                            );
+
+                    option.value =
+                        guest.invitationCode;
+
+                    option.textContent =
+                        `${guest.guestName} (${guest.guestCount})`;
+
+                    select.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+
+            const assignButton =
+                document
+                    .createElement(
+                        "button"
+                    );
+
+            assignButton.type =
+                "button";
+
+            assignButton.className =
+                "button secondary";
+
+            assignButton.textContent =
+                "Assign";
+
+            assignButton.addEventListener(
+                "click",
+                () => {
+
+                    if (
+                        !select.value
+                    ) {
+
+                        alert(
+                            "Select a guest first."
+                        );
+
+                        return;
+
+                    }
+
+
+                    assignGuestToTable(
+                        select.value,
+                        table.id
+                    );
+
+                }
+            );
+
+
+            assignmentRow.append(
+                select,
+                assignButton
+            );
+
+
+            const assignedList =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            assignedList.className =
+                "assigned-list";
+
+
+            const assignedCodes =
+                Array.isArray(
+                    table.assignedCodes
+                )
+                    ? table.assignedCodes
+                    : [];
+
+
+            if (
+                assignedCodes.length ===
+                0
+            ) {
+
+                const none =
+                    document
+                        .createElement(
+                            "div"
+                        );
+
+                none.className =
+                    "muted";
+
+                none.textContent =
+                    "No guests assigned yet.";
+
+                assignedList.appendChild(
+                    none
+                );
+
+            } else {
+
+                assignedCodes.forEach(
+                    invitationCode => {
+
+                        const guest =
+                            guestByCode(
+                                invitationCode
+                            );
+
+
+                        const item =
+                            document
+                                .createElement(
+                                    "div"
+                                );
+
+                        item.className =
+                            "assigned-item";
+
+
+                        const left =
+                            document
+                                .createElement(
+                                    "div"
+                                );
+
+
+                        const guestName =
+                            document
+                                .createElement(
+                                    "div"
+                                );
+
+                        guestName.className =
+                            "assigned-name";
+
+                        guestName.textContent =
+                            guest
+                                ? guest.guestName
+                                : invitationCode;
+
+
+                        const guestCount =
+                            document
+                                .createElement(
+                                    "div"
+                                );
+
+                        guestCount.className =
+                            "assigned-count";
+
+                        guestCount.textContent =
+                            guest
+                                ? `${guest.guestCount} attending`
+                                : "RSVP no longer attending";
+
+
+                        left.append(
+                            guestName,
+                            guestCount
+                        );
+
+
+                        const removeButton =
+                            document
+                                .createElement(
+                                    "button"
+                                );
+
+                        removeButton.type =
+                            "button";
+
+                        removeButton.className =
+                            "mini-button";
+
+                        removeButton.textContent =
+                            "Remove";
+
+                        removeButton.addEventListener(
+                            "click",
+                            () =>
+                                unassignGuest(
+                                    invitationCode
+                                )
+                        );
+
+
+                        item.append(
+                            left,
+                            removeButton
+                        );
+
+
+                        assignedList.appendChild(
+                            item
+                        );
+
+                    }
+                );
+
+            }
+
+
+            assignmentBox.append(
+                assignmentTitle,
+                assignmentRow,
+                assignedList
+            );
+
+
+            card.append(
+                top,
+                actions,
+                assignmentBox
+            );
+
+
+            list.appendChild(
+                card
+            );
+
+        }
+    );
+
+
+    renderUnassignedGuests();
+
+}
+
+
+async function createTable() {
+
+    const nameInput =
+        document
+            .getElementById(
+                "tableName"
+            );
+
+    const shapeInput =
+        document
+            .getElementById(
+                "tableShape"
+            );
+
+    const capacityInput =
+        document
+            .getElementById(
+                "tableCapacity"
+            );
+
+    const button =
+        document
+            .getElementById(
+                "createTableButton"
+            );
+
+    const status =
+        document
+            .getElementById(
+                "tableStatus"
+            );
+
+
+    const name =
+        nameInput.value
+            .replace(
+                /\s+/g,
+                " "
+            )
+            .trim();
+
+    const shape =
+        shapeInput.value;
+
+    const capacity =
+        Number(
+            capacityInput.value
+        );
+
+
+    if (
+        !name
+    ) {
+
+        showStatus(
+            status,
+            "Enter a table name.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !Number.isInteger(
+            capacity
+        ) ||
+        capacity < 1 ||
+        capacity > 100
+    ) {
+
+        showStatus(
+            status,
+            "Capacity must be a whole number between 1 and 100.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    button.disabled =
+        true;
+
+    button.textContent =
+        "Adding...";
+
+
+    try {
+
+        const result =
+            await apiRequest(
+                SEATING_API,
+                {
+                    method:
+                        "POST",
+
+                    body:
+                        JSON.stringify(
+                            {
+                                action:
+                                    "createTable",
+
+                                name,
+                                shape,
+                                capacity
+                            }
+                        )
+                }
+            );
+
+
+        seatingTables =
+            result.tables ||
+            [];
+
+        seatingPublished =
+            Boolean(
+                result.published
+            );
+
+        seatingUpdatedAt =
+            result.updatedAt ||
+            seatingUpdatedAt;
+
+        attendingGuests =
+            result.attendingGuests ||
+            attendingGuests;
+
+
+        renderTables();
+        renderSeatingPlanner();
+        renderOverview();
+
+
+        nameInput.value =
+            "";
+
+
+        showStatus(
+            status,
+            `${name} created.`,
+            "success"
+        );
+
+    } catch (
+        error
+    ) {
+
+        showStatus(
+            status,
+            error.message,
+            "error"
+        );
+
+    } finally {
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            "Add Table";
+
+    }
+
+}
+
+
+
+async function assignGuestToTable(
+    invitationCode,
+    tableId
+) {
+
+    try {
+
+        const result =
+            await apiRequest(
+                SEATING_API,
+                {
+                    method:
+                        "POST",
+
+                    body:
+                        JSON.stringify(
+                            {
+                                action:
+                                    "assignGuest",
+
+                                invitationCode,
+
+                                tableId
+                            }
+                        )
+                }
+            );
+
+
+        seatingTables =
+            result.tables ||
+            [];
+
+        seatingPublished =
+            Boolean(
+                result.published
+            );
+
+        seatingUpdatedAt =
+            result.updatedAt ||
+            seatingUpdatedAt;
+
+        attendingGuests =
+            result.attendingGuests ||
+            [];
+
+
+        renderTables();
+        renderSeatingPlanner();
+        renderOverview();
+
+    } catch (
+        error
+    ) {
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+
+async function unassignGuest(
+    invitationCode
+) {
+
+    try {
+
+        const result =
+            await apiRequest(
+                SEATING_API,
+                {
+                    method:
+                        "POST",
+
+                    body:
+                        JSON.stringify(
+                            {
+                                action:
+                                    "unassignGuest",
+
+                                invitationCode
+                            }
+                        )
+                }
+            );
+
+
+        seatingTables =
+            result.tables ||
+            [];
+
+        seatingPublished =
+            Boolean(
+                result.published
+            );
+
+        seatingUpdatedAt =
+            result.updatedAt ||
+            seatingUpdatedAt;
+
+        attendingGuests =
+            result.attendingGuests ||
+            [];
+
+
+        renderTables();
+        renderSeatingPlanner();
+        renderOverview();
+
+    } catch (
+        error
+    ) {
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+
+async function editTable(
+    table
+) {
+
+    const newName =
+        prompt(
+            "Table name:",
+            table.name
+        );
+
+
+    if (
+        newName ===
+        null
+    ) {
+
+        return;
+
+    }
+
+
+    const name =
+        newName
+            .replace(
+                /\s+/g,
+                " "
+            )
+            .trim();
+
+
+    if (
+        !name
+    ) {
+
+        alert(
+            "Table name cannot be empty."
+        );
+
+        return;
+
+    }
+
+
+    const newCapacity =
+        prompt(
+            "Capacity:",
+            String(
+                table.capacity
+            )
+        );
+
+
+    if (
+        newCapacity ===
+        null
+    ) {
+
+        return;
+
+    }
+
+
+    const capacity =
+        Number(
+            newCapacity
+        );
+
+
+    if (
+        !Number.isInteger(
+            capacity
+        ) ||
+        capacity < 1 ||
+        capacity > 100
+    ) {
+
+        alert(
+            "Capacity must be a whole number between 1 and 100."
+        );
+
+        return;
+
+    }
+
+
+    const shapePrompt =
+        prompt(
+            "Shape: round, square, rectangle, or banquet",
+            table.shape
+        );
+
+
+    if (
+        shapePrompt ===
+        null
+    ) {
+
+        return;
+
+    }
+
+
+    const shape =
+        shapePrompt
+            .trim()
+            .toLocaleLowerCase();
+
+
+    if (
+        ![
+            "round",
+            "square",
+            "rectangle",
+            "banquet"
+        ].includes(
+            shape
+        )
+    ) {
+
+        alert(
+            "Shape must be round, square, rectangle, or banquet."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const result =
+            await apiRequest(
+                SEATING_API,
+                {
+                    method:
+                        "POST",
+
+                    body:
+                        JSON.stringify(
+                            {
+                                action:
+                                    "updateTable",
+
+                                id:
+                                    table.id,
+
+                                name,
+                                shape,
+                                capacity,
+
+                                x:
+                                    table.x,
+
+                                y:
+                                    table.y,
+
+                                rotation:
+                                    table.rotation,
+
+                                width:
+                                    table.width,
+
+                                height:
+                                    table.height
+                            }
+                        )
+                }
+            );
+
+
+        seatingTables =
+            result.tables ||
+            [];
+
+        seatingPublished =
+            Boolean(
+                result.published
+            );
+
+        seatingUpdatedAt =
+            result.updatedAt ||
+            seatingUpdatedAt;
+
+        attendingGuests =
+            result.attendingGuests ||
+            attendingGuests;
+
+
+        renderTables();
+        renderSeatingPlanner();
+        renderOverview();
+
+    } catch (
+        error
+    ) {
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+
+async function deleteTable(
+    table
+) {
+
+    const confirmed =
+        confirm(
+            `Delete ${table.name}?`
+        );
+
+
+    if (
+        !confirmed
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const result =
+            await apiRequest(
+                SEATING_API,
+                {
+                    method:
+                        "DELETE",
+
+                    body:
+                        JSON.stringify(
+                            {
+                                id:
+                                    table.id
+                            }
+                        )
+                }
+            );
+
+
+        seatingTables =
+            result.tables ||
+            [];
+
+        seatingPublished =
+            Boolean(
+                result.published
+            );
+
+        seatingUpdatedAt =
+            result.updatedAt ||
+            seatingUpdatedAt;
+
+        attendingGuests =
+            result.attendingGuests ||
+            attendingGuests;
+
+
+        renderTables();
+        renderSeatingPlanner();
+        renderOverview();
+
+    } catch (
+        error
+    ) {
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+
+
+/* =========================
+   CSV EXPORTS
+========================= */
 
 function csvEscape(
     value
@@ -2151,9 +6764,9 @@ function csvEscape(
 
     const text =
         String(
-            value ?? ""
+            value ??
+            ""
         );
-
 
 
     if (
@@ -2170,17 +6783,93 @@ function csvEscape(
     }
 
 
-
     return text;
 
 }
 
 
+function downloadCsvFile(
+    rows,
+    fileName
+) {
 
-function downloadCsv() {
+    const csv =
+        rows
+            .map(
+                row =>
+                    row
+                        .map(
+                            csvEscape
+                        )
+                        .join(
+                            ","
+                        )
+            )
+            .join(
+                "\r\n"
+            );
+
+
+    const blob =
+        new Blob(
+            [
+                "\uFEFF",
+                csv
+            ],
+            {
+                type:
+                    "text/csv;charset=utf-8"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const a =
+        document
+            .createElement(
+                "a"
+            );
+
+
+    a.href =
+        url;
+
+    a.download =
+        fileName;
+
+
+    document.body
+        .appendChild(
+            a
+        );
+
+
+    a.click();
+
+    a.remove();
+
+
+    setTimeout(
+        () =>
+            URL.revokeObjectURL(
+                url
+            ),
+        1000
+    );
+
+}
+
+
+function downloadInvitationCsv() {
 
     if (
-        invitations.length === 0
+        invitations.length ===
+        0
     ) {
 
         alert(
@@ -2190,7 +6879,6 @@ function downloadCsv() {
         return;
 
     }
-
 
 
     const rows = [
@@ -2218,86 +6906,70 @@ function downloadCsv() {
     ];
 
 
-
-    const csv =
-        rows
-            .map(
-                row =>
-                    row
-                        .map(
-                            csvEscape
-                        )
-                        .join(
-                            ","
-                        )
-            )
-            .join(
-                "\r\n"
-            );
-
-
-
-    const blob =
-        new Blob(
-            [
-                "\uFEFF",
-                csv
-            ],
-            {
-                type:
-                    "text/csv;charset=utf-8"
-            }
-        );
-
-
-
-    const url =
-        URL.createObjectURL(
-            blob
-        );
-
-
-
-    const a =
-        document
-            .createElement(
-                "a"
-            );
-
-
-
-    a.href =
-        url;
-
-    a.download =
-        "guest-links.csv";
-
-
-
-    document.body
-        .appendChild(
-            a
-        );
-
-
-
-    a.click();
-
-    a.remove();
-
-
-
-    setTimeout(
-        () =>
-            URL.revokeObjectURL(
-                url
-            ),
-        1000
+    downloadCsvFile(
+        rows,
+        "guest-links.csv"
     );
 
 }
 
 
+function downloadRsvpCsv() {
+
+    if (
+        rsvpRows.length ===
+        0
+    ) {
+
+        alert(
+            "There are no RSVP records to export."
+        );
+
+        return;
+
+    }
+
+
+    const rows = [
+
+        [
+            "Guest",
+            "Invitation Code",
+            "RSVP Status",
+            "Guest Count",
+            "Message",
+            "Submitted At",
+            "Updated At"
+        ],
+
+        ...rsvpRows.map(
+            row => [
+
+                row.name,
+                row.code,
+                row.status,
+                row.guestCount,
+                row.message,
+                row.submittedAt,
+                row.updatedAt
+
+            ]
+        )
+
+    ];
+
+
+    downloadCsvFile(
+        rows,
+        "wedding-rsvps.csv"
+    );
+
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
 
 function logout() {
 
@@ -2306,6 +6978,23 @@ function logout() {
     invitations =
         [];
 
+    rsvpRows =
+        [];
+
+    rsvpSummaryData =
+        {};
+
+    seatingTables =
+        [];
+
+    seatingPublished =
+        false;
+
+    seatingUpdatedAt =
+        null;
+
+    attendingGuests =
+        [];
 
 
     document
@@ -2318,7 +7007,6 @@ function logout() {
         );
 
 
-
     document
         .getElementById(
             "loginPanel"
@@ -2329,7 +7017,6 @@ function logout() {
         );
 
 
-
     document
         .getElementById(
             "adminSecret"
@@ -2337,8 +7024,36 @@ function logout() {
         .value =
         "";
 
+
+    openTab(
+        "overview"
+    );
+
 }
 
+
+/* =========================
+   EVENTS
+========================= */
+
+document
+    .querySelectorAll(
+        ".nav-button"
+    )
+    .forEach(
+        button => {
+
+            button
+                .addEventListener(
+                    "click",
+                    () =>
+                        openTab(
+                            button.dataset.tab
+                        )
+                );
+
+        }
+    );
 
 
 document
@@ -2349,7 +7064,6 @@ document
         "click",
         login
     );
-
 
 
 document
@@ -2373,7 +7087,6 @@ document
     );
 
 
-
 document
     .getElementById(
         "generateButton"
@@ -2382,7 +7095,6 @@ document
         "click",
         generateInvitations
     );
-
 
 
 document
@@ -2395,10 +7107,9 @@ document
     );
 
 
-
 document
     .getElementById(
-        "refreshButton"
+        "refreshInvitationsButton"
     )
     .addEventListener(
         "click",
@@ -2407,6 +7118,7 @@ document
             try {
 
                 await loadInvitations();
+                renderOverview();
 
             } catch (
                 error
@@ -2422,16 +7134,56 @@ document
     );
 
 
-
 document
     .getElementById(
-        "downloadCsvButton"
+        "refreshRsvpButton"
     )
     .addEventListener(
         "click",
-        downloadCsv
+        async () => {
+
+            try {
+
+                await loadRsvps();
+
+            } catch (
+                error
+            ) {
+
+                alert(
+                    error.message
+                );
+
+            }
+
+        }
     );
 
+
+document
+    .getElementById(
+        "refreshAllButton"
+    )
+    .addEventListener(
+        "click",
+        async () => {
+
+            try {
+
+                await loadEverything();
+
+            } catch (
+                error
+            ) {
+
+                alert(
+                    error.message
+                );
+
+            }
+
+        }
+    );
 
 
 document
@@ -2444,6 +7196,100 @@ document
     );
 
 
+document
+    .getElementById(
+        "rsvpSearch"
+    )
+    .addEventListener(
+        "input",
+        renderRsvpRows
+    );
+
+
+document
+    .getElementById(
+        "rsvpStatusFilter"
+    )
+    .addEventListener(
+        "change",
+        renderRsvpRows
+    );
+
+
+document
+    .getElementById(
+        "downloadInvitationCsvButton"
+    )
+    .addEventListener(
+        "click",
+        downloadInvitationCsv
+    );
+
+
+document
+    .getElementById(
+        "downloadRsvpCsvButton"
+    )
+    .addEventListener(
+        "click",
+        downloadRsvpCsv
+    );
+
+
+
+document
+    .getElementById(
+        "createTableButton"
+    )
+    .addEventListener(
+        "click",
+        createTable
+    );
+
+document
+    .getElementById(
+        "toggleLayoutModeButton"
+    )
+    .addEventListener(
+        "click",
+        () => {
+            seatingEditMode = !seatingEditMode;
+            renderSeatingPlanner();
+        }
+    );
+
+document
+    .getElementById(
+        "publishSeatingButton"
+    )
+    .addEventListener(
+        "click",
+        () =>
+            setSeatingPublished(
+                !seatingPublished
+            )
+    );
+
+
+document
+    .getElementById(
+        "refreshSeatingMapButton"
+    )
+    .addEventListener(
+        "click",
+        loadSeating
+    );
+
+
+document
+    .getElementById(
+        "tableSearch"
+    )
+    .addEventListener(
+        "input",
+        renderTables
+    );
+
 
 document
     .getElementById(
@@ -2453,7 +7299,6 @@ document
         "click",
         logout
     );
-
 
 
 window.addEventListener(
@@ -2469,10 +7314,10 @@ window.addEventListener(
         }
 
 
-
         try {
 
-            await loadInvitations();
+            await loadEverything();
+
 
             document
                 .getElementById(
@@ -2482,6 +7327,7 @@ window.addEventListener(
                 .add(
                     "hidden"
                 );
+
 
             document
                 .getElementById(
