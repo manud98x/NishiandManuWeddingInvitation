@@ -5232,10 +5232,37 @@ END:VCALENDAR`
 
 
                             /*
-                                First hold the page in place while the DOM
-                                swaps, then centre the confirmation after the
-                                mobile visual viewport has finished resizing.
+                                Hold the original height only while the mobile
+                                keyboard is closing. Then smoothly let the RSVP
+                                card shrink to the success-message height so we
+                                do not leave a large empty area underneath it.
                             */
+                            let successCardHeight =
+                                0;
+
+                            let originalTransition =
+                                "";
+
+
+                            if (
+                                rsvpCard
+                            ) {
+
+                                originalTransition =
+                                    rsvpCard.style.transition;
+
+                                rsvpCard.style.minHeight =
+                                    "0px";
+
+                                successCardHeight =
+                                    rsvpCard.scrollHeight;
+
+                                rsvpCard.style.minHeight =
+                                    `${cardHeight}px`;
+
+                            }
+
+
                             requestAnimationFrame(
                                 () => {
 
@@ -5258,13 +5285,47 @@ END:VCALENDAR`
 
 
                             setTimeout(
-                                centreSuccess,
-                                350
+                                () => {
+
+                                    if (
+                                        rsvpCard &&
+                                        successCardHeight
+                                    ) {
+
+                                        rsvpCard.style.transition =
+                                            originalTransition
+                                                ? `${originalTransition}, min-height .45s ease`
+                                                : "min-height .45s ease";
+
+                                        rsvpCard.style.minHeight =
+                                            `${successCardHeight}px`;
+
+                                    }
+
+                                },
+                                300
                             );
 
+
                             setTimeout(
-                                centreSuccess,
-                                700
+                                () => {
+
+                                    if (
+                                        rsvpCard
+                                    ) {
+
+                                        rsvpCard.style.minHeight =
+                                            "";
+
+                                        rsvpCard.style.transition =
+                                            originalTransition;
+
+                                    }
+
+                                    centreSuccess();
+
+                                },
+                                820
                             );
 
                         }
