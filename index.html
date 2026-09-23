@@ -5121,6 +5121,55 @@ END:VCALENDAR`
 
 
 
+                        const rsvpCard =
+                            rsvpForm.closest(
+                                ".card"
+                            );
+
+                        const cardHeight =
+                            rsvpCard
+                                ? rsvpCard.offsetHeight
+                                : 0;
+
+                        const cardDocumentTop =
+                            rsvpCard
+                                ? window.scrollY +
+                                  rsvpCard.getBoundingClientRect().top
+                                : window.scrollY;
+
+
+                        /*
+                            On mobile, hiding the form at the exact moment
+                            the keyboard closes can make the page jump.
+                            Keep the RSVP card at its current height during
+                            the transition so the document does not collapse.
+                        */
+                        if (
+                            rsvpCard &&
+                            cardHeight
+                        ) {
+
+                            rsvpCard.style.minHeight =
+                                `${cardHeight}px`;
+
+                        }
+
+
+                        /*
+                            Close the mobile keyboard before changing the
+                            visible RSVP content.
+                        */
+                        if (
+                            document.activeElement &&
+                            typeof document.activeElement.blur ===
+                                "function"
+                        ) {
+
+                            document.activeElement.blur();
+
+                        }
+
+
                         rsvpForm.style.display =
                             "none";
 
@@ -5136,20 +5185,86 @@ END:VCALENDAR`
                             rsvpSuccess.style.display =
                                 "block";
 
-                            requestAnimationFrame(
+
+                            const centreSuccess =
                                 () => {
 
-                                    rsvpSuccess.scrollIntoView(
-                                        {
-                                            behavior:
-                                                "smooth",
+                                    const rect =
+                                        rsvpSuccess
+                                            .getBoundingClientRect();
 
-                                            block:
-                                                "center"
+                                    const viewportHeight =
+                                        window.visualViewport
+                                            ? window.visualViewport.height
+                                            : window.innerHeight;
+
+                                    const viewportOffsetTop =
+                                        window.visualViewport
+                                            ? window.visualViewport.offsetTop
+                                            : 0;
+
+                                    const targetTop =
+                                        window.scrollY +
+                                        rect.top -
+                                        viewportOffsetTop -
+                                        (
+                                            viewportHeight / 2
+                                        ) +
+                                        (
+                                            rect.height / 2
+                                        );
+
+
+                                    window.scrollTo(
+                                        {
+                                            top:
+                                                Math.max(
+                                                    0,
+                                                    targetTop
+                                                ),
+
+                                            behavior:
+                                                "smooth"
                                         }
                                     );
 
+                                };
+
+
+                            /*
+                                First hold the page in place while the DOM
+                                swaps, then centre the confirmation after the
+                                mobile visual viewport has finished resizing.
+                            */
+                            requestAnimationFrame(
+                                () => {
+
+                                    if (
+                                        rsvpCard
+                                    ) {
+
+                                        window.scrollTo(
+                                            0,
+                                            Math.max(
+                                                0,
+                                                cardDocumentTop - 24
+                                            )
+                                        );
+
+                                    }
+
                                 }
+                            );
+
+
+                            setTimeout(
+                                centreSuccess,
+                                350
+                            );
+
+                            setTimeout(
+                                centreSuccess,
+                                700
                             );
 
                         }
