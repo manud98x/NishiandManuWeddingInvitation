@@ -1686,8 +1686,8 @@ async function editInvitationName(
                     method: "POST",
                     body: JSON.stringify(
                         {
-                            code: invitation.code,
-                            name: cleanedName
+                            editCode: invitation.code,
+                            editName: cleanedName
                         }
                     )
                 }
