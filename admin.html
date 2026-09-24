@@ -1907,14 +1907,14 @@ code {
 @media (max-width: 700px) {
 
     #tab-seating .panel {
-        padding-left: 10px;
-        padding-right: 10px;
+        padding-left: 8px;
+        padding-right: 8px;
     }
 
     .seating-layout-grid {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 10px;
     }
 
     .seating-map-card,
@@ -1922,8 +1922,8 @@ code {
         width: 100%;
         max-width: 100%;
         box-sizing: border-box;
-        padding: 10px;
-        border-radius: 10px;
+        padding: 7px;
+        border-radius: 9px;
     }
 
     .seating-map-summary {
@@ -1938,72 +1938,87 @@ code {
                 )
             ) !important;
 
-        gap: 6px;
-        margin-bottom: 10px;
+        gap: 5px;
+        margin-bottom: 8px;
     }
 
     .seating-map-summary .summary-card {
         min-width: 0;
-        padding: 10px 5px;
+        padding: 8px 4px;
     }
 
     .seating-map-summary .summary-number {
-        font-size: 24px;
+        font-size: 21px;
     }
 
     .seating-map-summary .summary-label {
-        font-size: 9px;
-        line-height: 1.2;
-        letter-spacing: .5px;
+        font-size: 8px;
+        line-height: 1.15;
+        letter-spacing: .35px;
     }
 
     .seating-map-toolbar {
         display: block;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
 
     .seating-map-toolbar .counter {
-        margin-bottom: 8px;
+        margin: 7px 0 0;
         text-align: center;
+        font-size: 10px;
+        line-height: 1.3;
+        white-space: normal;
     }
 
     .seating-map-buttons {
         display: grid !important;
         grid-template-columns: 1fr !important;
-        gap: 7px;
+        gap: 6px;
     }
 
     .seating-map-buttons .button {
         width: 100%;
         min-width: 0;
-        min-height: 44px;
-        padding: 10px 8px;
-        font-size: 11px;
+        min-height: 40px;
+        padding: 9px 7px;
+        font-size: 10px;
     }
 
     .seating-publish-banner {
-        padding: 11px 12px;
-        margin-bottom: 10px;
+        padding: 9px 10px;
+        margin-bottom: 8px;
+        gap: 7px;
+        border-radius: 8px;
+    }
+
+    .seating-publish-badge {
+        margin-bottom: 4px;
+        padding: 3px 7px;
+        font-size: 8px;
     }
 
     .seating-publish-title {
-        font-size: 15px;
+        font-size: 13px;
+        line-height: 1.25;
     }
 
     .seating-publish-copy {
-        font-size: 13px;
+        margin-top: 2px;
+        font-size: 11px;
+        line-height: 1.35;
     }
 
-    /*
-        The important fix:
-        do not turn the map into a large swipeable canvas.
-        Make it part of the page and scale it to the phone.
-    */
+    .seating-publish-time {
+        margin-top: 1px;
+        font-size: 9px;
+        line-height: 1.3;
+    }
+
     .seating-map-shell {
         width: 100%;
         max-width: 100%;
         overflow: hidden !important;
-        border-radius: 10px;
+        border-radius: 9px;
         box-sizing: border-box;
     }
 
@@ -2022,26 +2037,32 @@ code {
     }
 
     .table-marker {
-        min-width: 34px;
-        min-height: 34px;
-
+        min-width: 22px;
+        min-height: 22px;
+        padding: 2px;
+        border-radius: 6px !important;
         touch-action: auto !important;
     }
 
+    .table-marker.round {
+        border-radius: 50% !important;
+    }
+
     .table-marker-name {
-        font-size: 9px;
-        line-height: 1.05;
+        font-size: 7px;
+        line-height: 1;
+        letter-spacing: 0;
     }
 
     .table-marker-capacity {
-        font-size: 8px;
-        line-height: 1.05;
+        margin-top: 1px;
+        font-size: 6px;
+        line-height: 1;
     }
 
     .seating-map-legend {
-        margin-top: 8px;
-        padding: 9px 10px;
-
+        margin-top: 7px;
+        padding: 7px 8px;
         border-radius: 7px;
 
         background:
@@ -2053,8 +2074,8 @@ code {
             );
 
         text-align: center;
-        font-size: 12px;
-        line-height: 1.4;
+        font-size: 10px;
+        line-height: 1.3;
     }
 
     .seating-map-legend::before {
@@ -2067,19 +2088,19 @@ code {
     }
 
     .seating-side-block + .seating-side-block {
-        margin-top: 10px;
+        margin-top: 9px;
     }
 
     .seating-selected-card {
-        padding: 12px;
+        padding: 10px;
     }
 
     .seating-selected-name {
-        font-size: 21px;
+        font-size: 19px;
     }
 
     .seating-selected-meta {
-        font-size: 14px;
+        font-size: 13px;
     }
 
     .seating-selected-actions,
@@ -2095,26 +2116,26 @@ code {
                 )
             ) !important;
 
-        gap: 7px;
+        gap: 6px;
     }
 
     .seating-selected-actions .button,
     .seating-adjust-grid .button {
-        min-height: 44px;
-        padding: 10px 8px;
+        min-height: 40px;
+        padding: 9px 7px;
     }
 
     .seating-guest-chip {
-        min-height: 48px;
-        padding: 11px;
+        min-height: 44px;
+        padding: 9px;
     }
 
     .seating-guest-chip-name {
-        font-size: 15px;
+        font-size: 14px;
     }
 
     .seating-guest-chip-meta {
-        font-size: 12px;
+        font-size: 11px;
     }
 
 }
@@ -6839,11 +6860,16 @@ function renderSeatingPlanner() {
                 marker.style.top =
                     `${table.y}%`;
 
+                const mobileMarkerScale =
+                    isMobileSeatingView()
+                        ? 0.72
+                        : 1;
+
                 marker.style.width =
-                    `${table.width}%`;
+                    `${Number(table.width || 10) * mobileMarkerScale}%`;
 
                 marker.style.height =
-                    `${table.height}%`;
+                    `${Number(table.height || 10) * mobileMarkerScale}%`;
 
                 marker.style.transform =
                     tableTransform(
