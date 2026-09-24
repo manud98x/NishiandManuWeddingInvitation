@@ -6818,13 +6818,13 @@ function renderSeatingPlanner() {
                 marker.setAttribute(
                     "aria-label",
                     isDisplayItem
-                        ? `${table.name}, non-seating display item`
+                        ? table.name
                         : `${table.name}, ${table.assignedPeople || 0} of ${table.capacity} seated`
                 );
 
                 marker.innerHTML =
                     isDisplayItem
-                        ? `<span class="table-marker-label"><span class="table-marker-name">${table.name}</span><span class="table-marker-capacity">Display Item</span></span>`
+                        ? `<span class="table-marker-label"><span class="table-marker-name">${table.name}</span></span>`
                         : `<span class="table-marker-label"><span class="table-marker-name">${table.name}</span><span class="table-marker-capacity">${table.assignedPeople || 0}/${table.capacity}</span></span>`;
 
                 marker.addEventListener(
@@ -7122,7 +7122,7 @@ function renderSelectedTablePanel() {
 
     meta.textContent =
         isDisplayItem
-            ? `${humanTableShape(table.shape)} · Non-seating display item`
+            ? `${humanTableShape(table.shape)}`
             : `${humanTableShape(table.shape)} · ${table.assignedPeople || 0} / ${table.capacity} people seated`;
 
     const position = document.createElement("div");
@@ -7705,10 +7705,20 @@ function renderTables() {
             meta.className =
                 "table-meta";
 
-            meta.textContent =
+            if (
                 Number(table.capacity) === 0
-                    ? "Non-seating display item"
-                    : `${table.assignedPeople || 0} / ${table.capacity} people seated`;
+            ) {
+
+                meta.classList.add(
+                    "hidden"
+                );
+
+            } else {
+
+                meta.textContent =
+                    `${table.assignedPeople || 0} / ${table.capacity} people seated`;
+
+            }
 
 
             copy.append(
@@ -7927,6 +7937,14 @@ function renderTables() {
 
 
             if (
+                Number(table.capacity) === 0
+            ) {
+
+                seatedList.classList.add(
+                    "hidden"
+                );
+
+            } else if (
                 householdCount ===
                 0
             ) {
@@ -7941,9 +7959,7 @@ function renderTables() {
                     "table-no-seated-guests";
 
                 none.textContent =
-                    Number(table.capacity) === 0
-                        ? "Display item · no guest seating"
-                        : "No guests seated at this table yet.";
+                    "No guests seated at this table yet.";
 
 
                 seatedList.appendChild(
