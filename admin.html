@@ -1741,6 +1741,42 @@ code {
 
 }
 
+/* MOBILE SEATING PLANNER */
+@media (max-width: 700px) {
+    #tab-seating .panel { padding-left: 10px; padding-right: 10px; }
+    .seating-layout-grid { display:flex; flex-direction:column; gap:12px; }
+    .seating-map-card, .seating-side-block { padding:10px; border-radius:9px; }
+    .seating-map-summary { grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin-bottom:10px; }
+    .seating-map-summary .summary-card { padding:10px 5px; min-width:0; }
+    .seating-map-summary .summary-number { font-size:24px; }
+    .seating-map-summary .summary-label { font-size:9px; letter-spacing:.6px; line-height:1.25; }
+    .seating-map-toolbar { display:block; margin-bottom:10px; }
+    .seating-map-toolbar .counter { margin-bottom:8px; text-align:center; }
+    .seating-map-buttons { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; }
+    .seating-map-buttons .button { width:100%; min-width:0; min-height:44px; padding:10px 8px; font-size:11px; }
+    #refreshSeatingMapButton { grid-column:1/-1; }
+    .seating-publish-banner { padding:11px 12px; margin-bottom:10px; }
+    .seating-publish-title { font-size:15px; }
+    .seating-publish-copy { font-size:13px; }
+    .seating-map-shell { width:100%; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain; border-radius:10px; touch-action:pan-x pan-y; }
+    .seating-floorplan { width:720px; min-width:720px; max-width:none; aspect-ratio:1296/680; background-size:100% 100%; background-position:center; background-repeat:no-repeat; }
+    .table-marker { min-width:48px; min-height:48px; }
+    .table-marker-name { font-size:11px; }
+    .table-marker-capacity { font-size:10px; }
+    .seating-map-legend { margin-top:8px; padding:9px 10px; border-radius:7px; background:rgba(212,175,55,.07); text-align:center; font-size:12px; line-height:1.4; }
+    .seating-map-legend::before { content:"Swipe left or right to move around the floor plan. "; font-weight:600; color:#80652d; }
+    .seating-sidebar { width:100%; }
+    .seating-side-block + .seating-side-block { margin-top:10px; }
+    .seating-selected-card { padding:12px; }
+    .seating-selected-name { font-size:21px; }
+    .seating-selected-meta { font-size:14px; }
+    .seating-selected-actions, .seating-adjust-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; }
+    .seating-selected-actions .button, .seating-adjust-grid .button { min-height:44px; padding:10px 8px; }
+    .seating-guest-chip { padding:11px; min-height:48px; }
+    .seating-guest-chip-name { font-size:15px; }
+    .seating-guest-chip-meta { font-size:12px; }
+}
+
 @media (max-width: 700px) {
 
     .seating-publish-banner {
@@ -1750,13 +1786,6 @@ code {
 
     .seating-publish-time {
         text-align: left;
-    }
-
-    .seating-map-toolbar,
-    .seating-map-summary,
-    .seating-selected-actions,
-    .seating-adjust-grid {
-        grid-template-columns: 1fr;
     }
 
     .table-marker-name {
@@ -6508,6 +6537,11 @@ function renderSeatingPlanner() {
                     tableTransform(
                         table
                     );
+
+                marker.style.touchAction =
+                    seatingEditMode
+                        ? "none"
+                        : "pan-x pan-y";
 
                 marker.setAttribute(
                     "aria-label",
