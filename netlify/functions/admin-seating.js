@@ -55,6 +55,13 @@ function isAuthorized(
         process.env
             .INVITE_ADMIN_SECRET;
 
+    const provided =
+        request
+            .headers
+            .get(
+                "x-admin-secret"
+            ) || "";
+
 
     if (
         !expected
@@ -66,14 +73,6 @@ function isAuthorized(
         };
 
     }
-
-
-    const provided =
-        request
-            .headers
-            .get(
-                "x-admin-secret"
-            ) || "";
 
 
     const expectedBuffer =
@@ -169,7 +168,7 @@ function cleanCapacity(
         !Number.isInteger(
             number
         ) ||
-        number < 1 ||
+        number < 0 ||
         number > 100
     ) {
 
@@ -234,7 +233,7 @@ function numericGuestCount(
 }
 
 
-function getStoreInstance() {
+function getSeatingStore() {
 
     return getStore(
         STORE_NAME
@@ -243,7 +242,7 @@ function getStoreInstance() {
 }
 
 
-async function getRegistry(
+async function getSeatingRegistry(
     store
 ) {
 
@@ -263,9 +262,6 @@ async function getRegistry(
     if (
         !registry ||
         typeof registry !==
-            "object" ||
-        !registry.tables ||
-        typeof registry.tables !==
             "object"
     ) {
 
@@ -276,6 +272,18 @@ async function getRegistry(
             tables: {},
             assignments: {}
         };
+
+    }
+
+
+    if (
+        !registry.tables ||
+        typeof registry.tables !==
+            "object"
+    ) {
+
+        registry.tables =
+            {};
 
     }
 
@@ -445,6 +453,11 @@ function attendingGuestMap(
 
             guestName:
                 rsvp.guestName ||
+                invitationRegistry
+                    .invitations[
+                        invitationCode
+                    ]
+                    ?.name ||
                 invitationCode,
 
             guestCount:
@@ -510,14 +523,25 @@ function pruneStaleAssignments(
         changed
     ) {
 
-        registry.updatedAt =
-            new Date()
-                .toISOString();
+        markRegistryUpdated(
+            registry
+        );
 
     }
 
 
     return changed;
+
+}
+
+
+function markRegistryUpdated(
+    registry
+) {
+
+    registry.updatedAt =
+        new Date()
+            .toISOString();
 
 }
 
@@ -571,11 +595,11 @@ function tableOccupancy(
         }
 
 
-        invitationCount +=
-            1;
-
         people +=
             guest.guestCount;
+
+        invitationCount +=
+            1;
 
     }
 
@@ -601,9 +625,10 @@ function listTables(
             table => {
 
                 const assignedCodes =
-                    Object.entries(
-                        registry.assignments
-                    )
+                    Object
+                        .entries(
+                            registry.assignments
+                        )
                         .filter(
                             (
                                 [
@@ -618,10 +643,10 @@ function listTables(
                         .map(
                             (
                                 [
-                                    code
+                                    invitationCode
                                 ]
                             ) =>
-                                code
+                                invitationCode
                         );
 
 
@@ -630,6 +655,13 @@ function listTables(
                         table.id,
                         registry,
                         attendingGuests
+                    );
+
+
+                const capacity =
+                    Number(
+                        table.capacity ||
+                        0
                     );
 
 
@@ -647,12 +679,12 @@ function listTables(
                     remainingCapacity:
                         Math.max(
                             0,
-                            Number(
-                                table.capacity ||
-                                0
-                            ) -
+                            capacity -
                             occupancy.people
-                        )
+                        ),
+
+                    isDisplayItem:
+                        capacity === 0
                 };
 
             }
@@ -697,9 +729,12 @@ function buildResponse(
                 guest => {
 
                     const assignment =
-                        registry.assignments[
-                            guest.invitationCode
-                        ] || null;
+                        registry
+                            .assignments[
+                                guest
+                                    .invitationCode
+                            ] ||
+                        null;
 
 
                     return {
@@ -749,13 +784,40 @@ function buildResponse(
 }
 
 
-function markRegistryUpdated(
-    registry
+function defaultDimensions(
+    shape
 ) {
 
-    registry.updatedAt =
-        new Date()
-            .toISOString();
+    if (
+        shape ===
+        "banquet"
+    ) {
+
+        return {
+            width: 18,
+            height: 7
+        };
+
+    }
+
+
+    if (
+        shape ===
+        "rectangle"
+    ) {
+
+        return {
+            width: 13,
+            height: 9
+        };
+
+    }
+
+
+    return {
+        width: 10,
+        height: 10
+    };
 
 }
 
@@ -802,7 +864,7 @@ export default async function (
 
 
     const store =
-        getStoreInstance();
+        getSeatingStore();
 
 
     if (
@@ -817,10 +879,12 @@ export default async function (
         ] =
             await Promise.all(
                 [
-                    getRegistry(
+                    getSeatingRegistry(
                         store
                     ),
+
                     getRsvpRegistry(),
+
                     getInvitationRegistry()
                 ]
             );
@@ -892,10 +956,12 @@ export default async function (
         ] =
             await Promise.all(
                 [
-                    getRegistry(
+                    getSeatingRegistry(
                         store
                     ),
+
                     getRsvpRegistry(),
+
                     getInvitationRegistry()
                 ]
             );
@@ -968,7 +1034,7 @@ export default async function (
                 return jsonResponse(
                     {
                         error:
-                            "Capacity must be a whole number between 1 and 100."
+                            "Capacity must be a whole number between 0 and 100."
                     },
                     400
                 );
@@ -997,7 +1063,7 @@ export default async function (
                 return jsonResponse(
                     {
                         error:
-                            "A table with that name already exists."
+                            "A table or display item with that name already exists."
                     },
                     409
                 );
@@ -1007,6 +1073,15 @@ export default async function (
 
             const id =
                 `table-${randomUUID()}`;
+
+            const dimensions =
+                defaultDimensions(
+                    shape
+                );
+
+            const now =
+                new Date()
+                    .toISOString();
 
 
             registry.tables[
@@ -1028,36 +1103,23 @@ export default async function (
                     0,
 
                 width:
-                    shape === "banquet"
-                        ? 18
-                        : (
-                            shape === "rectangle"
-                                ? 13
-                                : 10
-                        ),
+                    dimensions.width,
 
                 height:
-                    shape === "banquet"
-                        ? 7
-                        : (
-                            shape === "rectangle"
-                                ? 9
-                                : 10
-                        ),
+                    dimensions.height,
 
                 createdAt:
-                    new Date()
-                        .toISOString(),
+                    now,
 
                 updatedAt:
-                    new Date()
-                        .toISOString()
+                    now
             };
 
 
             markRegistryUpdated(
                 registry
             );
+
 
             await store.setJSON(
                 REGISTRY_KEY,
@@ -1067,7 +1129,9 @@ export default async function (
 
             return jsonResponse(
                 {
-                    created: true,
+                    created:
+                        true,
+
                     ...buildResponse(
                         registry,
                         rsvpRegistry,
@@ -1087,13 +1151,14 @@ export default async function (
             const id =
                 cleanText(
                     body.id,
-                    120
+                    160
                 );
 
             const existing =
-                registry.tables[
-                    id
-                ];
+                registry
+                    .tables[
+                        id
+                    ];
 
 
             if (
@@ -1103,7 +1168,7 @@ export default async function (
                 return jsonResponse(
                     {
                         error:
-                            "Table not found."
+                            "Table or display item not found."
                     },
                     404
                 );
@@ -1135,7 +1200,7 @@ export default async function (
                 return jsonResponse(
                     {
                         error:
-                            "Table name is required."
+                            "Name is required."
                     },
                     400
                 );
@@ -1151,7 +1216,7 @@ export default async function (
                 return jsonResponse(
                     {
                         error:
-                            "Capacity must be a whole number between 1 and 100."
+                            "Capacity must be a whole number between 0 and 100."
                     },
                     400
                 );
@@ -1205,7 +1270,7 @@ export default async function (
                 return jsonResponse(
                     {
                         error:
-                            "A table with that name already exists."
+                            "A table or display item with that name already exists."
                     },
                     409
                 );
@@ -1263,6 +1328,7 @@ export default async function (
                 registry
             );
 
+
             await store.setJSON(
                 REGISTRY_KEY,
                 registry
@@ -1271,7 +1337,9 @@ export default async function (
 
             return jsonResponse(
                 {
-                    updated: true,
+                    updated:
+                        true,
+
                     ...buildResponse(
                         registry,
                         rsvpRegistry,
@@ -1307,9 +1375,10 @@ export default async function (
                 ];
 
             const table =
-                registry.tables[
-                    tableId
-                ];
+                registry
+                    .tables[
+                        tableId
+                    ];
 
 
             if (
@@ -1342,10 +1411,28 @@ export default async function (
             }
 
 
+            if (
+                Number(
+                    table.capacity
+                ) === 0
+            ) {
+
+                return jsonResponse(
+                    {
+                        error:
+                            `${table.name} is a non-seating item and cannot have guests assigned to it.`
+                    },
+                    409
+                );
+
+            }
+
+
             const currentAssignment =
-                registry.assignments[
-                    invitationCode
-                ];
+                registry
+                    .assignments[
+                        invitationCode
+                    ];
 
 
             if (
@@ -1412,6 +1499,7 @@ export default async function (
                 registry
             );
 
+
             await store.setJSON(
                 REGISTRY_KEY,
                 registry
@@ -1420,7 +1508,9 @@ export default async function (
 
             return jsonResponse(
                 {
-                    assigned: true,
+                    assigned:
+                        true,
+
                     ...buildResponse(
                         registry,
                         rsvpRegistry,
@@ -1445,9 +1535,10 @@ export default async function (
 
 
             if (
-                !registry.assignments[
-                    invitationCode
-                ]
+                !registry
+                    .assignments[
+                        invitationCode
+                    ]
             ) {
 
                 return jsonResponse(
@@ -1461,14 +1552,16 @@ export default async function (
             }
 
 
-            delete registry.assignments[
-                invitationCode
-            ];
+            delete registry
+                .assignments[
+                    invitationCode
+                ];
 
 
             markRegistryUpdated(
                 registry
             );
+
 
             await store.setJSON(
                 REGISTRY_KEY,
@@ -1478,7 +1571,9 @@ export default async function (
 
             return jsonResponse(
                 {
-                    unassigned: true,
+                    unassigned:
+                        true,
+
                     ...buildResponse(
                         registry,
                         rsvpRegistry,
@@ -1505,6 +1600,7 @@ export default async function (
                 registry
             );
 
+
             await store.setJSON(
                 REGISTRY_KEY,
                 registry
@@ -1513,7 +1609,9 @@ export default async function (
 
             return jsonResponse(
                 {
-                    updated: true,
+                    updated:
+                        true,
+
                     ...buildResponse(
                         registry,
                         rsvpRegistry,
@@ -1565,34 +1663,54 @@ export default async function (
         const id =
             cleanText(
                 body.id,
-                120
-            );
-
-
-        const [
-            registry,
-            rsvpRegistry
-        ] =
-            await Promise.all(
-                [
-                    getRegistry(
-                        store
-                    ),
-                    getRsvpRegistry()
-                ]
+                160
             );
 
 
         if (
-            !registry.tables[
-                id
-            ]
+            !id
         ) {
 
             return jsonResponse(
                 {
                     error:
-                        "Table not found."
+                        "Table or display item ID is required."
+                },
+                400
+            );
+
+        }
+
+
+        const [
+            registry,
+            rsvpRegistry,
+            invitationRegistry
+        ] =
+            await Promise.all(
+                [
+                    getSeatingRegistry(
+                        store
+                    ),
+
+                    getRsvpRegistry(),
+
+                    getInvitationRegistry()
+                ]
+            );
+
+
+        if (
+            !registry
+                .tables[
+                    id
+                ]
+        ) {
+
+            return jsonResponse(
+                {
+                    error:
+                        "Table or display item not found."
                 },
                 404
             );
@@ -1600,14 +1718,15 @@ export default async function (
         }
 
 
-        delete registry.tables[
-            id
-        ];
+        delete registry
+            .tables[
+                id
+            ];
 
 
         for (
             const [
-                code,
+                invitationCode,
                 assignment
             ]
             of Object.entries(
@@ -1621,9 +1740,10 @@ export default async function (
                     id
             ) {
 
-                delete registry.assignments[
-                    code
-                ];
+                delete registry
+                    .assignments[
+                        invitationCode
+                    ];
 
             }
 
@@ -1634,6 +1754,7 @@ export default async function (
             registry
         );
 
+
         await store.setJSON(
             REGISTRY_KEY,
             registry
@@ -1642,12 +1763,14 @@ export default async function (
 
         return jsonResponse(
             {
-                deleted: true,
+                deleted:
+                    true,
+
                 ...buildResponse(
-                        registry,
-                        rsvpRegistry,
-                        invitationRegistry
-                    )
+                    registry,
+                    rsvpRegistry,
+                    invitationRegistry
+                )
             }
         );
 
