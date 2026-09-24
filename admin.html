@@ -3805,7 +3805,7 @@ function renderOverview() {
             "overviewTables"
         )
         .textContent =
-        seatingTables.length;
+        actualSeatingTableCount();
 
 
     document
@@ -6407,6 +6407,27 @@ function renderUnassignedGuests() {
 
 
 
+function actualSeatingTables() {
+
+    return seatingTables
+        .filter(
+            table =>
+                Number(
+                    table.capacity
+                ) > 0
+        );
+
+}
+
+
+function actualSeatingTableCount() {
+
+    return actualSeatingTables()
+        .length;
+
+}
+
+
 function getTableById(
     tableId
 ) {
@@ -6596,7 +6617,10 @@ function renderSeatingMapCounters() {
         );
 
 
-    if (tableCountEl) tableCountEl.textContent = seatingTables.length;
+    if (tableCountEl) {
+        tableCountEl.textContent =
+            actualSeatingTableCount();
+    }
     if (assignedCountEl) assignedCountEl.textContent = allocated;
     if (unassignedCountEl) unassignedCountEl.textContent = unassigned;
 
@@ -7576,8 +7600,12 @@ function renderTables() {
         filteredTables();
 
 
+    const seatingTableCount =
+        actualSeatingTableCount();
+
+
     count.textContent =
-        `${seatingTables.length} Table${seatingTables.length === 1 ? "" : "s"}`;
+        `${seatingTableCount} Table${seatingTableCount === 1 ? "" : "s"}`;
 
 
     list.innerHTML =
