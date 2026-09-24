@@ -935,6 +935,115 @@ code {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+
+    border-radius: 6px;
+
+    transition:
+        background .16s ease,
+        transform .16s ease;
+}
+
+.table-card-top:hover {
+    background:
+        rgba(
+            212,
+            175,
+            55,
+            .055
+        );
+}
+
+.table-card-top:focus-visible {
+    outline:
+        2px solid
+        rgba(
+            212,
+            175,
+            55,
+            .55
+        );
+
+    outline-offset:
+        5px;
+}
+
+.table-card-toggle-side {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 0 0 auto;
+}
+
+.table-expand-icon {
+    width: 28px;
+    height: 28px;
+
+    display: grid;
+    place-items: center;
+
+    border:
+        1px solid
+        rgba(
+            166,
+            124,
+            0,
+            .24
+        );
+
+    border-radius: 50%;
+
+    background:
+        #fffaf0;
+
+    color:
+        #8b6a18;
+
+    font-size: 17px;
+    line-height: 1;
+
+    transform:
+        rotate(0deg);
+
+    transition:
+        transform .18s ease,
+        background .18s ease;
+}
+
+.table-card.expanded
+.table-expand-icon {
+    transform:
+        rotate(180deg);
+
+    background:
+        #f8edcf;
+}
+
+.table-card-body {
+    display: grid;
+    grid-template-rows:
+        0fr;
+
+    opacity: 0;
+
+    transition:
+        grid-template-rows .18s ease,
+        opacity .14s ease;
+}
+
+.table-card-body-inner {
+    overflow: hidden;
+}
+
+.table-card.expanded
+.table-card-body {
+    grid-template-rows:
+        1fr;
+
+    opacity: 1;
 }
 
 .table-name {
@@ -1126,6 +1235,116 @@ code {
     letter-spacing: 1px;
     text-transform: uppercase;
     cursor: pointer;
+}
+
+.table-seated-list {
+    display: grid;
+    gap: 7px;
+    margin-top: 14px;
+}
+
+.table-seated-heading {
+    margin-bottom: 2px;
+
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-size: 10px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+
+    color: #8b6a18;
+}
+
+.table-seated-person {
+    display: grid;
+    grid-template-columns:
+        34px
+        minmax(
+            0,
+            1fr
+        );
+
+    gap: 10px;
+    align-items: center;
+
+    padding:
+        10px 12px;
+
+    border:
+        1px solid
+        rgba(
+            198,
+            162,
+            82,
+            .18
+        );
+
+    border-radius: 6px;
+
+    background:
+        #fffdf9;
+}
+
+.table-seat-number {
+    width: 28px;
+    height: 28px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    background:
+        rgba(
+            212,
+            175,
+            55,
+            .12
+        );
+
+    color:
+        #8b6a18;
+
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-size: 11px;
+}
+
+.table-seated-name {
+    min-width: 0;
+
+    font-size: 17px;
+    line-height: 1.35;
+
+    color: #493b30;
+
+    word-break: break-word;
+}
+
+.table-no-seated-guests {
+    padding:
+        14px 12px;
+
+    border:
+        1px dashed
+        rgba(
+            198,
+            162,
+            82,
+            .28
+        );
+
+    border-radius: 6px;
+
+    text-align: center;
+
+    color: #8b7766;
+
+    font-size: 15px;
 }
 
 .capacity-line {
@@ -1578,6 +1797,57 @@ code {
 }
 
 @media (max-width: 600px) {
+
+    .table-card {
+        padding:
+            14px;
+    }
+
+    .table-card-top {
+        gap:
+            10px;
+    }
+
+    .table-name {
+        font-size:
+            20px;
+    }
+
+    .table-shape-preview.round,
+    .table-shape-preview.square {
+        width:
+            46px;
+
+        height:
+            46px;
+    }
+
+    .table-shape-preview.rectangle {
+        width:
+            62px;
+
+        height:
+            42px;
+    }
+
+    .table-shape-preview.banquet {
+        width:
+            72px;
+
+        height:
+            34px;
+    }
+
+    .table-expand-icon {
+        width:
+            26px;
+
+        height:
+            26px;
+
+        font-size:
+            15px;
+    }
 
     .page {
         padding-top: 24px;
@@ -2451,6 +2721,18 @@ code {
 
                 </div>
 
+                <div class="button-row">
+
+                    <button
+                        class="button secondary"
+                        id="downloadTablesCsvButton"
+                        type="button"
+                    >
+                        Download Tables CSV
+                    </button>
+
+                </div>
+
                 <div
                     class="guest-list"
                     id="tableList"
@@ -2550,6 +2832,9 @@ let selectedSeatingTableId =
 
 let activeTableDrag =
     null;
+
+const expandedTableIds =
+    new Set();
 
 const FLOORPLAN_IMAGE =
     "/images/seating-plan.png";
@@ -6964,6 +7249,27 @@ function renderTables() {
                 "table-card";
 
 
+            const isExpanded =
+                expandedTableIds.has(
+                    table.id
+                );
+
+
+            if (
+                isExpanded
+            ) {
+
+                card.classList.add(
+                    "expanded"
+                );
+
+            }
+
+
+            /* =========================
+               COLLAPSED TABLE HEADER
+            ========================= */
+
             const top =
                 document
                     .createElement(
@@ -6972,6 +7278,23 @@ function renderTables() {
 
             top.className =
                 "table-card-top";
+
+            top.setAttribute(
+                "role",
+                "button"
+            );
+
+            top.setAttribute(
+                "tabindex",
+                "0"
+            );
+
+            top.setAttribute(
+                "aria-expanded",
+                String(
+                    isExpanded
+                )
+            );
 
 
             const copy =
@@ -7004,27 +7327,23 @@ function renderTables() {
                 "table-meta";
 
             meta.textContent =
-                `${humanTableShape(table.shape)} · ${table.assignedPeople || 0} / ${table.capacity} people`;
+                `${table.assignedPeople || 0} / ${table.capacity} people seated`;
 
 
-            const capacityLine =
+            copy.append(
+                name,
+                meta
+            );
+
+
+            const toggleSide =
                 document
                     .createElement(
                         "div"
                     );
 
-            capacityLine.className =
-                "capacity-line";
-
-            capacityLine.textContent =
-                `${table.remainingCapacity ?? table.capacity} seat${(table.remainingCapacity ?? table.capacity) === 1 ? "" : "s"} remaining`;
-
-
-            copy.append(
-                name,
-                meta,
-                capacityLine
-            );
+            toggleSide.className =
+                "table-card-toggle-side";
 
 
             const preview =
@@ -7042,11 +7361,218 @@ function renderTables() {
                 );
 
 
-            top.append(
-                copy,
-                preview
+            const expandIcon =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            expandIcon.className =
+                "table-expand-icon";
+
+            expandIcon.setAttribute(
+                "aria-hidden",
+                "true"
             );
 
+            expandIcon.textContent =
+                "⌄";
+
+
+            toggleSide.append(
+                preview,
+                expandIcon
+            );
+
+
+            top.append(
+                copy,
+                toggleSide
+            );
+
+
+            /* =========================
+               EXPANDED CONTENT
+               One row per invitation / household.
+            ========================= */
+
+            const body =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            body.className =
+                "table-card-body";
+
+
+            const bodyInner =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            bodyInner.className =
+                "table-card-body-inner";
+
+
+            const seatedList =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            seatedList.className =
+                "table-seated-list";
+
+
+            const heading =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            heading.className =
+                "table-seated-heading";
+
+            heading.textContent =
+                "Guests Seated";
+
+
+            seatedList.appendChild(
+                heading
+            );
+
+
+            const assignedCodes =
+                Array.isArray(
+                    table.assignedCodes
+                )
+                    ? table.assignedCodes
+                    : [];
+
+
+            let householdCount =
+                0;
+
+
+            assignedCodes.forEach(
+                invitationCode => {
+
+                    const guest =
+                        guestByCode(
+                            invitationCode
+                        );
+
+
+                    if (
+                        !guest
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    householdCount++;
+
+
+                    const guestCount =
+                        Number(
+                            guest.guestCount
+                        ) || 0;
+
+
+                    const row =
+                        document
+                            .createElement(
+                                "div"
+                            );
+
+                    row.className =
+                        "assigned-item";
+
+
+                    const left =
+                        document
+                            .createElement(
+                                "div"
+                            );
+
+
+                    const guestName =
+                        document
+                            .createElement(
+                                "div"
+                            );
+
+                    guestName.className =
+                        "assigned-name";
+
+                    guestName.textContent =
+                        guest.guestName;
+
+
+                    const partySize =
+                        document
+                            .createElement(
+                                "div"
+                            );
+
+                    partySize.className =
+                        "assigned-count";
+
+                    partySize.textContent =
+                        `${guestCount} ${guestCount === 1 ? "person" : "people"}`;
+
+
+                    left.append(
+                        guestName,
+                        partySize
+                    );
+
+
+                    row.appendChild(
+                        left
+                    );
+
+
+                    seatedList.appendChild(
+                        row
+                    );
+
+                }
+            );
+
+
+            if (
+                householdCount ===
+                0
+            ) {
+
+                const none =
+                    document
+                        .createElement(
+                            "div"
+                        );
+
+                none.className =
+                    "table-no-seated-guests";
+
+                none.textContent =
+                    "No guests seated at this table yet.";
+
+
+                seatedList.appendChild(
+                    none
+                );
+
+            }
+
+
+            /* =========================
+               TABLE CONTROLS
+            ========================= */
 
             const actions =
                 document
@@ -7073,12 +7599,18 @@ function renderTables() {
             editButton.textContent =
                 "Edit Table";
 
+
             editButton.addEventListener(
                 "click",
-                () =>
+                event => {
+
+                    event.stopPropagation();
+
                     editTable(
                         table
-                    )
+                    );
+
+                }
             );
 
 
@@ -7097,12 +7629,18 @@ function renderTables() {
             deleteButton.textContent =
                 "Delete Table";
 
+
             deleteButton.addEventListener(
                 "click",
-                () =>
+                event => {
+
+                    event.stopPropagation();
+
                     deleteTable(
                         table
-                    )
+                    );
+
+                }
             );
 
 
@@ -7112,299 +7650,104 @@ function renderTables() {
             );
 
 
-            const assignmentBox =
-                document
-                    .createElement(
-                        "div"
-                    );
+            bodyInner.append(
+                seatedList,
+                actions
+            );
 
-            assignmentBox.className =
-                "table-assignment-box";
-
-
-            const assignmentTitle =
-                document
-                    .createElement(
-                        "div"
-                    );
-
-            assignmentTitle.className =
-                "table-assignment-title";
-
-            assignmentTitle.textContent =
-                "Assign Attending Guests";
-
-
-            const assignmentRow =
-                document
-                    .createElement(
-                        "div"
-                    );
-
-            assignmentRow.className =
-                "table-assignment-row";
-
-
-            const select =
-                document
-                    .createElement(
-                        "select"
-                    );
-
-
-            const placeholder =
-                document
-                    .createElement(
-                        "option"
-                    );
-
-            placeholder.value =
-                "";
-
-            placeholder.textContent =
-                "Select an unassigned guest...";
-
-            select.appendChild(
-                placeholder
+            body.appendChild(
+                bodyInner
             );
 
 
-            const available =
-                unassignedGuests()
-                    .filter(
-                        guest =>
-                            guest.guestCount <=
-                            (
-                                table.remainingCapacity ??
-                                table.capacity
+            /* =========================
+               OPEN / CLOSE
+            ========================= */
+
+            const setExpanded =
+                expanded => {
+
+                    if (
+                        expanded
+                    ) {
+
+                        expandedTableIds.add(
+                            table.id
+                        );
+
+                        card.classList.add(
+                            "expanded"
+                        );
+
+                    } else {
+
+                        expandedTableIds.delete(
+                            table.id
+                        );
+
+                        card.classList.remove(
+                            "expanded"
+                        );
+
+                    }
+
+
+                    top.setAttribute(
+                        "aria-expanded",
+                        String(
+                            expanded
+                        )
+                    );
+
+                };
+
+
+            const toggleExpanded =
+                () => {
+
+                    setExpanded(
+                        !card.classList
+                            .contains(
+                                "expanded"
                             )
                     );
 
+                };
 
-            available.forEach(
-                guest => {
 
-                    const option =
-                        document
-                            .createElement(
-                                "option"
-                            );
-
-                    option.value =
-                        guest.invitationCode;
-
-                    option.textContent =
-                        `${guest.guestName} (${guest.guestCount})`;
-
-                    select.appendChild(
-                        option
-                    );
-
-                }
+            top.addEventListener(
+                "click",
+                toggleExpanded
             );
 
 
-            const assignButton =
-                document
-                    .createElement(
-                        "button"
-                    );
-
-            assignButton.type =
-                "button";
-
-            assignButton.className =
-                "button secondary";
-
-            assignButton.textContent =
-                "Assign";
-
-            assignButton.addEventListener(
-                "click",
-                () => {
+            top.addEventListener(
+                "keydown",
+                event => {
 
                     if (
-                        !select.value
+                        event.key !==
+                            "Enter" &&
+                        event.key !==
+                            " "
                     ) {
-
-                        alert(
-                            "Select a guest first."
-                        );
 
                         return;
 
                     }
 
 
-                    assignGuestToTable(
-                        select.value,
-                        table.id
-                    );
+                    event.preventDefault();
+
+                    toggleExpanded();
 
                 }
             );
 
 
-            assignmentRow.append(
-                select,
-                assignButton
-            );
-
-
-            const assignedList =
-                document
-                    .createElement(
-                        "div"
-                    );
-
-            assignedList.className =
-                "assigned-list";
-
-
-            const assignedCodes =
-                Array.isArray(
-                    table.assignedCodes
-                )
-                    ? table.assignedCodes
-                    : [];
-
-
-            if (
-                assignedCodes.length ===
-                0
-            ) {
-
-                const none =
-                    document
-                        .createElement(
-                            "div"
-                        );
-
-                none.className =
-                    "muted";
-
-                none.textContent =
-                    "No guests assigned yet.";
-
-                assignedList.appendChild(
-                    none
-                );
-
-            } else {
-
-                assignedCodes.forEach(
-                    invitationCode => {
-
-                        const guest =
-                            guestByCode(
-                                invitationCode
-                            );
-
-
-                        const item =
-                            document
-                                .createElement(
-                                    "div"
-                                );
-
-                        item.className =
-                            "assigned-item";
-
-
-                        const left =
-                            document
-                                .createElement(
-                                    "div"
-                                );
-
-
-                        const guestName =
-                            document
-                                .createElement(
-                                    "div"
-                                );
-
-                        guestName.className =
-                            "assigned-name";
-
-                        guestName.textContent =
-                            guest
-                                ? guest.guestName
-                                : invitationCode;
-
-
-                        const guestCount =
-                            document
-                                .createElement(
-                                    "div"
-                                );
-
-                        guestCount.className =
-                            "assigned-count";
-
-                        guestCount.textContent =
-                            guest
-                                ? `${guest.guestCount} attending`
-                                : "RSVP no longer attending";
-
-
-                        left.append(
-                            guestName,
-                            guestCount
-                        );
-
-
-                        const removeButton =
-                            document
-                                .createElement(
-                                    "button"
-                                );
-
-                        removeButton.type =
-                            "button";
-
-                        removeButton.className =
-                            "mini-button";
-
-                        removeButton.textContent =
-                            "Remove";
-
-                        removeButton.addEventListener(
-                            "click",
-                            () =>
-                                unassignGuest(
-                                    invitationCode
-                                )
-                        );
-
-
-                        item.append(
-                            left,
-                            removeButton
-                        );
-
-
-                        assignedList.appendChild(
-                            item
-                        );
-
-                    }
-                );
-
-            }
-
-
-            assignmentBox.append(
-                assignmentTitle,
-                assignmentRow,
-                assignedList
-            );
-
-
             card.append(
                 top,
-                actions,
-                assignmentBox
+                body
             );
 
 
@@ -7419,6 +7762,7 @@ function renderTables() {
     renderUnassignedGuests();
 
 }
+
 
 
 async function createTable() {
@@ -8211,6 +8555,103 @@ function downloadRsvpCsv() {
 }
 
 
+function downloadTablesCsv() {
+
+    const rows = [
+        [
+            "Table",
+            "Guest / Household"
+        ]
+    ];
+
+
+    let seatedPeople =
+        0;
+
+
+    seatingTables.forEach(
+        table => {
+
+            const assignedCodes =
+                Array.isArray(
+                    table.assignedCodes
+                )
+                    ? table.assignedCodes
+                    : [];
+
+
+            assignedCodes.forEach(
+                invitationCode => {
+
+                    const guest =
+                        guestByCode(
+                            invitationCode
+                        );
+
+
+                    if (
+                        !guest
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const guestCount =
+                        Number(
+                            guest.guestCount
+                        ) || 0;
+
+
+                    for (
+                        let personNumber = 1;
+                        personNumber <= guestCount;
+                        personNumber++
+                    ) {
+
+                        rows.push(
+                            [
+                                table.name,
+                                guest.guestName
+                            ]
+                        );
+
+
+                        seatedPeople++;
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
+    if (
+        seatedPeople ===
+        0
+    ) {
+
+        alert(
+            "There are no seated guests to export."
+        );
+
+        return;
+
+    }
+
+
+    downloadCsvFile(
+        rows,
+        "wedding-seating-plan.csv"
+    );
+
+}
+
+
+
 /* =========================
    LOGOUT
 ========================= */
@@ -8518,6 +8959,16 @@ document
         downloadRsvpCsv
     );
 
+
+
+document
+    .getElementById(
+        "downloadTablesCsvButton"
+    )
+    .addEventListener(
+        "click",
+        downloadTablesCsv
+    );
 
 
 document
