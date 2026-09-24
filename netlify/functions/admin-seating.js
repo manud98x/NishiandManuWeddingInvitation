@@ -14,6 +14,12 @@ const STORE_NAME =
 const REGISTRY_KEY =
     "registry";
 
+const INVITATION_STORE_NAME =
+    "wedding-invitations";
+
+const INVITATION_REGISTRY_KEY =
+    "registry";
+
 const RSVP_STORE_NAME =
     "wedding-rsvps";
 
@@ -313,6 +319,48 @@ async function getRegistry(
 }
 
 
+async function getInvitationRegistry() {
+
+    const store =
+        getStore(
+            INVITATION_STORE_NAME
+        );
+
+    const registry =
+        await store.get(
+            INVITATION_REGISTRY_KEY,
+            {
+                type:
+                    "json",
+
+                consistency:
+                    "strong"
+            }
+        );
+
+
+    if (
+        !registry ||
+        typeof registry !==
+            "object" ||
+        !registry.invitations ||
+        typeof registry.invitations !==
+            "object"
+    ) {
+
+        return {
+            version: 1,
+            invitations: {}
+        };
+
+    }
+
+
+    return registry;
+
+}
+
+
 async function getRsvpRegistry() {
 
     const store =
@@ -356,7 +404,8 @@ async function getRsvpRegistry() {
 
 
 function attendingGuestMap(
-    rsvpRegistry
+    rsvpRegistry,
+    invitationRegistry
 ) {
 
     const map =
@@ -376,7 +425,11 @@ function attendingGuestMap(
         if (
             !rsvp ||
             rsvp.attendance !==
-                "Yes"
+                "Yes" ||
+            !invitationRegistry
+                .invitations[
+                    invitationCode
+                ]
         ) {
 
             continue;
@@ -411,6 +464,60 @@ function attendingGuestMap(
 
 
     return map;
+
+}
+
+
+function pruneStaleAssignments(
+    registry,
+    attendingGuests
+) {
+
+    let changed =
+        false;
+
+
+    for (
+        const invitationCode
+        of Object.keys(
+            registry.assignments
+        )
+    ) {
+
+        if (
+            attendingGuests[
+                invitationCode
+            ]
+        ) {
+
+            continue;
+
+        }
+
+
+        delete registry
+            .assignments[
+                invitationCode
+            ];
+
+        changed =
+            true;
+
+    }
+
+
+    if (
+        changed
+    ) {
+
+        registry.updatedAt =
+            new Date()
+                .toISOString();
+
+    }
+
+
+    return changed;
 
 }
 
@@ -570,12 +677,14 @@ function listTables(
 
 function buildResponse(
     registry,
-    rsvpRegistry
+    rsvpRegistry,
+    invitationRegistry
 ) {
 
     const attendingGuests =
         attendingGuestMap(
-            rsvpRegistry
+            rsvpRegistry,
+            invitationRegistry
         );
 
 
@@ -703,23 +812,47 @@ export default async function (
 
         const [
             registry,
-            rsvpRegistry
+            rsvpRegistry,
+            invitationRegistry
         ] =
             await Promise.all(
                 [
                     getRegistry(
                         store
                     ),
-
-                    getRsvpRegistry()
+                    getRsvpRegistry(),
+                    getInvitationRegistry()
                 ]
             );
+
+
+        const attendingGuests =
+            attendingGuestMap(
+                rsvpRegistry,
+                invitationRegistry
+            );
+
+
+        if (
+            pruneStaleAssignments(
+                registry,
+                attendingGuests
+            )
+        ) {
+
+            await store.setJSON(
+                REGISTRY_KEY,
+                registry
+            );
+
+        }
 
 
         return jsonResponse(
             buildResponse(
                 registry,
-                rsvpRegistry
+                rsvpRegistry,
+                invitationRegistry
             )
         );
 
@@ -754,23 +887,40 @@ export default async function (
 
         const [
             registry,
-            rsvpRegistry
+            rsvpRegistry,
+            invitationRegistry
         ] =
             await Promise.all(
                 [
                     getRegistry(
                         store
                     ),
-
-                    getRsvpRegistry()
+                    getRsvpRegistry(),
+                    getInvitationRegistry()
                 ]
             );
 
 
         const attendingGuests =
             attendingGuestMap(
-                rsvpRegistry
+                rsvpRegistry,
+                invitationRegistry
             );
+
+
+        if (
+            pruneStaleAssignments(
+                registry,
+                attendingGuests
+            )
+        ) {
+
+            await store.setJSON(
+                REGISTRY_KEY,
+                registry
+            );
+
+        }
 
 
         if (
@@ -864,11 +1014,8 @@ export default async function (
             ] = {
 
                 id,
-
                 name,
-
                 shape,
-
                 capacity,
 
                 x:
@@ -881,23 +1028,19 @@ export default async function (
                     0,
 
                 width:
-                    shape ===
-                    "banquet"
+                    shape === "banquet"
                         ? 18
                         : (
-                            shape ===
-                            "rectangle"
+                            shape === "rectangle"
                                 ? 13
                                 : 10
                         ),
 
                 height:
-                    shape ===
-                    "banquet"
+                    shape === "banquet"
                         ? 7
                         : (
-                            shape ===
-                            "rectangle"
+                            shape === "rectangle"
                                 ? 9
                                 : 10
                         ),
@@ -916,7 +1059,6 @@ export default async function (
                 registry
             );
 
-
             await store.setJSON(
                 REGISTRY_KEY,
                 registry
@@ -926,10 +1068,10 @@ export default async function (
             return jsonResponse(
                 {
                     created: true,
-
                     ...buildResponse(
                         registry,
-                        rsvpRegistry
+                        rsvpRegistry,
+                        invitationRegistry
                     )
                 }
             );
@@ -1048,8 +1190,7 @@ export default async function (
                     )
                     .some(
                         table =>
-                            table.id !==
-                                id &&
+                            table.id !== id &&
                             table.name
                                 .toLocaleLowerCase() ===
                             name
@@ -1079,9 +1220,7 @@ export default async function (
                 ...existing,
 
                 name,
-
                 shape,
-
                 capacity,
 
                 x:
@@ -1124,7 +1263,6 @@ export default async function (
                 registry
             );
 
-
             await store.setJSON(
                 REGISTRY_KEY,
                 registry
@@ -1134,10 +1272,10 @@ export default async function (
             return jsonResponse(
                 {
                     updated: true,
-
                     ...buildResponse(
                         registry,
-                        rsvpRegistry
+                        rsvpRegistry,
+                        invitationRegistry
                     )
                 }
             );
@@ -1250,13 +1388,7 @@ export default async function (
                 return jsonResponse(
                     {
                         error:
-                            `${guest.guestName} has ${guest.guestCount} attending. ${table.name} only has ${Math.max(
-                                0,
-                                Number(
-                                    table.capacity
-                                ) -
-                                occupancy.people
-                            )} seat(s) remaining.`
+                            `${guest.guestName} has ${guest.guestCount} attending. ${table.name} only has ${Math.max(0, Number(table.capacity) - occupancy.people)} seat(s) remaining.`
                     },
                     409
                 );
@@ -1280,7 +1412,6 @@ export default async function (
                 registry
             );
 
-
             await store.setJSON(
                 REGISTRY_KEY,
                 registry
@@ -1290,10 +1421,10 @@ export default async function (
             return jsonResponse(
                 {
                     assigned: true,
-
                     ...buildResponse(
                         registry,
-                        rsvpRegistry
+                        rsvpRegistry,
+                        invitationRegistry
                     )
                 }
             );
@@ -1339,7 +1470,6 @@ export default async function (
                 registry
             );
 
-
             await store.setJSON(
                 REGISTRY_KEY,
                 registry
@@ -1349,10 +1479,10 @@ export default async function (
             return jsonResponse(
                 {
                     unassigned: true,
-
                     ...buildResponse(
                         registry,
-                        rsvpRegistry
+                        rsvpRegistry,
+                        invitationRegistry
                     )
                 }
             );
@@ -1375,7 +1505,6 @@ export default async function (
                 registry
             );
 
-
             await store.setJSON(
                 REGISTRY_KEY,
                 registry
@@ -1385,10 +1514,10 @@ export default async function (
             return jsonResponse(
                 {
                     updated: true,
-
                     ...buildResponse(
                         registry,
-                        rsvpRegistry
+                        rsvpRegistry,
+                        invitationRegistry
                     )
                 }
             );
@@ -1449,7 +1578,6 @@ export default async function (
                     getRegistry(
                         store
                     ),
-
                     getRsvpRegistry()
                 ]
             );
@@ -1506,7 +1634,6 @@ export default async function (
             registry
         );
 
-
         await store.setJSON(
             REGISTRY_KEY,
             registry
@@ -1516,11 +1643,11 @@ export default async function (
         return jsonResponse(
             {
                 deleted: true,
-
                 ...buildResponse(
-                    registry,
-                    rsvpRegistry
-                )
+                        registry,
+                        rsvpRegistry,
+                        invitationRegistry
+                    )
             }
         );
 

@@ -19,6 +19,12 @@ const RSVP_STORE_NAME =
 const RSVP_REGISTRY_KEY =
     "registry";
 
+const SEATING_STORE_NAME =
+    "wedding-seating";
+
+const SEATING_REGISTRY_KEY =
+    "registry";
+
 
 function jsonResponse(
     data,
@@ -215,6 +221,107 @@ async function getRsvpRegistry() {
 
 
     return registry;
+
+}
+
+
+function pruneOrphanedRsvps(
+    invitationRegistry,
+    rsvpRegistry
+) {
+
+    let changed =
+        false;
+
+
+    for (
+        const code
+        of Object.keys(
+            rsvpRegistry.rsvps
+        )
+    ) {
+
+        if (
+            invitationRegistry
+                .invitations[
+                    code
+                ]
+        ) {
+
+            continue;
+
+        }
+
+
+        delete rsvpRegistry
+            .rsvps[
+                code
+            ];
+
+        changed =
+            true;
+
+    }
+
+
+    return changed;
+
+}
+
+
+async function removeSeatingAssignment(
+    invitationCode
+) {
+
+    const store =
+        getStore(
+            SEATING_STORE_NAME
+        );
+
+    const registry =
+        await store.get(
+            SEATING_REGISTRY_KEY,
+            {
+                type:
+                    "json",
+
+                consistency:
+                    "strong"
+            }
+        );
+
+
+    if (
+        !registry ||
+        typeof registry !==
+            "object" ||
+        !registry.assignments ||
+        typeof registry.assignments !==
+            "object" ||
+        !registry.assignments[
+            invitationCode
+        ]
+    ) {
+
+        return;
+
+    }
+
+
+    delete registry
+        .assignments[
+            invitationCode
+        ];
+
+    registry.updatedAt =
+        new Date()
+            .toISOString();
+
+
+    await store.setJSON(
+        SEATING_REGISTRY_KEY,
+        registry
+    );
 
 }
 
@@ -470,6 +577,26 @@ export default async function (
             );
 
 
+        if (
+            pruneOrphanedRsvps(
+                invitationRegistry,
+                rsvpRegistry
+            )
+        ) {
+
+            const store =
+                getStore(
+                    RSVP_STORE_NAME
+                );
+
+            await store.setJSON(
+                RSVP_REGISTRY_KEY,
+                rsvpRegistry
+            );
+
+        }
+
+
         return jsonResponse(
             buildDashboard(
                 invitationRegistry,
@@ -676,6 +803,18 @@ export default async function (
         );
 
 
+        if (
+            attendance ===
+            "No"
+        ) {
+
+            await removeSeatingAssignment(
+                invitationCode
+            );
+
+        }
+
+
         return jsonResponse(
             {
                 saved: true,
@@ -781,6 +920,11 @@ export default async function (
         await store.setJSON(
             RSVP_REGISTRY_KEY,
             rsvpRegistry
+        );
+
+
+        await removeSeatingAssignment(
+            invitationCode
         );
 
 

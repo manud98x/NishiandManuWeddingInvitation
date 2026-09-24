@@ -684,6 +684,164 @@ td {
 }
 
 
+
+/* =========================
+   RSVP MOBILE CARDS
+========================= */
+
+.rsvp-sync-meta {
+    margin-top: 12px;
+    text-align: center;
+    font-size: 13px;
+    color: #8b7766;
+}
+
+.rsvp-mobile-list {
+    display: none;
+}
+
+.rsvp-mobile-card {
+    padding: 18px;
+    margin-bottom: 12px;
+    border:
+        1px solid
+        rgba(
+            198,
+            162,
+            82,
+            .24
+        );
+    border-radius: 9px;
+    background:
+        rgba(
+            255,
+            253,
+            249,
+            .82
+        );
+    box-shadow:
+        0 8px 24px
+        rgba(
+            74,
+            55,
+            30,
+            .045
+        );
+}
+
+.rsvp-mobile-card:last-child {
+    margin-bottom: 0;
+}
+
+.rsvp-mobile-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.rsvp-mobile-name {
+    font-size: 19px;
+    font-weight: 600;
+    color: #493b30;
+}
+
+.rsvp-mobile-code {
+    margin-top: 4px;
+    font-size: 11px;
+    line-height: 1.35;
+    word-break: break-all;
+    color: #9a8879;
+}
+
+.rsvp-mobile-details {
+    display: grid;
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(
+                0,
+                1fr
+            )
+        );
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.rsvp-mobile-detail {
+    min-width: 0;
+}
+
+.rsvp-mobile-detail-label {
+    margin-bottom: 4px;
+    font-family:
+        "Playfair Display",
+        serif;
+    font-size: 9px;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+    color: #8b6a18;
+}
+
+.rsvp-mobile-detail-value {
+    font-size: 15px;
+    line-height: 1.4;
+    color: #493b30;
+}
+
+.rsvp-mobile-message {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top:
+        1px solid
+        rgba(
+            198,
+            162,
+            82,
+            .16
+        );
+}
+
+.rsvp-mobile-message-text {
+    margin-top: 5px;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #5f4d40;
+    white-space: pre-wrap;
+}
+
+.rsvp-mobile-actions {
+    display: grid;
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(
+                0,
+                1fr
+            )
+        );
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.rsvp-mobile-actions .mini-button {
+    width: 100%;
+    margin: 0 !important;
+    padding: 10px 8px;
+}
+
+@media (max-width: 700px) {
+
+    .rsvp-table-wrap {
+        display: none;
+    }
+
+    .rsvp-mobile-list {
+        display: block;
+    }
+
+}
+
 /* =========================
    FUTURE SEATING/TABLES
 ========================= */
@@ -1860,6 +2018,14 @@ code {
                     id="rsvpSummary"
                 ></div>
 
+                <div
+                    class="rsvp-sync-meta"
+                    id="rsvpSyncMeta"
+                    aria-live="polite"
+                >
+                    Waiting for live RSVP data...
+                </div>
+
             </section>
 
 
@@ -2022,7 +2188,7 @@ code {
 
                 </div>
 
-                <div class="table-wrap">
+                <div class="table-wrap rsvp-table-wrap">
 
                     <table>
 
@@ -2046,6 +2212,11 @@ code {
                     </table>
 
                 </div>
+
+                <div
+                    class="rsvp-mobile-list"
+                    id="rsvpMobileList"
+                ></div>
 
                 <div
                     class="empty hidden"
@@ -2452,9 +2623,23 @@ async function apiRequest(
     }
 
 
+    const requestMethod =
+        String(
+            options.method ||
+            "GET"
+        )
+            .toUpperCase();
+
+
+    const requestUrl =
+        requestMethod === "GET"
+            ? `${url}${url.includes("?") ? "&" : "?"}_=${Date.now()}`
+            : url;
+
+
     const response =
         await fetch(
-            url,
+            requestUrl,
             {
                 ...options,
                 headers,
@@ -2611,6 +2796,38 @@ function openTab(
 
     }
 
+
+    if (
+        tabName ===
+        "rsvps" &&
+        getSecret()
+    ) {
+
+        loadRsvps()
+            .catch(
+                error => {
+
+                    const syncMeta =
+                        document
+                            .getElementById(
+                                "rsvpSyncMeta"
+                            );
+
+
+                    if (
+                        syncMeta
+                    ) {
+
+                        syncMeta.textContent =
+                            `Could not refresh RSVPs: ${error.message}`;
+
+                    }
+
+                }
+            );
+
+    }
+
 }
 
 
@@ -2639,6 +2856,23 @@ async function loadInvitations() {
 
 async function loadRsvps() {
 
+    const syncMeta =
+        document
+            .getElementById(
+                "rsvpSyncMeta"
+            );
+
+
+    if (
+        syncMeta
+    ) {
+
+        syncMeta.textContent =
+            "Refreshing live RSVP data...";
+
+    }
+
+
     const result =
         await apiRequest(
             RSVP_API
@@ -2658,6 +2892,16 @@ async function loadRsvps() {
     renderRsvpRows();
     renderRsvpManagerOptions();
     renderOverview();
+
+
+    if (
+        syncMeta
+    ) {
+
+        syncMeta.textContent =
+            `Live · ${window.location.host} · Synced ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+
+    }
 
 }
 
@@ -3747,6 +3991,7 @@ async function deleteInvitation(
 
 
         await loadRsvps();
+        await loadSeating();
 
     } catch (
         error
@@ -4902,12 +5147,49 @@ function formatDate(
 }
 
 
+function createRsvpActionButton(
+    label,
+    onClick
+) {
+
+    const button =
+        document
+            .createElement(
+                "button"
+            );
+
+    button.type =
+        "button";
+
+    button.className =
+        "mini-button";
+
+    button.textContent =
+        label;
+
+    button.addEventListener(
+        "click",
+        onClick
+    );
+
+
+    return button;
+
+}
+
+
 function renderRsvpRows() {
 
     const tbody =
         document
             .getElementById(
                 "rsvpRows"
+            );
+
+    const mobileList =
+        document
+            .getElementById(
+                "rsvpMobileList"
             );
 
     const empty =
@@ -4922,6 +5204,15 @@ function renderRsvpRows() {
 
     tbody.innerHTML =
         "";
+
+    if (
+        mobileList
+    ) {
+
+        mobileList.innerHTML =
+            "";
+
+    }
 
 
     if (
@@ -4947,6 +5238,8 @@ function renderRsvpRows() {
 
     rows.forEach(
         row => {
+
+            /* DESKTOP TABLE */
 
             const tr =
                 document
@@ -5058,54 +5351,25 @@ function renderRsvpRows() {
             ) {
 
                 const editButton =
-                    document
-                        .createElement(
-                            "button"
-                        );
-
-                editButton.type =
-                    "button";
-
-                editButton.className =
-                    "mini-button";
-
-                editButton.textContent =
-                    "Edit";
-
-                editButton.addEventListener(
-                    "click",
-                    () =>
-                        loadRsvpIntoManager(
-                            row
-                        )
-                );
-
+                    createRsvpActionButton(
+                        "Edit",
+                        () =>
+                            loadRsvpIntoManager(
+                                row
+                            )
+                    );
 
                 const deleteButton =
-                    document
-                        .createElement(
-                            "button"
-                        );
-
-                deleteButton.type =
-                    "button";
-
-                deleteButton.className =
-                    "mini-button";
+                    createRsvpActionButton(
+                        "Delete",
+                        () =>
+                            deleteManagedRsvp(
+                                row
+                            )
+                    );
 
                 deleteButton.style.marginLeft =
                     "6px";
-
-                deleteButton.textContent =
-                    "Delete";
-
-                deleteButton.addEventListener(
-                    "click",
-                    () =>
-                        deleteManagedRsvp(
-                            row
-                        )
-                );
 
 
                 actionCell.append(
@@ -5115,32 +5379,14 @@ function renderRsvpRows() {
 
             } else {
 
-                const addButton =
-                    document
-                        .createElement(
-                            "button"
-                        );
-
-                addButton.type =
-                    "button";
-
-                addButton.className =
-                    "mini-button";
-
-                addButton.textContent =
-                    "Add RSVP";
-
-                addButton.addEventListener(
-                    "click",
-                    () =>
-                        loadRsvpIntoManager(
-                            row
-                        )
-                );
-
-
                 actionCell.appendChild(
-                    addButton
+                    createRsvpActionButton(
+                        "Add RSVP",
+                        () =>
+                            loadRsvpIntoManager(
+                                row
+                            )
+                    )
                 );
 
             }
@@ -5158,6 +5404,254 @@ function renderRsvpRows() {
 
             tbody.appendChild(
                 tr
+            );
+
+
+            /* MOBILE CARD */
+
+            if (
+                !mobileList
+            ) {
+
+                return;
+
+            }
+
+
+            const card =
+                document
+                    .createElement(
+                        "article"
+                    );
+
+            card.className =
+                "rsvp-mobile-card";
+
+
+            const head =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            head.className =
+                "rsvp-mobile-head";
+
+
+            const identity =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+
+            const mobileName =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            mobileName.className =
+                "rsvp-mobile-name";
+
+            mobileName.textContent =
+                row.name;
+
+
+            const mobileCode =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            mobileCode.className =
+                "rsvp-mobile-code";
+
+            mobileCode.textContent =
+                row.code;
+
+
+            identity.append(
+                mobileName,
+                mobileCode
+            );
+
+
+            head.append(
+                identity,
+                rsvpStatusBadge(
+                    row.status
+                )
+            );
+
+
+            const details =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            details.className =
+                "rsvp-mobile-details";
+
+
+            const guestDetail =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            guestDetail.className =
+                "rsvp-mobile-detail";
+
+            guestDetail.innerHTML =
+                `<div class="rsvp-mobile-detail-label">Guests</div><div class="rsvp-mobile-detail-value"></div>`;
+
+            guestDetail
+                .querySelector(
+                    ".rsvp-mobile-detail-value"
+                )
+                .textContent =
+                row.guestCount ||
+                "—";
+
+
+            const updatedDetail =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            updatedDetail.className =
+                "rsvp-mobile-detail";
+
+            updatedDetail.innerHTML =
+                `<div class="rsvp-mobile-detail-label">Last Updated</div><div class="rsvp-mobile-detail-value"></div>`;
+
+            updatedDetail
+                .querySelector(
+                    ".rsvp-mobile-detail-value"
+                )
+                .textContent =
+                formatDate(
+                    row.updatedAt ||
+                    row.submittedAt
+                );
+
+
+            details.append(
+                guestDetail,
+                updatedDetail
+            );
+
+
+            const message =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            message.className =
+                "rsvp-mobile-message";
+
+
+            const messageLabel =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            messageLabel.className =
+                "rsvp-mobile-detail-label";
+
+            messageLabel.textContent =
+                "Message";
+
+
+            const messageText =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            messageText.className =
+                "rsvp-mobile-message-text";
+
+            messageText.textContent =
+                row.message ||
+                "—";
+
+
+            message.append(
+                messageLabel,
+                messageText
+            );
+
+
+            const actions =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+            actions.className =
+                "rsvp-mobile-actions";
+
+
+            if (
+                row.status !==
+                "Pending"
+            ) {
+
+                actions.append(
+                    createRsvpActionButton(
+                        "Edit RSVP",
+                        () =>
+                            loadRsvpIntoManager(
+                                row
+                            )
+                    ),
+
+                    createRsvpActionButton(
+                        "Delete RSVP",
+                        () =>
+                            deleteManagedRsvp(
+                                row
+                            )
+                    )
+                );
+
+            } else {
+
+                const addButton =
+                    createRsvpActionButton(
+                        "Add RSVP",
+                        () =>
+                            loadRsvpIntoManager(
+                                row
+                            )
+                    );
+
+                addButton.style.gridColumn =
+                    "1 / -1";
+
+                actions.appendChild(
+                    addButton
+                );
+
+            }
+
+
+            card.append(
+                head,
+                details,
+                message,
+                actions
+            );
+
+
+            mobileList.appendChild(
+                card
             );
 
         }
@@ -7964,6 +8458,45 @@ document
         "change",
         renderRsvpRows
     );
+
+
+document.addEventListener(
+    "visibilitychange",
+    () => {
+
+        if (
+            document.hidden ||
+            !getSecret()
+        ) {
+
+            return;
+
+        }
+
+
+        const rsvpPage =
+            document
+                .getElementById(
+                    "tab-rsvps"
+                );
+
+
+        if (
+            rsvpPage &&
+            rsvpPage.classList.contains(
+                "active"
+            )
+        ) {
+
+            loadRsvps()
+                .catch(
+                    () => {}
+                );
+
+        }
+
+    }
+);
 
 
 document

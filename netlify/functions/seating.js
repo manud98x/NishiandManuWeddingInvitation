@@ -15,6 +15,12 @@ const SEATING_STORE_NAME =
 const SEATING_REGISTRY_KEY =
     "registry";
 
+const RSVP_STORE_NAME =
+    "wedding-rsvps";
+
+const RSVP_REGISTRY_KEY =
+    "registry";
+
 
 function jsonResponse(
     data,
@@ -157,6 +163,48 @@ async function getSeatingRegistry() {
 }
 
 
+async function getRsvpRegistry() {
+
+    const store =
+        getStore(
+            RSVP_STORE_NAME
+        );
+
+    const registry =
+        await store.get(
+            RSVP_REGISTRY_KEY,
+            {
+                type:
+                    "json",
+
+                consistency:
+                    "strong"
+            }
+        );
+
+
+    if (
+        !registry ||
+        typeof registry !==
+            "object" ||
+        !registry.rsvps ||
+        typeof registry.rsvps !==
+            "object"
+    ) {
+
+        return {
+            version: 1,
+            rsvps: {}
+        };
+
+    }
+
+
+    return registry;
+
+}
+
+
 export default async function (
     request
 ) {
@@ -207,12 +255,14 @@ export default async function (
 
     const [
         invitationRegistry,
-        seatingRegistry
+        seatingRegistry,
+        rsvpRegistry
     ] =
         await Promise.all(
             [
                 getInvitationRegistry(),
-                getSeatingRegistry()
+                getSeatingRegistry(),
+                getRsvpRegistry()
             ]
         );
 
@@ -230,6 +280,34 @@ export default async function (
                     "Invalid invitation link."
             },
             404
+        );
+
+    }
+
+
+    const rsvp =
+        rsvpRegistry
+            .rsvps[
+                invitationCode
+            ];
+
+
+    if (
+        !rsvp ||
+        rsvp.attendance !==
+            "Yes"
+    ) {
+
+        return jsonResponse(
+            {
+                published:
+                    Boolean(
+                        seatingRegistry.published
+                    ),
+
+                assigned:
+                    false
+            }
         );
 
     }
@@ -297,7 +375,6 @@ export default async function (
         {
             published: true,
             assigned: true,
-
             tableName:
                 table.name
         }
