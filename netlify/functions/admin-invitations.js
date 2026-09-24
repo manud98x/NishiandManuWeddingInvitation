@@ -477,6 +477,227 @@ export default async function (
 
 
 
+        /* =========================================================
+           EDIT AN EXISTING INVITATION
+           Keeps the same invitation code/link and createdAt date.
+           Also updates the stored RSVP guest name, if one exists.
+        ========================================================= */
+
+        if (
+            body.editCode &&
+            body.editName
+        ) {
+
+            const editCode =
+                String(
+                    body.editCode
+                )
+                    .trim();
+
+            const editName =
+                normalizeName(
+                    body.editName
+                );
+
+
+            if (
+                !editCode ||
+                !editName
+            ) {
+
+                return jsonResponse(
+                    {
+                        error:
+                            "Invitation code and guest name are required."
+                    },
+                    400
+                );
+
+            }
+
+
+            const registry =
+                await getRegistry(
+                    store
+                );
+
+            const existingInvitation =
+                registry
+                    .invitations[
+                        editCode
+                    ];
+
+
+            if (
+                !existingInvitation
+            ) {
+
+                return jsonResponse(
+                    {
+                        error:
+                            "Invitation not found."
+                    },
+                    404
+                );
+
+            }
+
+
+            const duplicate =
+                Object
+                    .entries(
+                        registry
+                            .invitations
+                    )
+                    .some(
+                        (
+                            [
+                                code,
+                                invitation
+                            ]
+                        ) =>
+                            code !== editCode &&
+                            invitation &&
+                            invitation.name &&
+                            nameKey(
+                                invitation.name
+                            ) ===
+                            nameKey(
+                                editName
+                            )
+                    );
+
+
+            if (
+                duplicate
+            ) {
+
+                return jsonResponse(
+                    {
+                        error:
+                            "An invitation already exists for that guest name."
+                    },
+                    409
+                );
+
+            }
+
+
+            registry
+                .invitations[
+                    editCode
+                ] = {
+
+                    ...existingInvitation,
+
+                    name:
+                        editName,
+
+                    createdAt:
+                        existingInvitation
+                            .createdAt ||
+                        new Date()
+                            .toISOString()
+
+                };
+
+
+            const rsvpStore =
+                getStore(
+                    RSVP_STORE_NAME
+                );
+
+            const rsvpRegistryRaw =
+                await rsvpStore.get(
+                    RSVP_REGISTRY_KEY,
+                    {
+                        type:
+                            "json",
+
+                        consistency:
+                            "strong"
+                    }
+                );
+
+            const rsvpRegistry =
+                rsvpRegistryRaw &&
+                typeof rsvpRegistryRaw ===
+                    "object" &&
+                rsvpRegistryRaw.rsvps &&
+                typeof rsvpRegistryRaw.rsvps ===
+                    "object"
+                    ? rsvpRegistryRaw
+                    : {
+                        version: 1,
+                        rsvps: {}
+                    };
+
+
+            if (
+                rsvpRegistry
+                    .rsvps[
+                        editCode
+                    ]
+            ) {
+
+                rsvpRegistry
+                    .rsvps[
+                        editCode
+                    ] = {
+
+                        ...rsvpRegistry
+                            .rsvps[
+                                editCode
+                            ],
+
+                        guestName:
+                            editName,
+
+                        updatedAt:
+                            new Date()
+                                .toISOString()
+
+                    };
+
+            }
+
+
+            await Promise.all(
+                [
+                    store.setJSON(
+                        REGISTRY_KEY,
+                        registry
+                    ),
+
+                    rsvpStore.setJSON(
+                        RSVP_REGISTRY_KEY,
+                        rsvpRegistry
+                    )
+                ]
+            );
+
+
+            return jsonResponse(
+                {
+                    edited:
+                        true,
+
+                    code:
+                        editCode,
+
+                    name:
+                        editName,
+
+                    invitations:
+                        listInvitations(
+                            registry
+                        )
+                }
+            );
+
+        }
+
+
         const rawNames =
             Array.isArray(
                 body.names
