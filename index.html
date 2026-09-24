@@ -2430,6 +2430,11 @@
                 #6e5c4e;
         }
 
+        .table-assignment-name:not(.hidden) {
+            margin-top: 16px;
+            display: block;
+        }
+
         .table-assignment-status {
             margin-top:
                 16px;
@@ -2442,7 +2447,10 @@
                     18px;
             }
 
+
         }
+
+        
 
 
         /* =========================================================
@@ -2588,8 +2596,7 @@
             opacity: 0;
 
             transform:
-                translateY(8px)
-                scale(.985);
+                translateY(8px) scale(.985);
         }
 
         .rsvp-success::before {
@@ -2625,16 +2632,14 @@
                 opacity: 0;
 
                 transform:
-                    translateY(8px)
-                    scale(.985);
+                    translateY(8px) scale(.985);
             }
 
             to {
                 opacity: 1;
 
                 transform:
-                    translateY(0)
-                    scale(1);
+                    translateY(0) scale(1);
             }
 
         }
@@ -3178,8 +3183,6 @@
                             <path d="M13 30h6M29 30h6"></path>
                         </svg>
                     </div>
-
-                    <br>
 
                     <div class="table-assignment-status" id="tableAssignmentStatus">
 
@@ -5201,7 +5204,7 @@ END:VCALENDAR`
                         if (
                             document.activeElement &&
                             typeof document.activeElement.blur ===
-                                "function"
+                            "function"
                         ) {
 
                             document.activeElement.blur();
