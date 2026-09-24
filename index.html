@@ -3684,6 +3684,82 @@ END:VCALENDAR`
 
         let invitationCode = "";
 
+        /*
+            Always start the invitation at the top.
+
+            Browsers can restore the previous scroll position
+            after refresh/back-forward navigation, so disable
+            automatic scroll restoration and force the page
+            back to the top when it is shown.
+        */
+        if (
+            "scrollRestoration" in history
+        ) {
+
+            history.scrollRestoration =
+                "manual";
+
+        }
+
+
+        function forcePageToTop() {
+
+            window.scrollTo(
+                {
+                    top:
+                        0,
+
+                    left:
+                        0,
+
+                    behavior:
+                        "auto"
+                }
+            );
+
+        }
+
+
+        forcePageToTop();
+
+
+        window.addEventListener(
+            "pageshow",
+            () => {
+
+                forcePageToTop();
+
+            }
+        );
+
+
+        window.addEventListener(
+            "load",
+            () => {
+
+                requestAnimationFrame(
+                    () => {
+
+                        forcePageToTop();
+
+                    }
+                );
+
+            }
+        );
+
+
+        window.addEventListener(
+            "beforeunload",
+            () => {
+
+                forcePageToTop();
+
+            }
+        );
+
+
+
         let invitationIsValid = false;
 
         let rsvpAlreadySubmitted = false;
