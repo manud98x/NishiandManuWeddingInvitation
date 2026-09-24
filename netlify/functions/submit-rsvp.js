@@ -198,6 +198,115 @@ export default async function (
     request
 ) {
 
+    /*
+        GET:
+        Check whether this invitation
+        already has an RSVP.
+
+        Only returns true/false.
+        It does not expose RSVP details.
+    */
+    if (
+        request.method ===
+        "GET"
+    ) {
+
+        const url =
+            new URL(
+                request.url
+            );
+
+        const invitationCode =
+            String(
+                url.searchParams.get(
+                    "code"
+                ) ||
+                ""
+            )
+                .trim();
+
+
+        if (
+            !invitationCode
+        ) {
+
+            return jsonResponse(
+                {
+                    error:
+                        "Invitation code is required."
+                },
+                400
+            );
+
+        }
+
+
+        const invitationStore =
+            getStore(
+                INVITATION_STORE_NAME
+            );
+
+        const invitationRegistry =
+            await getInvitationRegistry(
+                invitationStore
+            );
+
+        const invitation =
+            invitationRegistry
+                .invitations[
+                    invitationCode
+                ];
+
+
+        if (
+            !invitation ||
+            !invitation.name
+        ) {
+
+            return jsonResponse(
+                {
+                    error:
+                        "Invalid invitation link."
+                },
+                404
+            );
+
+        }
+
+
+        const rsvpStore =
+            getStore(
+                RSVP_STORE_NAME
+            );
+
+        const rsvpRegistry =
+            await getRsvpRegistry(
+                rsvpStore
+            );
+
+        const existingRsvp =
+            rsvpRegistry
+                .rsvps[
+                    invitationCode
+                ];
+
+
+        return jsonResponse(
+            {
+                submitted:
+                    Boolean(
+                        existingRsvp
+                    )
+            }
+        );
+
+    }
+
+
+    /*
+        Only POST is allowed
+        after the GET check above.
+    */
     if (
         request.method !==
         "POST"
@@ -324,6 +433,9 @@ export default async function (
     }
 
 
+    /*
+        Validate invitation.
+    */
     const invitationStore =
         getStore(
             INVITATION_STORE_NAME
@@ -357,6 +469,9 @@ export default async function (
     }
 
 
+    /*
+        Load RSVP registry.
+    */
     const rsvpStore =
         getStore(
             RSVP_STORE_NAME
@@ -373,6 +488,35 @@ export default async function (
                 invitationCode
             ];
 
+
+    /*
+        IMPORTANT:
+
+        Once this invitation has submitted
+        an RSVP, the public invitation cannot
+        submit again or overwrite it.
+
+        Admin changes can still be made using
+        your admin-rsvps.js function.
+    */
+    if (
+        existingRsvp
+    ) {
+
+        return jsonResponse(
+            {
+                error:
+                    "An RSVP has already been submitted for this invitation.",
+
+                alreadySubmitted:
+                    true
+            },
+            409
+        );
+
+    }
+
+
     const now =
         new Date()
             .toISOString();
@@ -383,6 +527,9 @@ export default async function (
             : "0";
 
 
+    /*
+        Save first RSVP.
+    */
     rsvpRegistry
         .rsvps[
             invitationCode
@@ -400,10 +547,7 @@ export default async function (
             message,
 
             submittedAt:
-                existingRsvp &&
-                existingRsvp.submittedAt
-                    ? existingRsvp.submittedAt
-                    : now,
+                now,
 
             updatedAt:
                 now
@@ -417,6 +561,10 @@ export default async function (
     );
 
 
+    /*
+        If they decline, make sure any old
+        seating assignment is removed.
+    */
     if (
         attendance ===
         "No"
@@ -444,9 +592,7 @@ export default async function (
             guests,
 
             updated:
-                Boolean(
-                    existingRsvp
-                )
+                false
         }
     );
 

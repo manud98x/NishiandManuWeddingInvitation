@@ -3222,7 +3222,7 @@
 
 
                     <form class="rsvp-form" name="wedding-rsvp" method="POST" data-netlify="true"
-                        netlify-honeypot="bot-field" id="rsvpForm">
+                        netlify-honeypot="bot-field" id="rsvpForm" style="display: none;">
 
                         <input type="hidden" name="form-name" value="wedding-rsvp">
 
@@ -3686,6 +3686,157 @@ END:VCALENDAR`
 
         let invitationIsValid = false;
 
+        let rsvpAlreadySubmitted = false;
+
+
+
+        function showRsvpForm() {
+
+            const form =
+                document.getElementById(
+                    "rsvpForm"
+                );
+
+            const success =
+                document.getElementById(
+                    "rsvpSuccess"
+                );
+
+
+            if (success) {
+
+                success.style.display =
+                    "none";
+
+                success.classList.remove(
+                    "rsvp-success-show"
+                );
+
+            }
+
+
+            if (form) {
+
+                form.style.display =
+                    "";
+
+            }
+
+        }
+
+
+
+        function showExistingRsvpState() {
+
+            rsvpAlreadySubmitted =
+                true;
+
+
+            const form =
+                document.getElementById(
+                    "rsvpForm"
+                );
+
+            const success =
+                document.getElementById(
+                    "rsvpSuccess"
+                );
+
+
+            if (form) {
+
+                form.style.display =
+                    "none";
+
+            }
+
+
+            if (success) {
+
+                success.style.display =
+                    "block";
+
+                success.classList.add(
+                    "rsvp-success-show"
+                );
+
+            }
+
+        }
+
+
+
+        async function loadExistingRsvpState() {
+
+            if (
+                !invitationCode ||
+                !invitationIsValid
+            ) {
+
+                return false;
+
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `/.netlify/functions/submit-rsvp?code=${encodeURIComponent(invitationCode)}`,
+                        {
+                            method:
+                                "GET",
+
+                            cache:
+                                "no-store"
+                        }
+                    );
+
+
+                if (
+                    !response.ok
+                ) {
+
+                    return false;
+
+                }
+
+
+                const result =
+                    await response.json();
+
+
+                if (
+                    result.submitted
+                ) {
+
+                    showExistingRsvpState();
+
+                    return true;
+
+                }
+
+
+                rsvpAlreadySubmitted =
+                    false;
+
+                return false;
+
+            } catch (
+                error
+            ) {
+
+                console.error(
+                    "RSVP status lookup failed:",
+                    error
+                );
+
+                return false;
+
+            }
+
+        }
+
 
 
         function getInvitationCode() {
@@ -3905,13 +4056,26 @@ END:VCALENDAR`
 
 
 
-                if (rsvpSubmitButton) {
+                const alreadySubmitted =
+                    await loadExistingRsvpState();
 
-                    rsvpSubmitButton.disabled =
-                        false;
 
-                    rsvpSubmitButton.textContent =
-                        "Send RSVP";
+                if (
+                    !alreadySubmitted
+                ) {
+
+                    showRsvpForm();
+
+
+                    if (rsvpSubmitButton) {
+
+                        rsvpSubmitButton.disabled =
+                            false;
+
+                        rsvpSubmitButton.textContent =
+                            "Send RSVP";
+
+                    }
 
                 }
 
@@ -5070,6 +5234,17 @@ END:VCALENDAR`
                     }
 
 
+                    if (
+                        rsvpAlreadySubmitted
+                    ) {
+
+                        showExistingRsvpState();
+
+                        return;
+
+                    }
+
+
 
                     const button =
                         rsvpForm.querySelector(
@@ -5136,6 +5311,10 @@ END:VCALENDAR`
                             let errorMessage =
                                 "Submission failed";
 
+                            let alreadySubmitted =
+                                false;
+
+
                             try {
 
                                 const errorData =
@@ -5145,13 +5324,34 @@ END:VCALENDAR`
                                     errorData.error ||
                                     errorMessage;
 
+                                alreadySubmitted =
+                                    Boolean(
+                                        errorData.alreadySubmitted
+                                    );
+
                             } catch { }
+
+
+                            if (
+                                alreadySubmitted
+                            ) {
+
+                                showExistingRsvpState();
+
+                                return;
+
+                            }
+
 
                             throw new Error(
                                 errorMessage
                             );
 
                         }
+
+
+                        rsvpAlreadySubmitted =
+                            true;
 
 
 
