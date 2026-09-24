@@ -1018,7 +1018,7 @@ export default async function (
                 return jsonResponse(
                     {
                         error:
-                            "Table name is required."
+                            "Table or display item name is required."
                     },
                     400
                 );
@@ -1411,6 +1411,11 @@ export default async function (
             }
 
 
+            /*
+                Capacity 0 means this is a display item,
+                such as a bar, cake structure, photo booth,
+                decor item, DJ booth, etc.
+            */
             if (
                 Number(
                     table.capacity
@@ -1475,7 +1480,13 @@ export default async function (
                 return jsonResponse(
                     {
                         error:
-                            `${guest.guestName} has ${guest.guestCount} attending. ${table.name} only has ${Math.max(0, Number(table.capacity) - occupancy.people)} seat(s) remaining.`
+                            `${guest.guestName} has ${guest.guestCount} attending. ${table.name} only has ${Math.max(
+                                0,
+                                Number(
+                                    table.capacity
+                                ) -
+                                occupancy.people
+                            )} seat(s) remaining.`
                     },
                     409
                 );

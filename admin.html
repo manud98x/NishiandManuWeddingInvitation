@@ -2849,24 +2849,25 @@ code {
             <section class="panel">
 
                 <h2 class="panel-title">
-                    Create Table
+                    Create Table / Display Item
                 </h2>
 
                 <p class="panel-copy">
-                    Add the tables you plan to use at the reception.
-                    Each table can have its own shape and capacity.
+                    Add guest tables or non-seating floor-plan items such as a bar,
+                    cake structure, photo booth or decor.
+                    Use a capacity of 0 for non-seating items.
                 </p>
 
                 <div class="field">
 
                     <label for="tableName">
-                        Table Name
+                        Table / Item Name
                     </label>
 
                     <input
                         type="text"
                         id="tableName"
-                        placeholder="e.g. Table 1 or Head Table"
+                        placeholder="e.g. Table 1, Bar or Cake Structure"
                     >
 
                 </div>
@@ -2895,11 +2896,15 @@ code {
                     <input
                         type="number"
                         id="tableCapacity"
-                        min="1"
+                        min="0"
                         max="100"
                         step="1"
                         value="10"
                     >
+
+                    <div class="help" style="margin-top: 7px; text-align: left;">
+                        Use 0 for non-seating items.
+                    </div>
 
                 </div>
 
@@ -2908,7 +2913,7 @@ code {
                     id="createTableButton"
                     type="button"
                 >
-                    Add Table
+                    Add Table / Item
                 </button>
 
                 <div
@@ -6805,13 +6810,22 @@ function renderSeatingPlanner() {
                         table
                     );
 
+                const isDisplayItem =
+                    Number(
+                        table.capacity
+                    ) === 0;
+
                 marker.setAttribute(
                     "aria-label",
-                    `${table.name}, ${table.assignedPeople || 0} of ${table.capacity} seated`
+                    isDisplayItem
+                        ? `${table.name}, non-seating display item`
+                        : `${table.name}, ${table.assignedPeople || 0} of ${table.capacity} seated`
                 );
 
                 marker.innerHTML =
-                    `<span class="table-marker-label"><span class="table-marker-name">${table.name}</span><span class="table-marker-capacity">${table.assignedPeople || 0}/${table.capacity}</span></span>`;
+                    isDisplayItem
+                        ? `<span class="table-marker-label"><span class="table-marker-name">${table.name}</span><span class="table-marker-capacity">Display Item</span></span>`
+                        : `<span class="table-marker-label"><span class="table-marker-name">${table.name}</span><span class="table-marker-capacity">${table.assignedPeople || 0}/${table.capacity}</span></span>`;
 
                 marker.addEventListener(
                     "click",
@@ -7100,7 +7114,16 @@ function renderSelectedTablePanel() {
 
     const meta = document.createElement("div");
     meta.className = "seating-selected-meta";
-    meta.textContent = `${humanTableShape(table.shape)} · ${table.assignedPeople || 0} / ${table.capacity} people seated`;
+
+    const isDisplayItem =
+        Number(
+            table.capacity
+        ) === 0;
+
+    meta.textContent =
+        isDisplayItem
+            ? `${humanTableShape(table.shape)} · Non-seating display item`
+            : `${humanTableShape(table.shape)} · ${table.assignedPeople || 0} / ${table.capacity} people seated`;
 
     const position = document.createElement("div");
     position.className = "seating-position-line";
@@ -7212,22 +7235,63 @@ function renderSelectedTablePanel() {
     const editButton = document.createElement("button");
     editButton.type = "button";
     editButton.className = "button secondary";
-    editButton.textContent = "Edit Table Details";
+    editButton.textContent = "Edit Details";
     editButton.addEventListener("click", () => editTable(table));
 
     const deleteButton = document.createElement("button");
     deleteButton.type = "button";
     deleteButton.className = "button danger";
-    deleteButton.textContent = "Delete Table";
+    deleteButton.textContent = "Delete";
     deleteButton.addEventListener("click", () => deleteTable(table));
 
     actions.append(editButton, deleteButton);
 
     const note = document.createElement("div");
     note.className = "seating-small-note";
-    note.textContent = "Table movements are saved after you finish dragging. Use the controls above to fine-tune the layout.";
+    note.textContent = "Floor-plan movements are saved after you finish dragging. Use the controls above to fine-tune the layout.";
 
-    wrapper.append(title, meta, position, controls, assignmentTitle, assignmentRow, assignedTitle, assignedList, actions, note);
+    wrapper.append(
+        title,
+        meta,
+        position,
+        controls
+    );
+
+    if (
+        isDisplayItem
+    ) {
+
+        const displayNote =
+            document.createElement(
+                "div"
+            );
+
+        displayNote.className =
+            "seating-empty-state";
+
+        displayNote.textContent =
+            "This is a non-seating item. Guests cannot be assigned to it.";
+
+        wrapper.appendChild(
+            displayNote
+        );
+
+    } else {
+
+        wrapper.append(
+            assignmentTitle,
+            assignmentRow,
+            assignedTitle,
+            assignedList
+        );
+
+    }
+
+    wrapper.append(
+        actions,
+        note
+    );
+
     panel.appendChild(wrapper);
 
 }
@@ -7265,7 +7329,11 @@ function renderSeatingUnassignedPanel() {
 
         if (selectedSeatingTableId) {
             const table = getTableById(selectedSeatingTableId);
-            if (table && guest.guestCount <= (table.remainingCapacity ?? table.capacity)) {
+            if (
+                table &&
+                Number(table.capacity) > 0 &&
+                guest.guestCount <= (table.remainingCapacity ?? table.capacity)
+            ) {
                 const assign = document.createElement("button");
                 assign.type = "button";
                 assign.className = "mini-button";
@@ -7638,7 +7706,9 @@ function renderTables() {
                 "table-meta";
 
             meta.textContent =
-                `${table.assignedPeople || 0} / ${table.capacity} people seated`;
+                Number(table.capacity) === 0
+                    ? "Non-seating display item"
+                    : `${table.assignedPeople || 0} / ${table.capacity} people seated`;
 
 
             copy.append(
@@ -7871,7 +7941,9 @@ function renderTables() {
                     "table-no-seated-guests";
 
                 none.textContent =
-                    "No guests seated at this table yet.";
+                    Number(table.capacity) === 0
+                        ? "Display item · no guest seating"
+                        : "No guests seated at this table yet.";
 
 
                 seatedList.appendChild(
@@ -8132,7 +8204,7 @@ async function createTable() {
 
         showStatus(
             status,
-            "Enter a table name.",
+            "Enter a table or display item name.",
             "error"
         );
 
@@ -8145,13 +8217,13 @@ async function createTable() {
         !Number.isInteger(
             capacity
         ) ||
-        capacity < 1 ||
+        capacity < 0 ||
         capacity > 100
     ) {
 
         showStatus(
             status,
-            "Capacity must be a whole number between 1 and 100.",
+            "Capacity must be a whole number between 0 and 100.",
             "error"
         );
 
@@ -8217,10 +8289,15 @@ async function createTable() {
         nameInput.value =
             "";
 
+        capacityInput.value =
+            "10";
+
 
         showStatus(
             status,
-            `${name} created.`,
+            capacity === 0
+                ? `${name} added as a display item.`
+                : `${name} created.`,
             "success"
         );
 
@@ -8240,7 +8317,7 @@ async function createTable() {
             false;
 
         button.textContent =
-            "Add Table";
+            "Add Table / Item";
 
     }
 
@@ -8379,7 +8456,7 @@ async function editTable(
 
     const newName =
         prompt(
-            "Table name:",
+            "Table / item name:",
             table.name
         );
 
@@ -8408,7 +8485,7 @@ async function editTable(
     ) {
 
         alert(
-            "Table name cannot be empty."
+            "Table / item name cannot be empty."
         );
 
         return;
@@ -8418,7 +8495,7 @@ async function editTable(
 
     const newCapacity =
         prompt(
-            "Capacity:",
+            "Capacity (use 0 for non-seating items):",
             String(
                 table.capacity
             )
@@ -8445,12 +8522,12 @@ async function editTable(
         !Number.isInteger(
             capacity
         ) ||
-        capacity < 1 ||
+        capacity < 0 ||
         capacity > 100
     ) {
 
         alert(
-            "Capacity must be a whole number between 1 and 100."
+            "Capacity must be a whole number between 0 and 100."
         );
 
         return;
