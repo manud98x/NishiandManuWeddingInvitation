@@ -1725,7 +1725,7 @@ code {
     display: grid;
     grid-template-columns:
         repeat(
-            3,
+            4,
             minmax(
                 0,
                 1fr
@@ -1931,7 +1931,7 @@ code {
 
         grid-template-columns:
             repeat(
-                3,
+                2,
                 minmax(
                     0,
                     1fr
@@ -2819,6 +2819,11 @@ code {
                             <div class="summary-card">
                                 <div class="summary-number" id="seatingMapUnassignedCount">0</div>
                                 <div class="summary-label">Still Unassigned</div>
+                            </div>
+
+                            <div class="summary-card">
+                                <div class="summary-number" id="seatingMapCapacityCount">0</div>
+                                <div class="summary-label">Total Capacity</div>
                             </div>
 
                         </div>
@@ -6597,6 +6602,21 @@ function renderSeatingMapCounters() {
             allocated
         );
 
+    const totalCapacity =
+        actualSeatingTables()
+            .reduce(
+                (
+                    total,
+                    table
+                ) =>
+                    total +
+                    Number(
+                        table.capacity ||
+                        0
+                    ),
+                0
+            );
+
 
     const tableCountEl =
         document.getElementById(
@@ -6611,6 +6631,11 @@ function renderSeatingMapCounters() {
     const unassignedCountEl =
         document.getElementById(
             "seatingMapUnassignedCount"
+        );
+
+    const capacityCountEl =
+        document.getElementById(
+            "seatingMapCapacityCount"
         );
 
     const statusEl =
@@ -6660,6 +6685,7 @@ function renderSeatingMapCounters() {
     }
     if (assignedCountEl) assignedCountEl.textContent = allocated;
     if (unassignedCountEl) unassignedCountEl.textContent = unassigned;
+    if (capacityCountEl) capacityCountEl.textContent = totalCapacity;
 
     if (statusEl) {
 
