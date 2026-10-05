@@ -5009,34 +5009,47 @@ END:VCALENDAR`
                             entry => {
 
                                 if (
-                                    entry.isIntersecting
+                                    entry.isIntersecting &&
+                                    entry.target.dataset.timelineRevealStarted !==
+                                        "true"
                                 ) {
 
-                                    entry.target
-                                        .classList
-                                        .add(
-                                            "is-visible",
-                                            "is-active"
-                                        );
+                                    entry.target.dataset.timelineRevealStarted =
+                                        "true";
 
 
-                                    timelineItems
-                                        .forEach(
-                                            item => {
+                                    setTimeout(
+                                        () => {
 
-                                                if (
-                                                    item !==
-                                                    entry.target
-                                                ) {
+                                            entry.target
+                                                .classList
+                                                .add(
+                                                    "is-visible",
+                                                    "is-active"
+                                                );
 
-                                                    item.classList.remove(
-                                                        "is-active"
-                                                    );
 
-                                                }
+                                            timelineItems
+                                                .forEach(
+                                                    item => {
 
-                                            }
-                                        );
+                                                        if (
+                                                            item !==
+                                                            entry.target
+                                                        ) {
+
+                                                            item.classList.remove(
+                                                                "is-active"
+                                                            );
+
+                                                        }
+
+                                                    }
+                                                );
+
+                                        },
+                                        250
+                                    );
 
                                 }
 
