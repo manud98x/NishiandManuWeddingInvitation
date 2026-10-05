@@ -1708,6 +1708,18 @@
    DATE CARD
 ========================================================= */
 
+        /*
+            All content cards after the date remain hidden until
+            the guest completes the date reveal.
+        */
+        .post-reveal-card {
+            display: none !important;
+        }
+
+        .post-reveal-card.revealed {
+            display: block !important;
+        }
+
         .date-card {
             max-height: 300px;
 
@@ -4596,6 +4608,52 @@ END:VCALENDAR`
 
 
         /* =========================================================
+           POST-DATE REVEAL CONTENT
+        ========================================================= */
+
+        function preparePostRevealCards() {
+
+            document
+                .querySelectorAll(
+                    ".card:not(.date-card)"
+                )
+                .forEach(
+                    card => {
+
+                        card.classList.add(
+                            "post-reveal-card"
+                        );
+
+                    }
+                );
+
+        }
+
+
+        function revealPostRevealCards() {
+
+            document
+                .querySelectorAll(
+                    ".post-reveal-card"
+                )
+                .forEach(
+                    card => {
+
+                        card.classList.add(
+                            "revealed"
+                        );
+
+                    }
+                );
+
+        }
+
+
+        preparePostRevealCards();
+
+
+
+        /* =========================================================
            SCROLL CARD ANIMATION
         ========================================================= */
 
@@ -4840,6 +4898,9 @@ END:VCALENDAR`
                             .getElementById("dateContent")
                             .classList
                             .add("show");
+
+
+                        revealPostRevealCards();
 
                     }, 650);
 
