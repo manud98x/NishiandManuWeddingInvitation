@@ -4973,6 +4973,23 @@ END:VCALENDAR`
                 false;
 
 
+            const isMobile =
+                window.matchMedia(
+                    "(max-width: 700px)"
+                ).matches;
+
+
+            const firstItemDelay =
+                isMobile
+                    ? 250
+                    : 500;
+
+            const gapBetweenItems =
+                isMobile
+                    ? 450
+                    : 800;
+
+
             const timelineObserver =
                 new IntersectionObserver(
                     entries => {
@@ -5000,13 +5017,6 @@ END:VCALENDAR`
                         timelineObserver.disconnect();
 
 
-                        const firstItemDelay =
-                            650;
-
-                        const gapBetweenItems =
-                            1000;
-
-
                         timelineItems.forEach(
                             (
                                 item,
@@ -5020,9 +5030,11 @@ END:VCALENDAR`
                                             .forEach(
                                                 timelineItem => {
 
-                                                    timelineItem.classList.remove(
-                                                        "is-active"
-                                                    );
+                                                    timelineItem
+                                                        .classList
+                                                        .remove(
+                                                            "is-active"
+                                                        );
 
                                                 }
                                             );
@@ -5047,10 +5059,14 @@ END:VCALENDAR`
                     },
                     {
                         threshold:
-                            .28,
+                            isMobile
+                                ? .18
+                                : .28,
 
                         rootMargin:
-                            "0px 0px -10% 0px"
+                            isMobile
+                                ? "0px 0px -5% 0px"
+                                : "0px 0px -10% 0px"
                     }
                 );
 
