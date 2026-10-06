@@ -4588,367 +4588,26 @@ END:VCALENDAR`
 
         function showInvalidInvitation() {
 
+            invitationIsValid =
+                false;
+
             guestName =
                 "";
-
-
 
             invitationCode =
                 "";
 
 
-
-            invitationIsValid =
-                false;
-
-
-
-            const envelopeGuest =
-                document.getElementById(
-                    "envelopeGuest"
-                );
-
-            const guestGreeting =
-                document.getElementById(
-                    "guestGreeting"
-                );
-
-            const fullName =
-                document.getElementById(
-                    "fullName"
-                );
-
-            const rsvpSubmitButton =
-                document.getElementById(
-                    "rsvpSubmitButton"
-                );
-
-            const downloadInvitationButton =
-                document.getElementById(
-                    "downloadInvitationButton"
-                );
-
-
-
-            if (envelopeGuest) {
-
-                envelopeGuest.textContent =
-                    "Invalid Invitation";
-
-            }
-
-
-
-            if (guestGreeting) {
-
-                guestGreeting.textContent =
-                    "This invitation link is invalid. Please use the personal invitation link that was sent to you.";
-
-            }
-
-
-
-            if (fullName) {
-
-                fullName.value =
-                    "";
-
-                fullName.readOnly =
-                    true;
-
-            }
-
-
-
-            if (rsvpSubmitButton) {
-
-                rsvpSubmitButton.disabled =
-                    true;
-
-                rsvpSubmitButton.textContent =
-                    "Invalid Invitation";
-
-            }
-
-
-
-            if (downloadInvitationButton) {
-
-                downloadInvitationButton.disabled =
-                    true;
-
-                downloadInvitationButton.textContent =
-                    "Invalid Invitation";
-
-            }
-
-
-            const topEnvelope =
-                document.getElementById(
-                    "topEnvelope"
-                );
-
-            const tapCue =
-                document.querySelector(
-                    ".tap-cue"
-                );
-
-
-            if (
-                topEnvelope
-            ) {
-
-                topEnvelope.setAttribute(
-                    "aria-disabled",
-                    "true"
-                );
-
-                topEnvelope.setAttribute(
-                    "tabindex",
-                    "-1"
-                );
-
-                topEnvelope.style.cursor =
-                    "default";
-
-            }
-
-
-            if (
-                tapCue
-            ) {
-
-                tapCue.textContent =
-                    "Invalid Invitation Link";
-
-                tapCue.style.animation =
-                    "none";
-
-            }
-
-        }
-
-
-
-        loadGuestInvitation();
-
-
-
-        /* =========================================================
-           OPEN INVITATION
-        ========================================================= */
-
-        let musicStarted = false;
-
-
-
-        function startMusic() {
-
-            if (musicStarted) {
-                return;
-            }
-
-            const music =
-                document.getElementById("bgMusic");
-
-            if (!music) {
-                return;
-            }
-
-            music.volume = 0;
-
-            music
-                .play()
-                .then(() => {
-
-                    musicStarted = true;
-
-                    let volume = 0;
-
-                    const fade =
-                        setInterval(() => {
-
-                            volume += .02;
-
-                            if (volume >= .35) {
-
-                                volume = .35;
-
-                                clearInterval(fade);
-
-                            }
-
-                            music.volume = volume;
-
-                        }, 100);
-
-                })
-                .catch(() => {
-
-                    /*
-                        Browser may block autoplay.
-                        Because play() happens after the user's
-                        envelope click, it should normally work.
-                    */
-
-                });
-
-        }
-
-        /* =========================================================
-           STOP MUSIC WHEN BROWSER IS HIDDEN
-        ========================================================= */
-
-        document.addEventListener(
-            "visibilitychange",
-            () => {
-
-                const music =
-                    document.getElementById(
-                        "bgMusic"
-                    );
-
-
-
-                if (!music) {
-                    return;
-                }
-
-
-
-                if (document.hidden) {
-
-                    music.pause();
-
-                }
-
-            }
-        );
-
-
-
-        window.addEventListener(
-            "pagehide",
-            () => {
-
-                const music =
-                    document.getElementById(
-                        "bgMusic"
-                    );
-
-
-
-                if (music) {
-
-                    music.pause();
-
-                }
-
-            }
-        );
-
-
-        function openInvite() {
-
-            if (
-                !invitationIsValid
-            ) {
-
-                showInvalidInvitation();
-
-                return;
-
-            }
-
-
-            const topEnvelope =
-                document.getElementById(
-                    "topEnvelope"
-                );
-
-            const topFlap =
-                document.getElementById(
-                    "topFlap"
-                );
-
-            const envelopeScreen =
-                document.getElementById(
-                    "envelopeScreen"
-                );
-
-            const main =
-                document.getElementById(
-                    "main"
-                );
-
-            const tapCue =
-                document.querySelector(
-                    ".tap-cue"
-                );
-
-
-
-            if (
-                !topEnvelope ||
-                !topFlap ||
-                topEnvelope.classList.contains(
-                    "open"
-                )
-            ) {
-
-                return;
-
-            }
-
-
-
             /*
-                Keep the envelope exactly as designed.
-                Only open the flap — there is no letter extraction.
+                Invalid or missing invitation links should never
+                continue into the invitation experience.
+                Replace the current history entry so the browser's
+                Back button does not immediately return to the
+                invalid personalised URL.
             */
-
-            topEnvelope.classList.add(
-                "open"
+            window.location.replace(
+                "/invitation-required.html"
             );
-
-            topFlap.classList.add(
-                "open"
-            );
-
-            tapCue?.classList.add(
-                "opened"
-            );
-
-
-
-            startMusic();
-
-
-
-            /*
-                Leave the opened envelope visible briefly,
-                then transition directly to the main invitation page.
-            */
-
-            setTimeout(() => {
-
-                envelopeScreen.classList.add(
-                    "hide"
-                );
-
-                main.classList.add(
-                    "show"
-                );
-
-
-
-                setTimeout(() => {
-
-                    observeCards();
-
-                }, 400);
-
-            }, 1000);
 
         }
 
@@ -5069,20 +4728,32 @@ END:VCALENDAR`
 
         function initialiseWeddingTimeline() {
 
+            const timeline =
+                document.getElementById(
+                    "weddingTimeline"
+                );
+
             const timelineItems =
-                document.querySelectorAll(
-                    "#weddingTimeline .timeline-item"
+                Array.from(
+                    document.querySelectorAll(
+                        "#weddingTimeline .timeline-item"
+                    )
                 );
 
 
             if (
+                !timeline ||
                 timelineItems.length ===
-                0
+                    0
             ) {
 
                 return;
 
             }
+
+
+            let timelineSequenceStarted =
+                false;
 
 
             const timelineObserver =
@@ -5093,49 +4764,73 @@ END:VCALENDAR`
                             entry => {
 
                                 if (
-                                    entry.isIntersecting &&
-                                    entry.target.dataset.timelineRevealStarted !==
-                                        "true"
+                                    !entry.isIntersecting ||
+                                    timelineSequenceStarted
                                 ) {
 
-                                    entry.target.dataset.timelineRevealStarted =
-                                        "true";
+                                    return;
+
+                                }
 
 
-                                    setTimeout(
-                                        () => {
+                                timelineSequenceStarted =
+                                    true;
 
-                                            entry.target
-                                                .classList
-                                                .add(
+                                timelineObserver.disconnect();
+
+
+                                /*
+                                    Start shortly after the itinerary
+                                    reaches the viewport, then leave a
+                                    clear pause between each event so the
+                                    timeline unfolds rather than appearing
+                                    almost all at once.
+                                */
+                                const firstItemDelay =
+                                    550;
+
+                                const delayBetweenItems =
+                                    950;
+
+
+                                timelineItems.forEach(
+                                    (
+                                        item,
+                                        index
+                                    ) => {
+
+                                        setTimeout(
+                                            () => {
+
+                                                timelineItems
+                                                    .forEach(
+                                                        timelineItem => {
+
+                                                            timelineItem
+                                                                .classList
+                                                                .remove(
+                                                                    "is-active"
+                                                                );
+
+                                                        }
+                                                    );
+
+
+                                                item.classList.add(
                                                     "is-visible",
                                                     "is-active"
                                                 );
 
+                                            },
+                                            firstItemDelay +
+                                            (
+                                                index *
+                                                delayBetweenItems
+                                            )
+                                        );
 
-                                            timelineItems
-                                                .forEach(
-                                                    item => {
-
-                                                        if (
-                                                            item !==
-                                                            entry.target
-                                                        ) {
-
-                                                            item.classList.remove(
-                                                                "is-active"
-                                                            );
-
-                                                        }
-
-                                                    }
-                                                );
-
-                                        },
-                                        450
-                                    );
-
-                                }
+                                    }
+                                );
 
                             }
                         );
@@ -5143,24 +4838,17 @@ END:VCALENDAR`
                     },
                     {
                         threshold:
-                            .45,
+                            .22,
 
                         rootMargin:
-                            "0px 0px -12% 0px"
+                            "0px 0px -8% 0px"
                     }
                 );
 
 
-            timelineItems
-                .forEach(
-                    item => {
-
-                        timelineObserver.observe(
-                            item
-                        );
-
-                    }
-                );
+            timelineObserver.observe(
+                timeline
+            );
 
         }
 
