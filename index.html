@@ -2060,8 +2060,8 @@
                 translateY(28px);
 
             transition:
-                opacity .8s ease,
-                transform .9s cubic-bezier(.22, 1, .36, 1);
+                opacity 1.2s ease,
+                transform 1.35s cubic-bezier(.22, 1, .36, 1);
         }
 
         .timeline-item:nth-child(odd) {
@@ -2969,6 +2969,18 @@
             color: #806d5a;
         }
 
+        /*
+            Do not reveal the wedding date/location in the footer
+            until the guest has completed the date reveal.
+        */
+        .footer-date.reveal-gated {
+            display: none;
+        }
+
+        .footer-date.reveal-gated.revealed {
+            display: block;
+        }
+
 
         /* =========================================================
    MOBILE
@@ -3735,7 +3747,7 @@
                 Nishi & Manu
             </div>
 
-            <div class="footer-date">
+            <div class="footer-date reveal-gated" id="footerDate">
                 12 February 2027 · Kalutara, Sri Lanka
             </div>
 
@@ -4670,6 +4682,50 @@ END:VCALENDAR`
 
             }
 
+
+            const topEnvelope =
+                document.getElementById(
+                    "topEnvelope"
+                );
+
+            const tapCue =
+                document.querySelector(
+                    ".tap-cue"
+                );
+
+
+            if (
+                topEnvelope
+            ) {
+
+                topEnvelope.setAttribute(
+                    "aria-disabled",
+                    "true"
+                );
+
+                topEnvelope.setAttribute(
+                    "tabindex",
+                    "-1"
+                );
+
+                topEnvelope.style.cursor =
+                    "default";
+
+            }
+
+
+            if (
+                tapCue
+            ) {
+
+                tapCue.textContent =
+                    "Invalid Invitation Link";
+
+                tapCue.style.animation =
+                    "none";
+
+            }
+
         }
 
 
@@ -4793,6 +4849,17 @@ END:VCALENDAR`
 
 
         function openInvite() {
+
+            if (
+                !invitationIsValid
+            ) {
+
+                showInvalidInvitation();
+
+                return;
+
+            }
+
 
             const topEnvelope =
                 document.getElementById(
@@ -4926,6 +4993,23 @@ END:VCALENDAR`
                     }
                 );
 
+
+            const footerDate =
+                document.getElementById(
+                    "footerDate"
+                );
+
+
+            if (
+                footerDate
+            ) {
+
+                footerDate.classList.add(
+                    "revealed"
+                );
+
+            }
+
         }
 
 
@@ -5048,7 +5132,7 @@ END:VCALENDAR`
                                                 );
 
                                         },
-                                        250
+                                        450
                                     );
 
                                 }
