@@ -3018,7 +3018,7 @@ code {
 
                 <p class="panel-copy">
                     Only invitations that RSVP'd Attending appear here.
-                    Assign the whole invitation group to one table.
+                    Assign invitations together by default, or split a multi-person invitation when individual guests need different tables.
                 </p>
 
                 <div
@@ -6305,145 +6305,146 @@ function guestByCode(
 function unassignedGuests() {
 
     return attendingGuests
-        .filter(
-            guest =>
-                !guest.tableId
+        .filter(guest =>
+            !guest.tableId &&
+            !guest.splitSeating
         );
 
 }
 
 
+function splitSeatsForGuest(
+    guest
+) {
+
+    return guest &&
+        guest.splitSeating &&
+        Array.isArray(guest.seatAssignments)
+            ? guest.seatAssignments
+            : [];
+
+}
+
+
+function unassignedSplitSeats() {
+
+    return attendingGuests
+        .flatMap(guest =>
+            splitSeatsForGuest(guest)
+                .filter(seat => !seat.tableId)
+                .map(seat => ({
+                    ...seat,
+                    invitationCode: guest.invitationCode,
+                    householdName: guest.guestName
+                }))
+        );
+
+}
+
+
+function assignedSplitSeatsForTable(
+    tableId
+) {
+
+    const table =
+        getTableById(tableId);
+
+    return Array.isArray(table?.assignedSeats)
+        ? table.assignedSeats
+        : [];
+
+}
+
+
+
 function renderUnassignedGuests() {
 
     const list =
-        document
-            .getElementById(
-                "unassignedGuestList"
-            );
+        document.getElementById(
+            "unassignedGuestList"
+        );
 
+    if (!list) return;
 
-    if (
-        !list
-    ) {
+    const guests = unassignedGuests();
+    const splitSeats = unassignedSplitSeats();
 
-        return;
-
-    }
-
-
-    const guests =
-        unassignedGuests();
-
-
-    list.innerHTML =
-        "";
-
+    list.innerHTML = "";
 
     if (
-        guests.length ===
-        0
+        guests.length === 0 &&
+        splitSeats.length === 0
     ) {
-
-        const empty =
-            document
-                .createElement(
-                    "div"
-                );
-
-        empty.className =
-            "empty";
-
+        const empty = document.createElement("div");
+        empty.className = "empty";
         empty.textContent =
             attendingGuests.length
                 ? "All attending guests have been assigned."
                 : "No attending RSVPs yet.";
-
-        list.appendChild(
-            empty
-        );
-
+        list.appendChild(empty);
         return;
-
     }
 
+    guests.forEach(guest => {
+        const item = document.createElement("div");
+        item.className = "unassigned-item";
 
-    guests.forEach(
-        guest => {
+        const left = document.createElement("div");
+        const name = document.createElement("div");
+        name.className = "unassigned-name";
+        name.textContent = guest.guestName;
 
-            const item =
-                document
-                    .createElement(
-                        "div"
-                    );
+        const count = document.createElement("div");
+        count.className = "unassigned-count";
+        count.textContent = `${guest.guestCount} attending · together`;
 
-            item.className =
-                "unassigned-item";
+        left.append(name, count);
 
+        const actionWrap = document.createElement("div");
+        actionWrap.style.display = "flex";
+        actionWrap.style.gap = "6px";
+        actionWrap.style.alignItems = "center";
 
-            const left =
-                document
-                    .createElement(
-                        "div"
-                    );
-
-
-            const name =
-                document
-                    .createElement(
-                        "div"
-                    );
-
-            name.className =
-                "unassigned-name";
-
-            name.textContent =
-                guest.guestName;
-
-
-            const count =
-                document
-                    .createElement(
-                        "div"
-                    );
-
-            count.className =
-                "unassigned-count";
-
-            count.textContent =
-                `${guest.guestCount} attending`;
-
-
-            left.append(
-                name,
-                count
-            );
-
-
-            const badge =
-                document
-                    .createElement(
-                        "span"
-                    );
-
-            badge.className =
-                "badge pending";
-
-            badge.textContent =
-                "Unassigned";
-
-
-            item.append(
-                left,
-                badge
-            );
-
-
-            list.appendChild(
-                item
-            );
-
+        if (guest.guestCount > 1) {
+            const split = document.createElement("button");
+            split.type = "button";
+            split.className = "mini-button";
+            split.textContent = "Split Guests";
+            split.addEventListener("click", () => splitGuestSeating(guest.invitationCode));
+            actionWrap.appendChild(split);
         }
-    );
+
+        const badge = document.createElement("span");
+        badge.className = "badge pending";
+        badge.textContent = "Unassigned";
+        actionWrap.appendChild(badge);
+
+        item.append(left, actionWrap);
+        list.appendChild(item);
+    });
+
+    splitSeats.forEach(seat => {
+        const item = document.createElement("div");
+        item.className = "unassigned-item";
+
+        const left = document.createElement("div");
+        const name = document.createElement("div");
+        name.className = "unassigned-name";
+        name.textContent = seat.name;
+
+        const count = document.createElement("div");
+        count.className = "unassigned-count";
+        count.textContent = `Split seating · ${seat.householdName}`;
+
+        left.append(name, count);
+
+        const badge = document.createElement("span");
+        badge.className = "badge pending";
+        badge.textContent = "Unassigned";
+
+        item.append(left, badge);
+        list.appendChild(item);
+    });
 
 }
 
@@ -7182,9 +7183,7 @@ function renderSelectedTablePanel() {
 
     const table =
         selectedSeatingTableId
-            ? getTableById(
-                selectedSeatingTableId
-            )
+            ? getTableById(selectedSeatingTableId)
             : null;
 
     panel.innerHTML = "";
@@ -7208,9 +7207,7 @@ function renderSelectedTablePanel() {
     meta.className = "seating-selected-meta";
 
     const isDisplayItem =
-        Number(
-            table.capacity
-        ) === 0;
+        Number(table.capacity) === 0;
 
     meta.textContent =
         isDisplayItem
@@ -7268,8 +7265,17 @@ function renderSelectedTablePanel() {
         .filter(guest => guest.guestCount <= (table.remainingCapacity ?? table.capacity))
         .forEach(guest => {
             const option = document.createElement("option");
-            option.value = guest.invitationCode;
+            option.value = `guest:${guest.invitationCode}`;
             option.textContent = `${guest.guestName} (${guest.guestCount})`;
+            select.appendChild(option);
+        });
+
+    unassignedSplitSeats()
+        .filter(() => (table.remainingCapacity ?? table.capacity) >= 1)
+        .forEach(seat => {
+            const option = document.createElement("option");
+            option.value = `seat:${seat.invitationCode}:${seat.id}`;
+            option.textContent = `${seat.name} · split from ${seat.householdName}`;
             select.appendChild(option);
         });
 
@@ -7282,7 +7288,15 @@ function renderSelectedTablePanel() {
             alert("Select a guest first.");
             return;
         }
-        assignGuestToTable(select.value, table.id);
+
+        const parts = select.value.split(":");
+
+        if (parts[0] === "seat") {
+            assignSeatToTable(parts[1], parts.slice(2).join(":"), table.id);
+            return;
+        }
+
+        assignGuestToTable(parts.slice(1).join(":"), table.id);
     });
 
     assignmentRow.append(select, assignButton);
@@ -7296,30 +7310,67 @@ function renderSelectedTablePanel() {
     assignedList.className = "seating-assigned-list";
 
     const assignedGuests = assignedGuestsForTable(table.id);
+    const assignedSeats = assignedSplitSeatsForTable(table.id);
 
-    if (assignedGuests.length === 0) {
+    if (
+        assignedGuests.length === 0 &&
+        assignedSeats.length === 0
+    ) {
         const empty = document.createElement("div");
         empty.className = "seating-empty-state";
         empty.textContent = "No guests assigned yet.";
         assignedList.appendChild(empty);
-    } else {
-        assignedGuests.forEach(guest => {
-            const row = document.createElement("div");
-            row.className = "seating-guest-chip";
-
-            const left = document.createElement("div");
-            left.innerHTML = `<div class="seating-guest-chip-name">${guest.guestName}</div><div class="seating-guest-chip-meta">${guest.guestCount} attending</div>`;
-
-            const remove = document.createElement("button");
-            remove.type = "button";
-            remove.className = "mini-button";
-            remove.textContent = "Remove";
-            remove.addEventListener("click", () => unassignGuest(guest.invitationCode));
-
-            row.append(left, remove);
-            assignedList.appendChild(row);
-        });
     }
+
+    assignedGuests.forEach(guest => {
+        const row = document.createElement("div");
+        row.className = "seating-guest-chip";
+
+        const left = document.createElement("div");
+        left.innerHTML = `<div class="seating-guest-chip-name">${guest.guestName}</div><div class="seating-guest-chip-meta">${guest.guestCount} attending · together</div>`;
+
+        const actionWrap = document.createElement("div");
+        actionWrap.style.display = "flex";
+        actionWrap.style.gap = "6px";
+        actionWrap.style.flexWrap = "wrap";
+
+        if (guest.guestCount > 1) {
+            const split = document.createElement("button");
+            split.type = "button";
+            split.className = "mini-button";
+            split.textContent = "Split Guests";
+            split.addEventListener("click", () => splitGuestSeating(guest.invitationCode));
+            actionWrap.appendChild(split);
+        }
+
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "mini-button";
+        remove.textContent = "Remove";
+        remove.addEventListener("click", () => unassignGuest(guest.invitationCode));
+        actionWrap.appendChild(remove);
+
+        row.append(left, actionWrap);
+        assignedList.appendChild(row);
+    });
+
+    assignedSeats.forEach(seat => {
+        const row = document.createElement("div");
+        row.className = "seating-guest-chip";
+
+        const guest = guestByCode(seat.invitationCode);
+        const left = document.createElement("div");
+        left.innerHTML = `<div class="seating-guest-chip-name">${seat.name}</div><div class="seating-guest-chip-meta">Split seating${guest ? ` · ${guest.guestName}` : ""}</div>`;
+
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "mini-button";
+        remove.textContent = "Remove";
+        remove.addEventListener("click", () => unassignSeat(seat.invitationCode, seat.seatId));
+
+        row.append(left, remove);
+        assignedList.appendChild(row);
+    });
 
     const actions = document.createElement("div");
     actions.className = "seating-selected-actions";
@@ -7340,50 +7391,25 @@ function renderSelectedTablePanel() {
 
     const note = document.createElement("div");
     note.className = "seating-small-note";
-    note.textContent = "Floor-plan movements are saved after you finish dragging. Use the controls above to fine-tune the layout.";
+    note.textContent = "Households stay together by default. Use Split Guests only when people on the same invitation need different tables.";
 
-    wrapper.append(
-        title,
-        meta,
-        position,
-        controls
-    );
+    wrapper.append(title, meta, position, controls);
 
-    if (
-        isDisplayItem
-    ) {
-
-        const displayNote =
-            document.createElement(
-                "div"
-            );
-
-        displayNote.className =
-            "seating-empty-state";
-
-        displayNote.textContent =
-            "This is a non-seating item. Guests cannot be assigned to it.";
-
-        wrapper.appendChild(
-            displayNote
-        );
-
+    if (isDisplayItem) {
+        const displayNote = document.createElement("div");
+        displayNote.className = "seating-empty-state";
+        displayNote.textContent = "This is a non-seating item. Guests cannot be assigned to it.";
+        wrapper.appendChild(displayNote);
     } else {
-
         wrapper.append(
             assignmentTitle,
             assignmentRow,
             assignedTitle,
             assignedList
         );
-
     }
 
-    wrapper.append(
-        actions,
-        note
-    );
-
+    wrapper.append(actions, note);
     panel.appendChild(wrapper);
 
 }
@@ -7401,8 +7427,12 @@ function renderSeatingUnassignedPanel() {
     panel.innerHTML = "";
 
     const guests = unassignedGuests();
+    const splitSeats = unassignedSplitSeats();
 
-    if (guests.length === 0) {
+    if (
+        guests.length === 0 &&
+        splitSeats.length === 0
+    ) {
         const empty = document.createElement("div");
         empty.className = "seating-empty-state";
         empty.textContent = "Everyone attending is currently assigned to a table.";
@@ -7415,9 +7445,22 @@ function renderSeatingUnassignedPanel() {
         row.className = "seating-guest-chip";
 
         const left = document.createElement("div");
-        left.innerHTML = `<div class="seating-guest-chip-name">${guest.guestName}</div><div class="seating-guest-chip-meta">${guest.guestCount} attending</div>`;
+        left.innerHTML = `<div class="seating-guest-chip-name">${guest.guestName}</div><div class="seating-guest-chip-meta">${guest.guestCount} attending · together by default</div>`;
 
-        row.appendChild(left);
+        const actions = document.createElement("div");
+        actions.style.display = "flex";
+        actions.style.gap = "6px";
+        actions.style.flexWrap = "wrap";
+        actions.style.justifyContent = "flex-end";
+
+        if (guest.guestCount > 1) {
+            const split = document.createElement("button");
+            split.type = "button";
+            split.className = "mini-button";
+            split.textContent = "Split Guests";
+            split.addEventListener("click", () => splitGuestSeating(guest.invitationCode));
+            actions.appendChild(split);
+        }
 
         if (selectedSeatingTableId) {
             const table = getTableById(selectedSeatingTableId);
@@ -7431,6 +7474,35 @@ function renderSeatingUnassignedPanel() {
                 assign.className = "mini-button";
                 assign.textContent = `Assign to ${table.name}`;
                 assign.addEventListener("click", () => assignGuestToTable(guest.invitationCode, table.id));
+                actions.appendChild(assign);
+            }
+        }
+
+        row.append(left, actions);
+        panel.appendChild(row);
+    });
+
+    splitSeats.forEach(seat => {
+        const row = document.createElement("div");
+        row.className = "seating-guest-chip";
+
+        const left = document.createElement("div");
+        left.innerHTML = `<div class="seating-guest-chip-name">${seat.name}</div><div class="seating-guest-chip-meta">Split seating · ${seat.householdName}</div>`;
+
+        row.appendChild(left);
+
+        if (selectedSeatingTableId) {
+            const table = getTableById(selectedSeatingTableId);
+            if (
+                table &&
+                Number(table.capacity) > 0 &&
+                (table.remainingCapacity ?? table.capacity) >= 1
+            ) {
+                const assign = document.createElement("button");
+                assign.type = "button";
+                assign.className = "mini-button";
+                assign.textContent = `Assign to ${table.name}`;
+                assign.addEventListener("click", () => assignSeatToTable(seat.invitationCode, seat.id, table.id));
                 row.appendChild(assign);
             }
         }
@@ -7932,136 +8004,75 @@ function renderTables() {
 
 
             const assignedCodes =
-                Array.isArray(
-                    table.assignedCodes
-                )
+                Array.isArray(table.assignedCodes)
                     ? table.assignedCodes
                     : [];
 
+            const assignedSeats =
+                Array.isArray(table.assignedSeats)
+                    ? table.assignedSeats
+                    : [];
 
-            let householdCount =
-                0;
+            let seatedEntryCount = 0;
 
+            assignedCodes.forEach(invitationCode => {
 
-            assignedCodes.forEach(
-                invitationCode => {
+                const guest = guestByCode(invitationCode);
+                if (!guest) return;
 
-                    const guest =
-                        guestByCode(
-                            invitationCode
-                        );
+                seatedEntryCount++;
 
+                const guestCount = Number(guest.guestCount) || 0;
 
-                    if (
-                        !guest
-                    ) {
+                const row = document.createElement("div");
+                row.className = "assigned-item";
 
-                        return;
+                const left = document.createElement("div");
 
-                    }
+                const guestName = document.createElement("div");
+                guestName.className = "assigned-name";
+                guestName.textContent = guest.guestName;
 
+                const partySize = document.createElement("div");
+                partySize.className = "assigned-count";
+                partySize.textContent = `${guestCount} ${guestCount === 1 ? "person" : "people"} · together`;
 
-                    householdCount++;
+                left.append(guestName, partySize);
+                row.appendChild(left);
+                seatedList.appendChild(row);
+            });
 
+            assignedSeats.forEach(seat => {
 
-                    const guestCount =
-                        Number(
-                            guest.guestCount
-                        ) || 0;
+                seatedEntryCount++;
 
+                const guest = guestByCode(seat.invitationCode);
 
-                    const row =
-                        document
-                            .createElement(
-                                "div"
-                            );
+                const row = document.createElement("div");
+                row.className = "assigned-item";
 
-                    row.className =
-                        "assigned-item";
+                const left = document.createElement("div");
 
+                const guestName = document.createElement("div");
+                guestName.className = "assigned-name";
+                guestName.textContent = seat.name;
 
-                    const left =
-                        document
-                            .createElement(
-                                "div"
-                            );
+                const partySize = document.createElement("div");
+                partySize.className = "assigned-count";
+                partySize.textContent = `Split seating${guest ? ` · ${guest.guestName}` : ""}`;
 
+                left.append(guestName, partySize);
+                row.appendChild(left);
+                seatedList.appendChild(row);
+            });
 
-                    const guestName =
-                        document
-                            .createElement(
-                                "div"
-                            );
-
-                    guestName.className =
-                        "assigned-name";
-
-                    guestName.textContent =
-                        guest.guestName;
-
-
-                    const partySize =
-                        document
-                            .createElement(
-                                "div"
-                            );
-
-                    partySize.className =
-                        "assigned-count";
-
-                    partySize.textContent =
-                        `${guestCount} ${guestCount === 1 ? "person" : "people"}`;
-
-
-                    left.append(
-                        guestName,
-                        partySize
-                    );
-
-
-                    row.appendChild(
-                        left
-                    );
-
-
-                    seatedList.appendChild(
-                        row
-                    );
-
-                }
-            );
-
-
-            if (
-                Number(table.capacity) === 0
-            ) {
-
-                seatedList.classList.add(
-                    "hidden"
-                );
-
-            } else if (
-                householdCount ===
-                0
-            ) {
-
-                const none =
-                    document
-                        .createElement(
-                            "div"
-                        );
-
-                none.className =
-                    "table-no-seated-guests";
-
-                none.textContent =
-                    "No guests seated at this table yet.";
-
-
-                seatedList.appendChild(
-                    none
-                );
-
+            if (Number(table.capacity) === 0) {
+                seatedList.classList.add("hidden");
+            } else if (seatedEntryCount === 0) {
+                const none = document.createElement("div");
+                none.className = "table-no-seated-guests";
+                none.textContent = "No guests seated at this table yet.";
+                seatedList.appendChild(none);
             }
 
 
@@ -8496,6 +8507,173 @@ async function assignGuestToTable(
             error.message
         );
 
+    }
+
+}
+
+
+async function assignSeatToTable(
+    invitationCode,
+    seatId,
+    tableId
+) {
+
+    try {
+        const result =
+            await apiRequest(
+                SEATING_API,
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        action: "assignSeat",
+                        invitationCode,
+                        seatId,
+                        tableId
+                    })
+                }
+            );
+
+        seatingTables = result.tables || [];
+        seatingPublished = Boolean(result.published);
+        seatingUpdatedAt = result.updatedAt || seatingUpdatedAt;
+        attendingGuests = result.attendingGuests || [];
+
+        renderTables();
+        renderSeatingPlanner();
+        renderOverview();
+
+    } catch (error) {
+        alert(error.message);
+    }
+
+}
+
+
+async function unassignSeat(
+    invitationCode,
+    seatId
+) {
+
+    try {
+        const result =
+            await apiRequest(
+                SEATING_API,
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        action: "unassignSeat",
+                        invitationCode,
+                        seatId
+                    })
+                }
+            );
+
+        seatingTables = result.tables || [];
+        seatingPublished = Boolean(result.published);
+        seatingUpdatedAt = result.updatedAt || seatingUpdatedAt;
+        attendingGuests = result.attendingGuests || [];
+
+        renderTables();
+        renderSeatingPlanner();
+        renderOverview();
+
+    } catch (error) {
+        alert(error.message);
+    }
+
+}
+
+
+function suggestedSplitNames(
+    guest
+) {
+
+    const count = Number(guest?.guestCount || 0);
+    const name = String(guest?.guestName || "").trim();
+
+    if (count === 2) {
+        const parts = name
+            .split(/\s+(?:&|and)\s+/i)
+            .map(value => value.trim())
+            .filter(Boolean);
+
+        if (parts.length === 2) {
+            return parts;
+        }
+    }
+
+    return Array.from(
+        { length: count },
+        (_, index) =>
+            index === 0
+                ? name
+                : `Guest ${index + 1}`
+    );
+
+}
+
+
+async function splitGuestSeating(
+    invitationCode
+) {
+
+    const guest = guestByCode(invitationCode);
+
+    if (!guest || guest.guestCount < 2) {
+        alert("This invitation does not have multiple attending guests to split.");
+        return;
+    }
+
+    const defaults = suggestedSplitNames(guest);
+    const names = [];
+
+    for (
+        let index = 0;
+        index < guest.guestCount;
+        index++
+    ) {
+        const value = prompt(
+            `Name for guest ${index + 1} of ${guest.guestCount}:`,
+            defaults[index] || `Guest ${index + 1}`
+        );
+
+        if (value === null) return;
+
+        const clean = value.replace(/\s+/g, " ").trim();
+
+        if (!clean) {
+            alert("Each split guest needs a name.");
+            return;
+        }
+
+        names.push(clean);
+    }
+
+    try {
+        const result =
+            await apiRequest(
+                SEATING_API,
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        action: "splitGuest",
+                        invitationCode,
+                        names
+                    })
+                }
+            );
+
+        seatingTables = result.tables || [];
+        seatingPublished = Boolean(result.published);
+        seatingUpdatedAt = result.updatedAt || seatingUpdatedAt;
+        attendingGuests = result.attendingGuests || [];
+
+        renderTables();
+        renderSeatingPlanner();
+        renderOverview();
+
+    } catch (error) {
+        alert(error.message);
     }
 
 }
@@ -9060,88 +9238,62 @@ function downloadTablesCsv() {
     const rows = [
         [
             "Table",
-            "Guest / Household"
+            "Guest",
+            "Invitation / Household"
         ]
     ];
 
+    let seatedPeople = 0;
 
-    let seatedPeople =
-        0;
+    seatingTables.forEach(table => {
 
+        const assignedCodes =
+            Array.isArray(table.assignedCodes)
+                ? table.assignedCodes
+                : [];
 
-    seatingTables.forEach(
-        table => {
+        assignedCodes.forEach(invitationCode => {
 
-            const assignedCodes =
-                Array.isArray(
-                    table.assignedCodes
-                )
-                    ? table.assignedCodes
-                    : [];
+            const guest = guestByCode(invitationCode);
+            if (!guest) return;
 
+            const guestCount = Number(guest.guestCount) || 0;
 
-            assignedCodes.forEach(
-                invitationCode => {
+            for (
+                let personNumber = 1;
+                personNumber <= guestCount;
+                personNumber++
+            ) {
+                rows.push([
+                    table.name,
+                    guest.guestName,
+                    guest.guestName
+                ]);
+                seatedPeople++;
+            }
+        });
 
-                    const guest =
-                        guestByCode(
-                            invitationCode
-                        );
+        const assignedSeats =
+            Array.isArray(table.assignedSeats)
+                ? table.assignedSeats
+                : [];
 
+        assignedSeats.forEach(seat => {
+            const guest = guestByCode(seat.invitationCode);
+            rows.push([
+                table.name,
+                seat.name,
+                guest ? guest.guestName : seat.invitationCode
+            ]);
+            seatedPeople++;
+        });
 
-                    if (
-                        !guest
-                    ) {
+    });
 
-                        return;
-
-                    }
-
-
-                    const guestCount =
-                        Number(
-                            guest.guestCount
-                        ) || 0;
-
-
-                    for (
-                        let personNumber = 1;
-                        personNumber <= guestCount;
-                        personNumber++
-                    ) {
-
-                        rows.push(
-                            [
-                                table.name,
-                                guest.guestName
-                            ]
-                        );
-
-
-                        seatedPeople++;
-
-                    }
-
-                }
-            );
-
-        }
-    );
-
-
-    if (
-        seatedPeople ===
-        0
-    ) {
-
-        alert(
-            "There are no seated guests to export."
-        );
-
+    if (seatedPeople === 0) {
+        alert("There are no seated guests to export.");
         return;
-
     }
-
 
     downloadCsvFile(
         rows,

@@ -2730,6 +2730,38 @@
                 16px;
         }
 
+        .split-seating-list {
+            display: grid;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .split-seating-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 14px;
+            align-items: center;
+            padding: 11px 14px;
+            border: 1px solid rgba(198, 162, 82, .24);
+            border-radius: 7px;
+            background: rgba(255, 253, 249, .72);
+            text-align: left;
+        }
+
+        .split-seating-person {
+            font-size: 18px;
+            color: #493b30;
+        }
+
+        .split-seating-table {
+            font-family: "Playfair Display", serif;
+            font-size: 12px;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #a67c00;
+            text-align: right;
+        }
+
         @media (max-width: 600px) {
 
             .table-assignment-text {
@@ -4504,65 +4536,83 @@ END:VCALENDAR`
                     "tableAssignmentName"
                 );
 
-
             if (
                 !text ||
                 !name ||
                 !invitationCode ||
                 !invitationIsValid
             ) {
-
                 return;
-
             }
-
 
             text.textContent =
                 "Your table assignment will be available closer to the celebration. Please check back here once seating has been finalised.";
 
-            name.textContent =
-                "";
-
-            name.classList.add(
-                "hidden"
-            );
-
+            name.textContent = "";
+            name.classList.add("hidden");
 
             try {
-
                 const response =
                     await fetch(
                         `/.netlify/functions/seating?code=${encodeURIComponent(invitationCode)}`,
-                        {
-                            cache:
-                                "no-store"
-                        }
+                        { cache: "no-store" }
                     );
 
-
-                if (
-                    !response.ok
-                ) {
-
-                    return;
-
-                }
-
+                if (!response.ok) return;
 
                 const seating =
                     await response.json();
 
+                if (!seating.published) return;
 
                 if (
-                    !seating.published ||
+                    seating.split &&
+                    Array.isArray(seating.seats) &&
+                    seating.seats.length > 0
+                ) {
+
+                    text.textContent =
+                        "Your seating arrangements";
+
+                    name.textContent = "";
+                    name.classList.remove("hidden");
+
+                    const list =
+                        document.createElement("div");
+                    list.className = "split-seating-list";
+
+                    seating.seats.forEach(seat => {
+                        const row =
+                            document.createElement("div");
+                        row.className = "split-seating-row";
+
+                        const person =
+                            document.createElement("div");
+                        person.className = "split-seating-person";
+                        person.textContent = seat.name || "Guest";
+
+                        const table =
+                            document.createElement("div");
+                        table.className = "split-seating-table";
+                        table.textContent =
+                            seat.assigned && seat.tableName
+                                ? seat.tableName
+                                : "To be confirmed";
+
+                        row.append(person, table);
+                        list.appendChild(row);
+                    });
+
+                    name.appendChild(list);
+                    return;
+                }
+
+                if (
                     !seating.assigned ||
                     !seating.tableName
                 ) {
-
                     return;
-
                 }
-
 
                 text.textContent =
                     "We’re delighted to have you seated at";
@@ -4570,17 +4620,13 @@ END:VCALENDAR`
                 name.textContent =
                     seating.tableName;
 
-                name.classList.remove(
-                    "hidden"
-                );
+                name.classList.remove("hidden");
 
             } catch (error) {
-
                 console.error(
                     "Table assignment lookup failed:",
                     error
                 );
-
             }
 
         }
@@ -4973,23 +5019,6 @@ END:VCALENDAR`
                 false;
 
 
-            const isMobile =
-                window.matchMedia(
-                    "(max-width: 700px)"
-                ).matches;
-
-
-            const firstItemDelay =
-                isMobile
-                    ? 250
-                    : 500;
-
-            const gapBetweenItems =
-                isMobile
-                    ? 450
-                    : 800;
-
-
             const timelineObserver =
                 new IntersectionObserver(
                     entries => {
@@ -5017,6 +5046,13 @@ END:VCALENDAR`
                         timelineObserver.disconnect();
 
 
+                        const firstItemDelay =
+                            650;
+
+                        const gapBetweenItems =
+                            1000;
+
+
                         timelineItems.forEach(
                             (
                                 item,
@@ -5030,11 +5066,9 @@ END:VCALENDAR`
                                             .forEach(
                                                 timelineItem => {
 
-                                                    timelineItem
-                                                        .classList
-                                                        .remove(
-                                                            "is-active"
-                                                        );
+                                                    timelineItem.classList.remove(
+                                                        "is-active"
+                                                    );
 
                                                 }
                                             );
@@ -5059,14 +5093,10 @@ END:VCALENDAR`
                     },
                     {
                         threshold:
-                            isMobile
-                                ? .18
-                                : .28,
+                            .28,
 
                         rootMargin:
-                            isMobile
-                                ? "0px 0px -5% 0px"
-                                : "0px 0px -10% 0px"
+                            "0px 0px -10% 0px"
                     }
                 );
 

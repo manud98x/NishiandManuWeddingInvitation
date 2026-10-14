@@ -55,13 +55,6 @@ function isAuthorized(
         process.env
             .INVITE_ADMIN_SECRET;
 
-    const provided =
-        request
-            .headers
-            .get(
-                "x-admin-secret"
-            ) || "";
-
 
     if (
         !expected
@@ -73,6 +66,14 @@ function isAuthorized(
         };
 
     }
+
+
+    const provided =
+        request
+            .headers
+            .get(
+                "x-admin-secret"
+            ) || "";
 
 
     const expectedBuffer =
@@ -233,7 +234,7 @@ function numericGuestCount(
 }
 
 
-function getSeatingStore() {
+function getStoreInstance() {
 
     return getStore(
         STORE_NAME
@@ -242,7 +243,7 @@ function getSeatingStore() {
 }
 
 
-async function getSeatingRegistry(
+async function getRegistry(
     store
 ) {
 
@@ -262,28 +263,19 @@ async function getSeatingRegistry(
     if (
         !registry ||
         typeof registry !==
-            "object"
-    ) {
-
-        return {
-            version: 1,
-            published: false,
-            updatedAt: null,
-            tables: {},
-            assignments: {}
-        };
-
-    }
-
-
-    if (
+            "object" ||
         !registry.tables ||
         typeof registry.tables !==
             "object"
     ) {
 
-        registry.tables =
-            {};
+        return {
+            version: 2,
+            published: false,
+            updatedAt: null,
+            tables: {},
+            assignments: {}
+        };
 
     }
 
@@ -334,6 +326,7 @@ async function getInvitationRegistry() {
             INVITATION_STORE_NAME
         );
 
+
     const registry =
         await store.get(
             INVITATION_REGISTRY_KEY,
@@ -375,6 +368,7 @@ async function getRsvpRegistry() {
         getStore(
             RSVP_STORE_NAME
         );
+
 
     const registry =
         await store.get(
@@ -456,8 +450,7 @@ function attendingGuestMap(
                 invitationRegistry
                     .invitations[
                         invitationCode
-                    ]
-                    ?.name ||
+                    ]?.name ||
                 invitationCode,
 
             guestCount:
@@ -497,24 +490,68 @@ function pruneStaleAssignments(
         )
     ) {
 
-        if (
+        const guest =
             attendingGuests[
                 invitationCode
-            ]
+            ];
+
+
+        if (
+            !guest
         ) {
+
+            delete registry
+                .assignments[
+                    invitationCode
+                ];
+
+            changed =
+                true;
 
             continue;
 
         }
 
 
-        delete registry
-            .assignments[
+        const assignment =
+            registry.assignments[
                 invitationCode
             ];
 
-        changed =
-            true;
+
+        if (
+            assignment &&
+            assignment.split === true &&
+            Array.isArray(
+                assignment.seats
+            )
+        ) {
+
+            /*
+                If RSVP guest count is later reduced,
+                remove any excess split seats.
+            */
+            if (
+                assignment.seats.length >
+                guest.guestCount
+            ) {
+
+                assignment.seats =
+                    assignment.seats.slice(
+                        0,
+                        guest.guestCount
+                    );
+
+                assignment.updatedAt =
+                    new Date()
+                        .toISOString();
+
+                changed =
+                    true;
+
+            }
+
+        }
 
     }
 
@@ -523,25 +560,14 @@ function pruneStaleAssignments(
         changed
     ) {
 
-        markRegistryUpdated(
-            registry
-        );
+        registry.updatedAt =
+            new Date()
+                .toISOString();
 
     }
 
 
     return changed;
-
-}
-
-
-function markRegistryUpdated(
-    registry
-) {
-
-    registry.updatedAt =
-        new Date()
-            .toISOString();
 
 }
 
@@ -570,9 +596,7 @@ function tableOccupancy(
     ) {
 
         if (
-            !assignment ||
-            assignment.tableId !==
-                tableId
+            !assignment
         ) {
 
             continue;
@@ -595,11 +619,68 @@ function tableOccupancy(
         }
 
 
-        people +=
-            guest.guestCount;
+        /*
+            SPLIT SEATING
+
+            Each named seat counts as exactly
+            one person at its assigned table.
+        */
+        if (
+            assignment.split === true &&
+            Array.isArray(
+                assignment.seats
+            )
+        ) {
+
+            const seatsAtTable =
+                assignment.seats
+                    .filter(
+                        seat =>
+                            seat &&
+                            seat.tableId ===
+                                tableId
+                    );
+
+
+            if (
+                seatsAtTable.length >
+                0
+            ) {
+
+                people +=
+                    seatsAtTable.length;
+
+                invitationCount +=
+                    1;
+
+            }
+
+
+            continue;
+
+        }
+
+
+        /*
+            NORMAL HOUSEHOLD SEATING
+
+            The entire RSVP party sits together.
+        */
+        if (
+            assignment.tableId !==
+            tableId
+        ) {
+
+            continue;
+
+        }
+
 
         invitationCount +=
             1;
+
+        people +=
+            guest.guestCount;
 
     }
 
@@ -625,29 +706,84 @@ function listTables(
             table => {
 
                 const assignedCodes =
-                    Object
-                        .entries(
-                            registry.assignments
+                    [];
+
+                const assignedSeats =
+                    [];
+
+
+                for (
+                    const [
+                        invitationCode,
+                        assignment
+                    ]
+                    of Object.entries(
+                        registry.assignments
+                    )
+                ) {
+
+                    if (
+                        !assignment
+                    ) {
+
+                        continue;
+
+                    }
+
+
+                    if (
+                        assignment.split ===
+                            true &&
+                        Array.isArray(
+                            assignment.seats
                         )
-                        .filter(
-                            (
-                                [
-                                    ,
-                                    assignment
-                                ]
-                            ) =>
-                                assignment &&
-                                assignment.tableId ===
-                                    table.id
-                        )
-                        .map(
-                            (
-                                [
-                                    invitationCode
-                                ]
-                            ) =>
-                                invitationCode
+                    ) {
+
+                        assignment.seats
+                            .forEach(
+                                seat => {
+
+                                    if (
+                                        seat &&
+                                        seat.tableId ===
+                                            table.id
+                                    ) {
+
+                                        assignedSeats.push(
+                                            {
+                                                invitationCode,
+
+                                                seatId:
+                                                    seat.id,
+
+                                                name:
+                                                    seat.name
+                                            }
+                                        );
+
+                                    }
+
+                                }
+                            );
+
+
+                        continue;
+
+                    }
+
+
+                    if (
+                        assignment.tableId ===
+                        table.id
+                    ) {
+
+                        assignedCodes.push(
+                            invitationCode
                         );
+
+                    }
+
+                }
 
 
                 const occupancy =
@@ -658,33 +794,32 @@ function listTables(
                     );
 
 
-                const capacity =
-                    Number(
-                        table.capacity ||
-                        0
-                    );
-
-
                 return {
+
                     ...table,
 
                     assignedCodes,
+
+                    assignedSeats,
 
                     assignedPeople:
                         occupancy.people,
 
                     assignedInvitations:
-                        occupancy.invitationCount,
+                        occupancy
+                            .invitationCount,
 
                     remainingCapacity:
                         Math.max(
                             0,
-                            capacity -
-                            occupancy.people
-                        ),
 
-                    isDisplayItem:
-                        capacity === 0
+                            Number(
+                                table.capacity ||
+                                0
+                            ) -
+                            occupancy.people
+                        )
+
                 };
 
             }
@@ -699,7 +834,8 @@ function listTables(
                         b.name,
                         undefined,
                         {
-                            numeric: true
+                            numeric:
+                                true
                         }
                     )
         );
@@ -737,13 +873,60 @@ function buildResponse(
                         null;
 
 
+                    const splitSeating =
+                        Boolean(
+                            assignment &&
+                            assignment.split ===
+                                true &&
+                            Array.isArray(
+                                assignment.seats
+                            )
+                        );
+
+
                     return {
+
                         ...guest,
 
+                        /*
+                            tableId continues to work exactly
+                            as before for normal households.
+                        */
                         tableId:
+                            !splitSeating &&
                             assignment
-                                ? assignment.tableId
-                                : null
+                                ? (
+                                    assignment
+                                        .tableId ||
+                                    null
+                                )
+                                : null,
+
+                        splitSeating,
+
+                        /*
+                            Only populated for invitations
+                            that have been intentionally split.
+                        */
+                        seatAssignments:
+                            splitSeating
+                                ? assignment
+                                    .seats
+                                    .map(
+                                        seat => ({
+                                            id:
+                                                seat.id,
+
+                                            name:
+                                                seat.name,
+
+                                            tableId:
+                                                seat.tableId ||
+                                                null
+                                        })
+                                    )
+                                : []
+
                     };
 
                 }
@@ -761,6 +944,7 @@ function buildResponse(
 
 
     return {
+
         published:
             registry.published,
 
@@ -779,45 +963,19 @@ function buildResponse(
 
         attendingGuests:
             guests
+
     };
 
 }
 
 
-function defaultDimensions(
-    shape
+function markRegistryUpdated(
+    registry
 ) {
 
-    if (
-        shape ===
-        "banquet"
-    ) {
-
-        return {
-            width: 18,
-            height: 7
-        };
-
-    }
-
-
-    if (
-        shape ===
-        "rectangle"
-    ) {
-
-        return {
-            width: 13,
-            height: 9
-        };
-
-    }
-
-
-    return {
-        width: 10,
-        height: 10
-    };
+    registry.updatedAt =
+        new Date()
+            .toISOString();
 
 }
 
@@ -864,8 +1022,14 @@ export default async function (
 
 
     const store =
-        getSeatingStore();
+        getStoreInstance();
 
+
+    /*
+        =====================================================
+        GET
+        =====================================================
+    */
 
     if (
         request.method ===
@@ -879,7 +1043,7 @@ export default async function (
         ] =
             await Promise.all(
                 [
-                    getSeatingRegistry(
+                    getRegistry(
                         store
                     ),
 
@@ -923,6 +1087,12 @@ export default async function (
     }
 
 
+    /*
+        =====================================================
+        POST
+        =====================================================
+    */
+
     if (
         request.method ===
         "POST"
@@ -956,7 +1126,7 @@ export default async function (
         ] =
             await Promise.all(
                 [
-                    getSeatingRegistry(
+                    getRegistry(
                         store
                     ),
 
@@ -989,6 +1159,12 @@ export default async function (
         }
 
 
+        /*
+            =================================================
+            CREATE TABLE / DISPLAY ITEM
+            =================================================
+        */
+
         if (
             body.action ===
             "createTable"
@@ -1000,10 +1176,12 @@ export default async function (
                     80
                 );
 
+
             const shape =
                 cleanShape(
                     body.shape
                 );
+
 
             const capacity =
                 cleanCapacity(
@@ -1018,7 +1196,7 @@ export default async function (
                 return jsonResponse(
                     {
                         error:
-                            "Table or display item name is required."
+                            "Table name is required."
                     },
                     400
                 );
@@ -1063,7 +1241,7 @@ export default async function (
                 return jsonResponse(
                     {
                         error:
-                            "A table or display item with that name already exists."
+                            "A table with that name already exists."
                     },
                     409
                 );
@@ -1074,10 +1252,6 @@ export default async function (
             const id =
                 `table-${randomUUID()}`;
 
-            const dimensions =
-                defaultDimensions(
-                    shape
-                );
 
             const now =
                 new Date()
@@ -1103,16 +1277,33 @@ export default async function (
                     0,
 
                 width:
-                    dimensions.width,
+                    shape ===
+                        "banquet"
+                        ? 18
+                        : (
+                            shape ===
+                                "rectangle"
+                                ? 13
+                                : 10
+                        ),
 
                 height:
-                    dimensions.height,
+                    shape ===
+                        "banquet"
+                        ? 7
+                        : (
+                            shape ===
+                                "rectangle"
+                                ? 9
+                                : 10
+                        ),
 
                 createdAt:
                     now,
 
                 updatedAt:
                     now
+
             };
 
 
@@ -1143,6 +1334,12 @@ export default async function (
         }
 
 
+        /*
+            =================================================
+            UPDATE TABLE
+            =================================================
+        */
+
         if (
             body.action ===
             "updateTable"
@@ -1151,14 +1348,14 @@ export default async function (
             const id =
                 cleanText(
                     body.id,
-                    160
+                    120
                 );
 
+
             const existing =
-                registry
-                    .tables[
-                        id
-                    ];
+                registry.tables[
+                    id
+                ];
 
 
             if (
@@ -1168,7 +1365,7 @@ export default async function (
                 return jsonResponse(
                     {
                         error:
-                            "Table or display item not found."
+                            "Table not found."
                     },
                     404
                 );
@@ -1182,10 +1379,12 @@ export default async function (
                     80
                 );
 
+
             const shape =
                 cleanShape(
                     body.shape
                 );
+
 
             const capacity =
                 cleanCapacity(
@@ -1200,7 +1399,7 @@ export default async function (
                 return jsonResponse(
                     {
                         error:
-                            "Name is required."
+                            "Table name is required."
                     },
                     400
                 );
@@ -1255,7 +1454,8 @@ export default async function (
                     )
                     .some(
                         table =>
-                            table.id !== id &&
+                            table.id !==
+                                id &&
                             table.name
                                 .toLocaleLowerCase() ===
                             name
@@ -1270,7 +1470,7 @@ export default async function (
                 return jsonResponse(
                     {
                         error:
-                            "A table or display item with that name already exists."
+                            "A table with that name already exists."
                     },
                     409
                 );
@@ -1321,6 +1521,7 @@ export default async function (
                 updatedAt:
                     new Date()
                         .toISOString()
+
             };
 
 
@@ -1351,6 +1552,12 @@ export default async function (
         }
 
 
+        /*
+            =================================================
+            NORMAL HOUSEHOLD ASSIGNMENT
+            =================================================
+        */
+
         if (
             body.action ===
             "assignGuest"
@@ -1361,6 +1568,7 @@ export default async function (
                     body.invitationCode,
                     160
                 );
+
 
             const tableId =
                 cleanText(
@@ -1374,11 +1582,11 @@ export default async function (
                     invitationCode
                 ];
 
+
             const table =
-                registry
-                    .tables[
-                        tableId
-                    ];
+                registry.tables[
+                    tableId
+                ];
 
 
             if (
@@ -1411,33 +1619,27 @@ export default async function (
             }
 
 
-            /*
-                Capacity 0 means this is a display item,
-                such as a bar, cake structure, photo booth,
-                decor item, DJ booth, etc.
-            */
+            const currentAssignment =
+                registry.assignments[
+                    invitationCode
+                ];
+
+
             if (
-                Number(
-                    table.capacity
-                ) === 0
+                currentAssignment &&
+                currentAssignment.split ===
+                    true
             ) {
 
                 return jsonResponse(
                     {
                         error:
-                            `${table.name} is a non-seating item and cannot have guests assigned to it.`
+                            "This invitation has split seating. Assign each named guest individually."
                     },
                     409
                 );
 
             }
-
-
-            const currentAssignment =
-                registry
-                    .assignments[
-                        invitationCode
-                    ];
 
 
             if (
@@ -1450,6 +1652,24 @@ export default async function (
                     {
                         error:
                             "That guest is already assigned to this table."
+                    },
+                    409
+                );
+
+            }
+
+
+            if (
+                Number(
+                    table.capacity
+                ) ===
+                0
+            ) {
+
+                return jsonResponse(
+                    {
+                        error:
+                            `${table.name} is a non-seating item and cannot have guests assigned to it.`
                     },
                     409
                 );
@@ -1503,6 +1723,7 @@ export default async function (
                 assignedAt:
                     new Date()
                         .toISOString()
+
             };
 
 
@@ -1533,9 +1754,15 @@ export default async function (
         }
 
 
+        /*
+            =================================================
+            SPLIT AN INVITATION INTO NAMED PEOPLE
+            =================================================
+        */
+
         if (
             body.action ===
-            "unassignGuest"
+            "splitGuest"
         ) {
 
             const invitationCode =
@@ -1545,17 +1772,269 @@ export default async function (
                 );
 
 
+            const guest =
+                attendingGuests[
+                    invitationCode
+                ];
+
+
             if (
-                !registry
-                    .assignments[
-                        invitationCode
-                    ]
+                !guest
             ) {
 
                 return jsonResponse(
                     {
                         error:
-                            "That guest is not currently assigned to a table."
+                            "Only guests who RSVP'd Attending can use split seating."
+                    },
+                    400
+                );
+
+            }
+
+
+            if (
+                guest.guestCount <
+                2
+            ) {
+
+                return jsonResponse(
+                    {
+                        error:
+                            "Split seating is only available for invitations with two or more attending guests."
+                    },
+                    409
+                );
+
+            }
+
+
+            const names =
+                Array.isArray(
+                    body.names
+                )
+                    ? body.names
+                        .map(
+                            name =>
+                                cleanText(
+                                    name,
+                                    100
+                                )
+                        )
+                        .filter(
+                            Boolean
+                        )
+                    : [];
+
+
+            if (
+                names.length !==
+                guest.guestCount
+            ) {
+
+                return jsonResponse(
+                    {
+                        error:
+                            `Enter exactly ${guest.guestCount} guest names for this invitation.`
+                    },
+                    400
+                );
+
+            }
+
+
+            const existing =
+                registry.assignments[
+                    invitationCode
+                ] ||
+                null;
+
+
+            /*
+                If the household was already assigned to
+                one table, splitting keeps everyone at that
+                same table initially.
+
+                You can then remove/move individual people.
+            */
+            const preservedTableId =
+                existing &&
+                existing.split !==
+                    true &&
+                existing.tableId
+                    ? existing.tableId
+                    : null;
+
+
+            const now =
+                new Date()
+                    .toISOString();
+
+
+            registry.assignments[
+                invitationCode
+            ] = {
+
+                split:
+                    true,
+
+                seats:
+                    names.map(
+                        (
+                            name,
+                            index
+                        ) => ({
+                            id:
+                                `seat-${index + 1}`,
+
+                            name,
+
+                            tableId:
+                                preservedTableId,
+
+                            assignedAt:
+                                preservedTableId
+                                    ? now
+                                    : null
+                        })
+                    ),
+
+                updatedAt:
+                    now
+
+            };
+
+
+            markRegistryUpdated(
+                registry
+            );
+
+
+            await store.setJSON(
+                REGISTRY_KEY,
+                registry
+            );
+
+
+            return jsonResponse(
+                {
+                    split:
+                        true,
+
+                    ...buildResponse(
+                        registry,
+                        rsvpRegistry,
+                        invitationRegistry
+                    )
+                }
+            );
+
+        }
+
+
+        /*
+            =================================================
+            ASSIGN ONE NAMED PERSON
+            =================================================
+        */
+
+        if (
+            body.action ===
+            "assignSeat"
+        ) {
+
+            const invitationCode =
+                cleanText(
+                    body.invitationCode,
+                    160
+                );
+
+
+            const seatId =
+                cleanText(
+                    body.seatId,
+                    100
+                );
+
+
+            const tableId =
+                cleanText(
+                    body.tableId,
+                    160
+                );
+
+
+            const guest =
+                attendingGuests[
+                    invitationCode
+                ];
+
+
+            const assignment =
+                registry.assignments[
+                    invitationCode
+                ];
+
+
+            const table =
+                registry.tables[
+                    tableId
+                ];
+
+
+            if (
+                !guest
+            ) {
+
+                return jsonResponse(
+                    {
+                        error:
+                            "Only guests who RSVP'd Attending can be assigned to a table."
+                    },
+                    400
+                );
+
+            }
+
+
+            if (
+                !assignment ||
+                assignment.split !==
+                    true ||
+                !Array.isArray(
+                    assignment.seats
+                )
+            ) {
+
+                return jsonResponse(
+                    {
+                        error:
+                            "This invitation is not using split seating."
+                    },
+                    409
+                );
+
+            }
+
+
+            const seat =
+                assignment.seats
+                    .find(
+                        item =>
+                            item &&
+                            item.id ===
+                                seatId
+                    );
+
+
+            if (
+                !seat
+            ) {
+
+                return jsonResponse(
+                    {
+                        error:
+                            "Guest seat not found."
                     },
                     404
                 );
@@ -1563,10 +2042,206 @@ export default async function (
             }
 
 
-            delete registry
-                .assignments[
+            if (
+                !table
+            ) {
+
+                return jsonResponse(
+                    {
+                        error:
+                            "Table not found."
+                    },
+                    404
+                );
+
+            }
+
+
+            if (
+                Number(
+                    table.capacity
+                ) ===
+                0
+            ) {
+
+                return jsonResponse(
+                    {
+                        error:
+                            `${table.name} is a non-seating item and cannot have guests assigned to it.`
+                    },
+                    409
+                );
+
+            }
+
+
+            if (
+                seat.tableId ===
+                tableId
+            ) {
+
+                return jsonResponse(
+                    {
+                        error:
+                            `${seat.name} is already assigned to ${table.name}.`
+                    },
+                    409
+                );
+
+            }
+
+
+            const occupancy =
+                tableOccupancy(
+                    tableId,
+                    registry,
+                    attendingGuests
+                );
+
+
+            if (
+                occupancy.people +
+                1 >
+                Number(
+                    table.capacity
+                )
+            ) {
+
+                return jsonResponse(
+                    {
+                        error:
+                            `${table.name} has no seats remaining.`
+                    },
+                    409
+                );
+
+            }
+
+
+            seat.tableId =
+                tableId;
+
+            seat.assignedAt =
+                new Date()
+                    .toISOString();
+
+            assignment.updatedAt =
+                new Date()
+                    .toISOString();
+
+
+            markRegistryUpdated(
+                registry
+            );
+
+
+            await store.setJSON(
+                REGISTRY_KEY,
+                registry
+            );
+
+
+            return jsonResponse(
+                {
+                    assigned:
+                        true,
+
+                    ...buildResponse(
+                        registry,
+                        rsvpRegistry,
+                        invitationRegistry
+                    )
+                }
+            );
+
+        }
+
+
+        /*
+            =================================================
+            UNASSIGN ONE NAMED PERSON
+            =================================================
+        */
+
+        if (
+            body.action ===
+            "unassignSeat"
+        ) {
+
+            const invitationCode =
+                cleanText(
+                    body.invitationCode,
+                    160
+                );
+
+
+            const seatId =
+                cleanText(
+                    body.seatId,
+                    100
+                );
+
+
+            const assignment =
+                registry.assignments[
                     invitationCode
                 ];
+
+
+            if (
+                !assignment ||
+                assignment.split !==
+                    true ||
+                !Array.isArray(
+                    assignment.seats
+                )
+            ) {
+
+                return jsonResponse(
+                    {
+                        error:
+                            "This invitation is not using split seating."
+                    },
+                    409
+                );
+
+            }
+
+
+            const seat =
+                assignment.seats
+                    .find(
+                        item =>
+                            item &&
+                            item.id ===
+                                seatId
+                    );
+
+
+            if (
+                !seat
+            ) {
+
+                return jsonResponse(
+                    {
+                        error:
+                            "Guest seat not found."
+                    },
+                    404
+                );
+
+            }
+
+
+            seat.tableId =
+                null;
+
+            seat.assignedAt =
+                null;
+
+            assignment.updatedAt =
+                new Date()
+                    .toISOString();
 
 
             markRegistryUpdated(
@@ -1595,6 +2270,79 @@ export default async function (
 
         }
 
+
+        /*
+            =================================================
+            REMOVE WHOLE INVITATION ASSIGNMENT
+            =================================================
+        */
+
+        if (
+            body.action ===
+            "unassignGuest"
+        ) {
+
+            const invitationCode =
+                cleanText(
+                    body.invitationCode,
+                    160
+                );
+
+
+            if (
+                !registry.assignments[
+                    invitationCode
+                ]
+            ) {
+
+                return jsonResponse(
+                    {
+                        error:
+                            "That guest is not currently assigned to a table."
+                    },
+                    404
+                );
+
+            }
+
+
+            delete registry.assignments[
+                invitationCode
+            ];
+
+
+            markRegistryUpdated(
+                registry
+            );
+
+
+            await store.setJSON(
+                REGISTRY_KEY,
+                registry
+            );
+
+
+            return jsonResponse(
+                {
+                    unassigned:
+                        true,
+
+                    ...buildResponse(
+                        registry,
+                        rsvpRegistry,
+                        invitationRegistry
+                    )
+                }
+            );
+
+        }
+
+
+        /*
+            =================================================
+            PUBLISH / UNPUBLISH
+            =================================================
+        */
 
         if (
             body.action ===
@@ -1645,6 +2393,12 @@ export default async function (
     }
 
 
+    /*
+        =====================================================
+        DELETE TABLE
+        =====================================================
+    */
+
     if (
         request.method ===
         "DELETE"
@@ -1674,23 +2428,8 @@ export default async function (
         const id =
             cleanText(
                 body.id,
-                160
+                120
             );
-
-
-        if (
-            !id
-        ) {
-
-            return jsonResponse(
-                {
-                    error:
-                        "Table or display item ID is required."
-                },
-                400
-            );
-
-        }
 
 
         const [
@@ -1700,7 +2439,7 @@ export default async function (
         ] =
             await Promise.all(
                 [
-                    getSeatingRegistry(
+                    getRegistry(
                         store
                     ),
 
@@ -1712,16 +2451,15 @@ export default async function (
 
 
         if (
-            !registry
-                .tables[
-                    id
-                ]
+            !registry.tables[
+                id
+            ]
         ) {
 
             return jsonResponse(
                 {
                     error:
-                        "Table or display item not found."
+                        "Table not found."
                 },
                 404
             );
@@ -1729,12 +2467,19 @@ export default async function (
         }
 
 
-        delete registry
-            .tables[
-                id
-            ];
+        delete registry.tables[
+            id
+        ];
 
 
+        /*
+            Normal household:
+            remove the assignment.
+
+            Split household:
+            keep the named people but clear only
+            the people who were assigned to this table.
+        */
         for (
             const [
                 invitationCode,
@@ -1746,9 +2491,57 @@ export default async function (
         ) {
 
             if (
-                assignment &&
+                !assignment
+            ) {
+
+                continue;
+
+            }
+
+
+            if (
+                assignment.split ===
+                    true &&
+                Array.isArray(
+                    assignment.seats
+                )
+            ) {
+
+                assignment.seats
+                    .forEach(
+                        seat => {
+
+                            if (
+                                seat &&
+                                seat.tableId ===
+                                    id
+                            ) {
+
+                                seat.tableId =
+                                    null;
+
+                                seat.assignedAt =
+                                    null;
+
+                            }
+
+                        }
+                    );
+
+
+                assignment.updatedAt =
+                    new Date()
+                        .toISOString();
+
+
+                continue;
+
+            }
+
+
+            if (
                 assignment.tableId ===
-                    id
+                id
             ) {
 
                 delete registry

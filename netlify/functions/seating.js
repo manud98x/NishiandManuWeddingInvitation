@@ -65,6 +65,7 @@ async function getInvitationRegistry() {
             INVITATION_STORE_NAME
         );
 
+
     const registry =
         await store.get(
             INVITATION_REGISTRY_KEY,
@@ -107,6 +108,7 @@ async function getSeatingRegistry() {
             SEATING_STORE_NAME
         );
 
+
     const registry =
         await store.get(
             SEATING_REGISTRY_KEY,
@@ -127,7 +129,7 @@ async function getSeatingRegistry() {
     ) {
 
         return {
-            version: 1,
+            version: 2,
             published: false,
             tables: {},
             assignments: {}
@@ -137,8 +139,10 @@ async function getSeatingRegistry() {
 
 
     return {
+
         version:
-            registry.version || 1,
+            registry.version ||
+            2,
 
         published:
             Boolean(
@@ -158,6 +162,7 @@ async function getSeatingRegistry() {
                 "object"
                 ? registry.assignments
                 : {}
+
     };
 
 }
@@ -169,6 +174,7 @@ async function getRsvpRegistry() {
         getStore(
             RSVP_STORE_NAME
         );
+
 
     const registry =
         await store.get(
@@ -230,6 +236,7 @@ export default async function (
             request.url
         );
 
+
     const invitationCode =
         cleanCode(
             url.searchParams.get(
@@ -261,12 +268,17 @@ export default async function (
         await Promise.all(
             [
                 getInvitationRegistry(),
+
                 getSeatingRegistry(),
+
                 getRsvpRegistry()
             ]
         );
 
 
+    /*
+        Invitation must still exist.
+    */
     if (
         !invitationRegistry
             .invitations[
@@ -285,6 +297,9 @@ export default async function (
     }
 
 
+    /*
+        Only attending guests receive seating.
+    */
     const rsvp =
         rsvpRegistry
             .rsvps[
@@ -313,14 +328,21 @@ export default async function (
     }
 
 
+    /*
+        Seating exists privately in admin,
+        but guests cannot see it until published.
+    */
     if (
         !seatingRegistry.published
     ) {
 
         return jsonResponse(
             {
-                published: false,
-                assigned: false
+                published:
+                    false,
+
+                assigned:
+                    false
             }
         );
 
@@ -335,14 +357,137 @@ export default async function (
 
 
     if (
-        !assignment ||
+        !assignment
+    ) {
+
+        return jsonResponse(
+            {
+                published:
+                    true,
+
+                assigned:
+                    false
+            }
+        );
+
+    }
+
+
+    /*
+        =====================================================
+        SPLIT SEATING
+
+        One invitation link may now contain several
+        individually named people, each with a different table.
+        =====================================================
+    */
+
+    if (
+        assignment.split ===
+            true &&
+        Array.isArray(
+            assignment.seats
+        )
+    ) {
+
+        const seats =
+            assignment.seats
+                .map(
+                    seat => {
+
+                        const table =
+                            seat &&
+                            seat.tableId
+                                ? seatingRegistry
+                                    .tables[
+                                        seat.tableId
+                                    ]
+                                : null;
+
+
+                        return {
+
+                            id:
+                                seat?.id ||
+                                "",
+
+                            name:
+                                seat?.name ||
+                                "Guest",
+
+                            assigned:
+                                Boolean(
+                                    table &&
+                                    table.name
+                                ),
+
+                            tableName:
+                                table &&
+                                table.name
+                                    ? table.name
+                                    : null
+
+                        };
+
+                    }
+                );
+
+
+        return jsonResponse(
+            {
+                published:
+                    true,
+
+                /*
+                    True when at least one person
+                    has a table.
+                */
+                assigned:
+                    seats.some(
+                        seat =>
+                            seat.assigned
+                    ),
+
+                split:
+                    true,
+
+                /*
+                    Useful for the invitation UI if
+                    some people still need seating.
+                */
+                fullyAssigned:
+                    seats.length >
+                        0 &&
+                    seats.every(
+                        seat =>
+                            seat.assigned
+                    ),
+
+                seats
+
+            }
+        );
+
+    }
+
+
+    /*
+        =====================================================
+        NORMAL HOUSEHOLD SEATING
+        =====================================================
+    */
+
+    if (
         !assignment.tableId
     ) {
 
         return jsonResponse(
             {
-                published: true,
-                assigned: false
+                published:
+                    true,
+
+                assigned:
+                    false
             }
         );
 
@@ -363,8 +508,11 @@ export default async function (
 
         return jsonResponse(
             {
-                published: true,
-                assigned: false
+                published:
+                    true,
+
+                assigned:
+                    false
             }
         );
 
@@ -373,8 +521,15 @@ export default async function (
 
     return jsonResponse(
         {
-            published: true,
-            assigned: true,
+            published:
+                true,
+
+            assigned:
+                true,
+
+            split:
+                false,
+
             tableName:
                 table.name
         }
