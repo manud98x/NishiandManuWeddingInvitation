@@ -2060,8 +2060,8 @@
                 translateY(28px);
 
             transition:
-                opacity 1.2s ease,
-                transform 1.35s cubic-bezier(.22, 1, .36, 1);
+                opacity .55s ease,
+                transform .65s cubic-bezier(.22, 1, .36, 1);
         }
 
         .timeline-item:nth-child(odd) {
@@ -2232,8 +2232,8 @@
 
             .timeline-item {
                 transition:
-                    opacity .48s ease,
-                    transform .58s cubic-bezier(.22, 1, .36, 1);
+                    opacity .38s ease,
+                    transform .48s cubic-bezier(.22, 1, .36, 1);
             }
 
             .timeline {
@@ -5055,11 +5055,6 @@ END:VCALENDAR`
 
         function initialiseWeddingTimeline() {
 
-            const timeline =
-                document.getElementById(
-                    "weddingTimeline"
-                );
-
             const timelineItems =
                 Array.from(
                     document.querySelectorAll(
@@ -5069,9 +5064,7 @@ END:VCALENDAR`
 
 
             if (
-                !timeline ||
-                timelineItems.length ===
-                    0
+                timelineItems.length === 0
             ) {
 
                 return;
@@ -5079,99 +5072,40 @@ END:VCALENDAR`
             }
 
 
-            let sequenceStarted =
-                false;
-
-
-            const isMobile =
-                window.matchMedia(
-                    "(max-width: 700px)"
-                ).matches;
-
-
             /*
-                Observe the whole itinerary card rather than waiting
-                for the inner timeline to be deep in the viewport.
-                This starts the sequence earlier and lets it finish
-                while the section is still on screen.
+                Reveal each itinerary item when that item itself
+                reaches the viewport.
+
+                This removes the old timed sequence completely,
+                so there is no animation still running after the
+                guest has already scrolled past the itinerary.
             */
-            const triggerTarget =
-                timeline.closest(".card") ||
-                timeline;
-
-
-            const firstItemDelay =
-                isMobile
-                    ? 120
-                    : 220;
-
-            const gapBetweenItems =
-                isMobile
-                    ? 260
-                    : 420;
-
-
-            const timelineObserver =
+            const itemObserver =
                 new IntersectionObserver(
                     entries => {
 
-                        const entered =
-                            entries.some(
-                                entry =>
-                                    entry.isIntersecting
-                            );
+                        entries.forEach(
+                            entry => {
+
+                                if (
+                                    !entry.isIntersecting
+                                ) {
+
+                                    return;
+
+                                }
 
 
-                        if (
-                            !entered ||
-                            sequenceStarted
-                        ) {
-
-                            return;
-
-                        }
+                                entry.target
+                                    .classList
+                                    .add(
+                                        "is-visible",
+                                        "is-active"
+                                    );
 
 
-                        sequenceStarted =
-                            true;
-
-                        timelineObserver.disconnect();
-
-
-                        timelineItems.forEach(
-                            (
-                                item,
-                                index
-                            ) => {
-
-                                setTimeout(
-                                    () => {
-
-                                        timelineItems
-                                            .forEach(
-                                                timelineItem => {
-
-                                                    timelineItem
-                                                        .classList
-                                                        .remove(
-                                                            "is-active"
-                                                        );
-
-                                                }
-                                            );
-
-
-                                        item.classList.add(
-                                            "is-visible",
-                                            "is-active"
-                                        );
-
-                                    },
-                                    firstItemDelay +
-                                    (
-                                        index *
-                                        gapBetweenItems
-                                    )
+                                itemObserver.unobserve(
+                                    entry.target
                                 );
 
                             }
@@ -5180,20 +5114,22 @@ END:VCALENDAR`
                     },
                     {
                         threshold:
-                            isMobile
-                                ? .08
-                                : .12,
+                            .12,
 
                         rootMargin:
-                            isMobile
-                                ? "0px 0px -2% 0px"
-                                : "0px 0px -5% 0px"
+                            "0px 0px -6% 0px"
                     }
                 );
 
 
-            timelineObserver.observe(
-                triggerTarget
+            timelineItems.forEach(
+                item => {
+
+                    itemObserver.observe(
+                        item
+                    );
+
+                }
             );
 
         }
