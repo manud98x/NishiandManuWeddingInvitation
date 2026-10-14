@@ -129,7 +129,7 @@ async function getSeatingRegistry() {
     ) {
 
         return {
-            version: 2,
+            version: 1,
             published: false,
             tables: {},
             assignments: {}
@@ -142,7 +142,7 @@ async function getSeatingRegistry() {
 
         version:
             registry.version ||
-            2,
+            1,
 
         published:
             Boolean(
@@ -276,9 +276,6 @@ export default async function (
         );
 
 
-    /*
-        Invitation must still exist.
-    */
     if (
         !invitationRegistry
             .invitations[
@@ -297,9 +294,6 @@ export default async function (
     }
 
 
-    /*
-        Only attending guests receive seating.
-    */
     const rsvp =
         rsvpRegistry
             .rsvps[
@@ -328,10 +322,6 @@ export default async function (
     }
 
 
-    /*
-        Seating exists privately in admin,
-        but guests cannot see it until published.
-    */
     if (
         !seatingRegistry.published
     ) {
@@ -374,14 +364,12 @@ export default async function (
 
 
     /*
-        =====================================================
-        SPLIT SEATING
+        Split seating.
 
-        One invitation link may now contain several
-        individually named people, each with a different table.
-        =====================================================
+        One invitation remains one link,
+        but each named person may have
+        their own table.
     */
-
     if (
         assignment.split ===
             true &&
@@ -438,10 +426,6 @@ export default async function (
                 published:
                     true,
 
-                /*
-                    True when at least one person
-                    has a table.
-                */
                 assigned:
                     seats.some(
                         seat =>
@@ -451,10 +435,6 @@ export default async function (
                 split:
                     true,
 
-                /*
-                    Useful for the invitation UI if
-                    some people still need seating.
-                */
                 fullyAssigned:
                     seats.length >
                         0 &&
@@ -472,11 +452,8 @@ export default async function (
 
 
     /*
-        =====================================================
-        NORMAL HOUSEHOLD SEATING
-        =====================================================
+        Normal household seating.
     */
-
     if (
         !assignment.tableId
     ) {

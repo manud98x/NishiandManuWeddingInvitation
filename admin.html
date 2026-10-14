@@ -11,6 +11,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="image" href="/images/seating-plan.png" fetchpriority="high">
 
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Great+Vibes&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
 
@@ -3107,6 +3108,23 @@ const expandedTableIds =
 
 const FLOORPLAN_IMAGE =
     "/images/seating-plan.png";
+
+
+/*
+    Warm the browser cache immediately so the venue map is ready
+    by the time the Seating Plan tab is opened.
+*/
+const floorplanImagePreload =
+    new Image();
+
+floorplanImagePreload.decoding =
+    "async";
+
+floorplanImagePreload.fetchPriority =
+    "high";
+
+floorplanImagePreload.src =
+    FLOORPLAN_IMAGE;
 
 
 function getSecret() {
@@ -6438,11 +6456,38 @@ function renderUnassignedGuests() {
 
         left.append(name, count);
 
+        const actionWrap = document.createElement("div");
+        actionWrap.style.display = "flex";
+        actionWrap.style.gap = "6px";
+        actionWrap.style.alignItems = "center";
+        actionWrap.style.flexWrap = "wrap";
+
+        const unsplit = document.createElement("button");
+        unsplit.type = "button";
+        unsplit.className = "mini-button";
+        unsplit.textContent = "Unsplit Group";
+        unsplit.addEventListener(
+            "click",
+            () =>
+                unsplitGuestSeating(
+                    seat.invitationCode
+                )
+        );
+
         const badge = document.createElement("span");
         badge.className = "badge pending";
         badge.textContent = "Unassigned";
 
-        item.append(left, badge);
+        actionWrap.append(
+            unsplit,
+            badge
+        );
+
+        item.append(
+            left,
+            actionWrap
+        );
+
         list.appendChild(item);
     });
 
@@ -7362,13 +7407,47 @@ function renderSelectedTablePanel() {
         const left = document.createElement("div");
         left.innerHTML = `<div class="seating-guest-chip-name">${seat.name}</div><div class="seating-guest-chip-meta">Split seating${guest ? ` · ${guest.guestName}` : ""}</div>`;
 
+        const actionWrap = document.createElement("div");
+        actionWrap.style.display = "flex";
+        actionWrap.style.gap = "6px";
+        actionWrap.style.flexWrap = "wrap";
+        actionWrap.style.justifyContent = "flex-end";
+
+        const unsplit = document.createElement("button");
+        unsplit.type = "button";
+        unsplit.className = "mini-button";
+        unsplit.textContent = "Unsplit Group";
+        unsplit.addEventListener(
+            "click",
+            () =>
+                unsplitGuestSeating(
+                    seat.invitationCode
+                )
+        );
+
         const remove = document.createElement("button");
         remove.type = "button";
         remove.className = "mini-button";
         remove.textContent = "Remove";
-        remove.addEventListener("click", () => unassignSeat(seat.invitationCode, seat.seatId));
+        remove.addEventListener(
+            "click",
+            () =>
+                unassignSeat(
+                    seat.invitationCode,
+                    seat.seatId
+                )
+        );
 
-        row.append(left, remove);
+        actionWrap.append(
+            unsplit,
+            remove
+        );
+
+        row.append(
+            left,
+            actionWrap
+        );
+
         assignedList.appendChild(row);
     });
 
@@ -7489,7 +7568,27 @@ function renderSeatingUnassignedPanel() {
         const left = document.createElement("div");
         left.innerHTML = `<div class="seating-guest-chip-name">${seat.name}</div><div class="seating-guest-chip-meta">Split seating · ${seat.householdName}</div>`;
 
-        row.appendChild(left);
+        const actions = document.createElement("div");
+        actions.style.display = "flex";
+        actions.style.gap = "6px";
+        actions.style.flexWrap = "wrap";
+        actions.style.justifyContent = "flex-end";
+
+        const unsplit = document.createElement("button");
+        unsplit.type = "button";
+        unsplit.className = "mini-button";
+        unsplit.textContent = "Unsplit Group";
+        unsplit.addEventListener(
+            "click",
+            () =>
+                unsplitGuestSeating(
+                    seat.invitationCode
+                )
+        );
+
+        actions.appendChild(
+            unsplit
+        );
 
         if (selectedSeatingTableId) {
             const table = getTableById(selectedSeatingTableId);
@@ -7502,10 +7601,23 @@ function renderSeatingUnassignedPanel() {
                 assign.type = "button";
                 assign.className = "mini-button";
                 assign.textContent = `Assign to ${table.name}`;
-                assign.addEventListener("click", () => assignSeatToTable(seat.invitationCode, seat.id, table.id));
-                row.appendChild(assign);
+                assign.addEventListener(
+                    "click",
+                    () =>
+                        assignSeatToTable(
+                            seat.invitationCode,
+                            seat.id,
+                            table.id
+                        )
+                );
+                actions.appendChild(assign);
             }
         }
+
+        row.append(
+            left,
+            actions
+        );
 
         panel.appendChild(row);
     });
@@ -8609,6 +8721,168 @@ function suggestedSplitNames(
                 ? name
                 : `Guest ${index + 1}`
     );
+
+}
+
+
+async function unsplitGuestSeating(
+    invitationCode
+) {
+
+    const guest =
+        guestByCode(
+            invitationCode
+        );
+
+
+    if (
+        !guest ||
+        !guest.splitSeating
+    ) {
+
+        alert(
+            "This invitation is not currently split."
+        );
+
+        return;
+
+    }
+
+
+    const seats =
+        splitSeatsForGuest(
+            guest
+        );
+
+
+    const assignedTableIds =
+        [
+            ...new Set(
+                seats
+                    .map(
+                        seat =>
+                            seat.tableId
+                    )
+                    .filter(
+                        Boolean
+                    )
+            )
+        ];
+
+
+    let message;
+
+
+    if (
+        assignedTableIds.length ===
+        1
+    ) {
+
+        const table =
+            getTableById(
+                assignedTableIds[0]
+            );
+
+
+        message =
+            `Unsplit ${guest.guestName}?\n\n` +
+            `The invitation will become one household again. ` +
+            `If there is enough room, the whole group will be kept at ${table?.name || "the current table"}.`;
+
+    } else if (
+        assignedTableIds.length >
+        1
+    ) {
+
+        message =
+            `Unsplit ${guest.guestName}?\n\n` +
+            `The guests are currently seated at different tables. ` +
+            `Unsplit will combine them back into one household and leave the household unassigned so you can choose one table for everyone.`;
+
+    } else {
+
+        message =
+            `Unsplit ${guest.guestName}?\n\n` +
+            `The named split guests will be combined back into one household invitation.`;
+
+    }
+
+
+    if (
+        !confirm(
+            message
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const result =
+            await apiRequest(
+                SEATING_API,
+                {
+                    method:
+                        "POST",
+
+                    body:
+                        JSON.stringify(
+                            {
+                                action:
+                                    "unsplitGuest",
+
+                                invitationCode
+                            }
+                        )
+                }
+            );
+
+
+        seatingTables =
+            result.tables ||
+            [];
+
+        seatingPublished =
+            Boolean(
+                result.published
+            );
+
+        seatingUpdatedAt =
+            result.updatedAt ||
+            seatingUpdatedAt;
+
+        attendingGuests =
+            result.attendingGuests ||
+            [];
+
+
+        renderTables();
+        renderSeatingPlanner();
+        renderOverview();
+
+
+        if (
+            result.preservedTableName
+        ) {
+
+            alert(
+                `${guest.guestName} is together again at ${result.preservedTableName}.`
+            );
+
+        }
+
+    } catch (
+        error
+    ) {
+
+        alert(
+            error.message
+        );
+
+    }
 
 }
 

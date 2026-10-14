@@ -2230,6 +2230,12 @@
 
         @media (max-width: 700px) {
 
+            .timeline-item {
+                transition:
+                    opacity .48s ease,
+                    transform .58s cubic-bezier(.22, 1, .36, 1);
+            }
+
             .timeline {
                 max-width:
                     100%;
@@ -2732,34 +2738,48 @@
 
         .split-seating-list {
             display: grid;
-            gap: 10px;
-            margin-top: 8px;
+            gap: 0;
+            margin-top: 6px;
         }
 
         .split-seating-row {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) auto;
-            gap: 14px;
-            align-items: center;
-            padding: 11px 14px;
-            border: 1px solid rgba(198, 162, 82, .24);
-            border-radius: 7px;
-            background: rgba(255, 253, 249, .72);
-            text-align: left;
+            position: relative;
+            padding: 20px 8px 22px;
+            text-align: center;
+        }
+
+        .split-seating-row:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            width: 62px;
+            height: 1px;
+            transform: translateX(-50%);
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(212, 175, 55, .65),
+                    transparent
+                );
         }
 
         .split-seating-person {
+            margin-bottom: 7px;
             font-size: 18px;
-            color: #493b30;
+            line-height: 1.35;
+            color: #6e5c4e;
         }
 
         .split-seating-table {
             font-family: "Playfair Display", serif;
-            font-size: 12px;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
+            font-size: clamp(27px, 6vw, 38px);
+            line-height: 1.15;
+            font-weight: 500;
+            letter-spacing: 1px;
             color: #a67c00;
-            text-align: right;
+            text-align: center;
         }
 
         @media (max-width: 600px) {
@@ -3355,7 +3375,7 @@
                     </p>
 
                     <iframe class="map" src="https://www.google.com/maps?q=Anantara+Kalutara+Resort&output=embed"
-                        loading="lazy" allowfullscreen></iframe>
+                        loading="eager" fetchpriority="high" allowfullscreen></iframe>
 
                 </div>
 
@@ -4572,7 +4592,7 @@ END:VCALENDAR`
                 ) {
 
                     text.textContent =
-                        "Your seating arrangements";
+                        "We’re delighted to have you seated at";
 
                     name.textContent = "";
                     name.classList.remove("hidden");
@@ -4582,6 +4602,7 @@ END:VCALENDAR`
                     list.className = "split-seating-list";
 
                     seating.seats.forEach(seat => {
+
                         const row =
                             document.createElement("div");
                         row.className = "split-seating-row";
@@ -4589,21 +4610,33 @@ END:VCALENDAR`
                         const person =
                             document.createElement("div");
                         person.className = "split-seating-person";
-                        person.textContent = seat.name || "Guest";
+                        person.textContent =
+                            seat.name || "Guest";
 
                         const table =
                             document.createElement("div");
                         table.className = "split-seating-table";
                         table.textContent =
-                            seat.assigned && seat.tableName
+                            seat.assigned &&
+                            seat.tableName
                                 ? seat.tableName
                                 : "To be confirmed";
 
-                        row.append(person, table);
-                        list.appendChild(row);
+                        row.append(
+                            person,
+                            table
+                        );
+
+                        list.appendChild(
+                            row
+                        );
+
                     });
 
-                    name.appendChild(list);
+                    name.appendChild(
+                        list
+                    );
+
                     return;
                 }
 
@@ -5019,6 +5052,34 @@ END:VCALENDAR`
                 false;
 
 
+            const isMobile =
+                window.matchMedia(
+                    "(max-width: 700px)"
+                ).matches;
+
+
+            /*
+                Observe the whole itinerary card rather than waiting
+                for the inner timeline to be deep in the viewport.
+                This starts the sequence earlier and lets it finish
+                while the section is still on screen.
+            */
+            const triggerTarget =
+                timeline.closest(".card") ||
+                timeline;
+
+
+            const firstItemDelay =
+                isMobile
+                    ? 120
+                    : 220;
+
+            const gapBetweenItems =
+                isMobile
+                    ? 260
+                    : 420;
+
+
             const timelineObserver =
                 new IntersectionObserver(
                     entries => {
@@ -5046,13 +5107,6 @@ END:VCALENDAR`
                         timelineObserver.disconnect();
 
 
-                        const firstItemDelay =
-                            650;
-
-                        const gapBetweenItems =
-                            1000;
-
-
                         timelineItems.forEach(
                             (
                                 item,
@@ -5066,9 +5120,11 @@ END:VCALENDAR`
                                             .forEach(
                                                 timelineItem => {
 
-                                                    timelineItem.classList.remove(
-                                                        "is-active"
-                                                    );
+                                                    timelineItem
+                                                        .classList
+                                                        .remove(
+                                                            "is-active"
+                                                        );
 
                                                 }
                                             );
@@ -5093,16 +5149,20 @@ END:VCALENDAR`
                     },
                     {
                         threshold:
-                            .28,
+                            isMobile
+                                ? .08
+                                : .12,
 
                         rootMargin:
-                            "0px 0px -10% 0px"
+                            isMobile
+                                ? "0px 0px -2% 0px"
+                                : "0px 0px -5% 0px"
                     }
                 );
 
 
             timelineObserver.observe(
-                timeline
+                triggerTarget
             );
 
         }
