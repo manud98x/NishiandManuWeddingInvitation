@@ -6414,7 +6414,10 @@ function renderUnassignedGuests() {
 
         const count = document.createElement("div");
         count.className = "unassigned-count";
-        count.textContent = `${guest.guestCount} attending · together`;
+        count.textContent =
+            Number(guest.guestCount) === 1
+                ? "1 attending"
+                : `${guest.guestCount} attending · together`;
 
         left.append(name, count);
 
@@ -7306,23 +7309,53 @@ function renderSelectedTablePanel() {
     placeholder.textContent = "Select an unassigned guest...";
     select.appendChild(placeholder);
 
-    unassignedGuests()
-        .filter(guest => guest.guestCount <= (table.remainingCapacity ?? table.capacity))
-        .forEach(guest => {
-            const option = document.createElement("option");
-            option.value = `guest:${guest.invitationCode}`;
-            option.textContent = `${guest.guestName} (${guest.guestCount})`;
-            select.appendChild(option);
-        });
+    if (!isDisplayItem) {
 
-    unassignedSplitSeats()
-        .filter(() => (table.remainingCapacity ?? table.capacity) >= 1)
-        .forEach(seat => {
-            const option = document.createElement("option");
-            option.value = `seat:${seat.invitationCode}:${seat.id}`;
-            option.textContent = `${seat.name} · split from ${seat.householdName}`;
-            select.appendChild(option);
-        });
+        unassignedGuests()
+            .filter(
+                guest =>
+                    guest.guestCount <=
+                    (
+                        table.remainingCapacity ??
+                        table.capacity
+                    )
+            )
+            .forEach(guest => {
+                const option =
+                    document.createElement("option");
+
+                option.value =
+                    `guest:${guest.invitationCode}`;
+
+                option.textContent =
+                    `${guest.guestName} (${guest.guestCount})`;
+
+                select.appendChild(option);
+            });
+
+
+        unassignedSplitSeats()
+            .filter(
+                () =>
+                    (
+                        table.remainingCapacity ??
+                        table.capacity
+                    ) >= 1
+            )
+            .forEach(seat => {
+                const option =
+                    document.createElement("option");
+
+                option.value =
+                    `seat:${seat.invitationCode}:${seat.id}`;
+
+                option.textContent =
+                    `${seat.name} · split from ${seat.householdName}`;
+
+                select.appendChild(option);
+            });
+
+    }
 
     const assignButton = document.createElement("button");
     assignButton.type = "button";
@@ -7372,7 +7405,13 @@ function renderSelectedTablePanel() {
         row.className = "seating-guest-chip";
 
         const left = document.createElement("div");
-        left.innerHTML = `<div class="seating-guest-chip-name">${guest.guestName}</div><div class="seating-guest-chip-meta">${guest.guestCount} attending · together</div>`;
+        left.innerHTML =
+            `<div class="seating-guest-chip-name">${guest.guestName}</div>` +
+            `<div class="seating-guest-chip-meta">${
+                Number(guest.guestCount) === 1
+                    ? "1 attending"
+                    : `${guest.guestCount} attending · together`
+            }</div>`;
 
         const actionWrap = document.createElement("div");
         actionWrap.style.display = "flex";
@@ -7524,7 +7563,13 @@ function renderSeatingUnassignedPanel() {
         row.className = "seating-guest-chip";
 
         const left = document.createElement("div");
-        left.innerHTML = `<div class="seating-guest-chip-name">${guest.guestName}</div><div class="seating-guest-chip-meta">${guest.guestCount} attending · together by default</div>`;
+        left.innerHTML =
+            `<div class="seating-guest-chip-name">${guest.guestName}</div>` +
+            `<div class="seating-guest-chip-meta">${
+                Number(guest.guestCount) === 1
+                    ? "1 attending"
+                    : `${guest.guestCount} attending · together by default`
+            }</div>`;
 
         const actions = document.createElement("div");
         actions.style.display = "flex";
@@ -7545,6 +7590,7 @@ function renderSeatingUnassignedPanel() {
             const table = getTableById(selectedSeatingTableId);
             if (
                 table &&
+                Number.isFinite(Number(table.capacity)) &&
                 Number(table.capacity) > 0 &&
                 guest.guestCount <= (table.remainingCapacity ?? table.capacity)
             ) {
@@ -7594,6 +7640,7 @@ function renderSeatingUnassignedPanel() {
             const table = getTableById(selectedSeatingTableId);
             if (
                 table &&
+                Number.isFinite(Number(table.capacity)) &&
                 Number(table.capacity) > 0 &&
                 (table.remainingCapacity ?? table.capacity) >= 1
             ) {
@@ -8147,7 +8194,10 @@ function renderTables() {
 
                 const partySize = document.createElement("div");
                 partySize.className = "assigned-count";
-                partySize.textContent = `${guestCount} ${guestCount === 1 ? "person" : "people"} · together`;
+                partySize.textContent =
+                    guestCount === 1
+                        ? "1 person"
+                        : `${guestCount} people · together`;
 
                 left.append(guestName, partySize);
                 row.appendChild(left);
@@ -8565,6 +8615,33 @@ async function assignGuestToTable(
     tableId
 ) {
 
+    const table =
+        getTableById(
+            tableId
+        );
+
+
+    if (
+        !table ||
+        !Number.isFinite(
+            Number(
+                table.capacity
+            )
+        ) ||
+        Number(
+            table.capacity
+        ) <= 0
+    ) {
+
+        alert(
+            "Guests can only be assigned to seating tables, not floor-plan objects."
+        );
+
+        return;
+
+    }
+
+
     try {
 
         const result =
@@ -8629,6 +8706,33 @@ async function assignSeatToTable(
     seatId,
     tableId
 ) {
+
+    const table =
+        getTableById(
+            tableId
+        );
+
+
+    if (
+        !table ||
+        !Number.isFinite(
+            Number(
+                table.capacity
+            )
+        ) ||
+        Number(
+            table.capacity
+        ) <= 0
+    ) {
+
+        alert(
+            "Split guests can only be assigned to seating tables, not floor-plan objects."
+        );
+
+        return;
+
+    }
+
 
     try {
         const result =
