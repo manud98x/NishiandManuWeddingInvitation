@@ -1469,7 +1469,7 @@ code {
     display: grid;
     grid-template-columns:
         repeat(
-            3,
+            4,
             minmax(
                 0,
                 1fr
@@ -2139,6 +2139,278 @@ code {
         font-size: 11px;
     }
 
+}
+
+
+/* =========================================================
+   PRINTABLE SEATING PLAN
+========================================================= */
+
+.seating-print-root {
+    display: none;
+}
+
+@media print {
+
+    @page {
+        size: A4 landscape;
+        margin: 10mm;
+    }
+
+    html,
+    body {
+        background: #fff !important;
+        color: #2f2923 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    body > *:not(.seating-print-root) {
+        display: none !important;
+    }
+
+    .seating-print-root {
+        display: block !important;
+        width: 100%;
+        background: #fff;
+    }
+
+    .print-page {
+        width: 100%;
+        min-height: 185mm;
+        box-sizing: border-box;
+    }
+
+    .print-page + .print-page {
+        break-before: page;
+        page-break-before: always;
+    }
+
+    .print-kicker {
+        margin: 0 0 2mm;
+        text-align: center;
+        font-family: "Playfair Display", serif;
+        font-size: 9pt;
+        letter-spacing: 2.2pt;
+        text-transform: uppercase;
+        color: #9d741d;
+    }
+
+    .print-title {
+        margin: 0;
+        text-align: center;
+        font-family: "Playfair Display", serif;
+        font-size: 19pt;
+        font-weight: 500;
+        color: #5c4938;
+    }
+
+    .print-subtitle {
+        margin: 2mm 0 5mm;
+        text-align: center;
+        font-family: "Inter", sans-serif;
+        font-size: 8pt;
+        color: #7f6d5e;
+    }
+
+    .print-floorplan-wrap {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1296 / 680;
+        overflow: hidden;
+        box-sizing: border-box;
+        border: .35mm solid rgba(166,124,0,.35);
+        border-radius: 2.5mm;
+        background: #f8f3ea;
+    }
+
+    .print-floorplan-image {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center;
+    }
+
+    .print-floorplan-marker {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        padding: 1.1mm;
+        transform-origin: center center;
+        background: rgba(255,250,240,.96);
+        border: .3mm solid rgba(166,124,0,.62);
+        box-shadow: 0 1mm 2.5mm rgba(74,55,30,.12);
+        color: #624a16;
+        text-align: center;
+        overflow: hidden;
+    }
+
+    .print-floorplan-marker.round {
+        border-radius: 50%;
+    }
+
+    .print-floorplan-marker.square,
+    .print-floorplan-marker.rectangle,
+    .print-floorplan-marker.banquet {
+        border-radius: 2mm;
+    }
+
+    .print-floorplan-marker-name {
+        display: block;
+        font-family: "Playfair Display", serif;
+        font-size: 6.5pt;
+        font-weight: 600;
+        line-height: 1.05;
+    }
+
+    .print-floorplan-marker-count {
+        display: block;
+        margin-top: .5mm;
+        font-family: "Inter", sans-serif;
+        font-size: 5.2pt;
+        line-height: 1;
+        color: #826c56;
+    }
+
+    .print-roster-page {
+        padding-top: 1mm;
+    }
+
+    .print-roster-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 4mm;
+        align-items: start;
+    }
+
+    .print-table-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        box-sizing: border-box;
+        min-height: 76mm;
+        padding: 4mm;
+        border: .3mm solid rgba(166,124,0,.34);
+        border-radius: 2.5mm;
+        background: #fffdf9;
+    }
+
+    .print-table-card-head {
+        display: grid;
+        grid-template-columns: 28mm minmax(0,1fr);
+        gap: 4mm;
+        align-items: center;
+        padding-bottom: 3mm;
+        margin-bottom: 3mm;
+        border-bottom: .25mm solid rgba(166,124,0,.2);
+    }
+
+    .print-table-illustration-wrap {
+        width: 28mm;
+        height: 28mm;
+        display: grid;
+        place-items: center;
+    }
+
+    .print-table-illustration {
+        display: grid;
+        place-items: center;
+        box-sizing: border-box;
+        width: 24mm;
+        height: 24mm;
+        padding: 2mm;
+        border: .6mm solid #b58b31;
+        background: #fff8e9;
+        color: #6d5218;
+        font-family: "Playfair Display", serif;
+        font-size: 8pt;
+        font-weight: 600;
+        line-height: 1.05;
+        text-align: center;
+    }
+
+    .print-table-illustration.round {
+        border-radius: 50%;
+    }
+
+    .print-table-illustration.square {
+        border-radius: 2mm;
+    }
+
+    .print-table-illustration.rectangle {
+        width: 27mm;
+        height: 19mm;
+        border-radius: 2mm;
+    }
+
+    .print-table-illustration.banquet {
+        width: 27mm;
+        height: 13mm;
+        border-radius: 7mm;
+    }
+
+    .print-table-name {
+        margin: 0;
+        font-family: "Playfair Display", serif;
+        font-size: 13pt;
+        font-weight: 600;
+        color: #5b4634;
+    }
+
+    .print-table-meta {
+        margin-top: 1mm;
+        font-family: "Inter", sans-serif;
+        font-size: 7pt;
+        color: #8a7767;
+    }
+
+    .print-table-guest-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        columns: 2;
+        column-gap: 5mm;
+    }
+
+    .print-table-guest {
+        break-inside: avoid;
+        margin: 0 0 1.5mm;
+        font-family: "Inter", sans-serif;
+        font-size: 8pt;
+        line-height: 1.25;
+        color: #3f3831;
+    }
+
+    .print-table-guest::before {
+        content: "•";
+        display: inline-block;
+        width: 3mm;
+        color: #b58b31;
+    }
+
+    .print-table-guest-note {
+        color: #8a7767;
+        font-size: 7pt;
+    }
+
+    .print-table-empty {
+        font-family: "Inter", sans-serif;
+        font-size: 8pt;
+        font-style: italic;
+        color: #9a8a7c;
+    }
+
+    .print-roster-footer {
+        margin-top: 4mm;
+        text-align: center;
+        font-family: "Inter", sans-serif;
+        font-size: 6.5pt;
+        color: #9b8b7e;
+    }
 }
 
 </style>
@@ -2837,6 +3109,7 @@ code {
                                 <button class="button secondary" id="toggleLayoutModeButton" type="button">Enable Layout Editing</button>
                                 <button class="button secondary" id="publishSeatingButton" type="button">Publish Seating</button>
                                 <button class="button secondary" id="refreshSeatingMapButton" type="button">Refresh Map</button>
+                                <button class="button secondary" id="printSeatingPlanButton" type="button">Print Floor Plan</button>
                             </div>
 
                         </div>
@@ -3060,6 +3333,7 @@ code {
 
 </div>
 
+<div id="seatingPrintRoot" class="seating-print-root" aria-hidden="true"></div>
 
 <script>
 
@@ -6847,6 +7121,605 @@ function renderSeatingMapCounters() {
 }
 
 
+
+function printableGuestsForTable(
+    table
+) {
+
+    const entries =
+        [];
+
+
+    const assignedCodes =
+        Array.isArray(
+            table?.assignedCodes
+        )
+            ? table.assignedCodes
+            : [];
+
+
+    assignedCodes.forEach(
+        invitationCode => {
+
+            const guest =
+                guestByCode(
+                    invitationCode
+                );
+
+
+            if (
+                !guest
+            ) {
+
+                return;
+
+            }
+
+
+            const count =
+                Number(
+                    guest.guestCount
+                ) || 0;
+
+
+            entries.push(
+                {
+                    name:
+                        guest.guestName,
+
+                    note:
+                        count > 1
+                            ? `${count} people`
+                            : ""
+                }
+            );
+
+        }
+    );
+
+
+    const splitSeats =
+        Array.isArray(
+            table?.assignedSeats
+        )
+            ? table.assignedSeats
+            : [];
+
+
+    splitSeats.forEach(
+        seat => {
+
+            entries.push(
+                {
+                    name:
+                        seat.name ||
+                        "Guest",
+
+                    note:
+                        ""
+                }
+            );
+
+        }
+    );
+
+
+    return entries;
+
+}
+
+
+
+function buildPrintableFloorplan(
+    container
+) {
+
+    const page =
+        document.createElement(
+            "section"
+        );
+
+    page.className =
+        "print-page print-floorplan-page";
+
+
+    const kicker =
+        document.createElement(
+            "div"
+        );
+
+    kicker.className =
+        "print-kicker";
+
+    kicker.textContent =
+        "Nishi & Manu";
+
+
+    const title =
+        document.createElement(
+            "h1"
+        );
+
+    title.className =
+        "print-title";
+
+    title.textContent =
+        "Wedding Seating Floor Plan";
+
+
+    const subtitle =
+        document.createElement(
+            "div"
+        );
+
+    subtitle.className =
+        "print-subtitle";
+
+    subtitle.textContent =
+        "12 February 2027 · Anantara Kalutara Resort";
+
+
+    const floorplan =
+        document.createElement(
+            "div"
+        );
+
+    floorplan.className =
+        "print-floorplan-wrap";
+
+
+    const image =
+        document.createElement(
+            "img"
+        );
+
+    image.className =
+        "print-floorplan-image";
+
+    image.src =
+        FLOORPLAN_IMAGE;
+
+    image.alt =
+        "";
+
+
+    floorplan.appendChild(
+        image
+    );
+
+
+    seatingTables.forEach(
+        table => {
+
+            const marker =
+                document.createElement(
+                    "div"
+                );
+
+
+            marker.className =
+                `print-floorplan-marker ${table.shape || "round"}`;
+
+
+            marker.style.left =
+                `${Number(table.x) || 0}%`;
+
+            marker.style.top =
+                `${Number(table.y) || 0}%`;
+
+            marker.style.width =
+                `${Number(table.width) || 10}%`;
+
+            marker.style.height =
+                `${Number(table.height) || 10}%`;
+
+            marker.style.transform =
+                tableTransform(
+                    table
+                );
+
+
+            const name =
+                document.createElement(
+                    "span"
+                );
+
+            name.className =
+                "print-floorplan-marker-name";
+
+            name.textContent =
+                table.name;
+
+
+            marker.appendChild(
+                name
+            );
+
+
+            if (
+                Number(
+                    table.capacity
+                ) > 0
+            ) {
+
+                const count =
+                    document.createElement(
+                        "span"
+                    );
+
+                count.className =
+                    "print-floorplan-marker-count";
+
+                count.textContent =
+                    `${table.assignedPeople || 0}/${table.capacity}`;
+
+                marker.appendChild(
+                    count
+                );
+
+            }
+
+
+            floorplan.appendChild(
+                marker
+            );
+
+        }
+    );
+
+
+    page.append(
+        kicker,
+        title,
+        subtitle,
+        floorplan
+    );
+
+
+    container.appendChild(
+        page
+    );
+
+}
+
+
+
+function buildPrintableTableRoster(
+    container
+) {
+
+    const page =
+        document.createElement(
+            "section"
+        );
+
+    page.className =
+        "print-page print-roster-page";
+
+
+    const kicker =
+        document.createElement(
+            "div"
+        );
+
+    kicker.className =
+        "print-kicker";
+
+    kicker.textContent =
+        "Nishi & Manu";
+
+
+    const title =
+        document.createElement(
+            "h1"
+        );
+
+    title.className =
+        "print-title";
+
+    title.textContent =
+        "Table Guest List";
+
+
+    const subtitle =
+        document.createElement(
+            "div"
+        );
+
+    subtitle.className =
+        "print-subtitle";
+
+    subtitle.textContent =
+        "Guest assignments by table";
+
+
+    const grid =
+        document.createElement(
+            "div"
+        );
+
+    grid.className =
+        "print-roster-grid";
+
+
+    actualSeatingTables()
+        .forEach(
+            table => {
+
+                const card =
+                    document.createElement(
+                        "article"
+                    );
+
+                card.className =
+                    "print-table-card";
+
+
+                const head =
+                    document.createElement(
+                        "div"
+                    );
+
+                head.className =
+                    "print-table-card-head";
+
+
+                const illustrationWrap =
+                    document.createElement(
+                        "div"
+                    );
+
+                illustrationWrap.className =
+                    "print-table-illustration-wrap";
+
+
+                const illustration =
+                    document.createElement(
+                        "div"
+                    );
+
+                illustration.className =
+                    `print-table-illustration ${table.shape || "round"}`;
+
+                illustration.textContent =
+                    table.name;
+
+
+                illustrationWrap.appendChild(
+                    illustration
+                );
+
+
+                const heading =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                const name =
+                    document.createElement(
+                        "h2"
+                    );
+
+                name.className =
+                    "print-table-name";
+
+                name.textContent =
+                    table.name;
+
+
+                const meta =
+                    document.createElement(
+                        "div"
+                    );
+
+                meta.className =
+                    "print-table-meta";
+
+                meta.textContent =
+                    `${table.assignedPeople || 0} seated · capacity ${table.capacity}`;
+
+
+                heading.append(
+                    name,
+                    meta
+                );
+
+
+                head.append(
+                    illustrationWrap,
+                    heading
+                );
+
+
+                const guestEntries =
+                    printableGuestsForTable(
+                        table
+                    );
+
+
+                card.appendChild(
+                    head
+                );
+
+
+                if (
+                    guestEntries.length === 0
+                ) {
+
+                    const empty =
+                        document.createElement(
+                            "div"
+                        );
+
+                    empty.className =
+                        "print-table-empty";
+
+                    empty.textContent =
+                        "No guests assigned.";
+
+                    card.appendChild(
+                        empty
+                    );
+
+                } else {
+
+                    const list =
+                        document.createElement(
+                            "ul"
+                        );
+
+                    list.className =
+                        "print-table-guest-list";
+
+
+                    guestEntries.forEach(
+                        entry => {
+
+                            const item =
+                                document.createElement(
+                                    "li"
+                                );
+
+                            item.className =
+                                "print-table-guest";
+
+
+                            const guestName =
+                                document.createElement(
+                                    "span"
+                                );
+
+                            guestName.textContent =
+                                entry.name;
+
+
+                            item.appendChild(
+                                guestName
+                            );
+
+
+                            if (
+                                entry.note
+                            ) {
+
+                                const note =
+                                    document.createElement(
+                                        "span"
+                                    );
+
+                                note.className =
+                                    "print-table-guest-note";
+
+                                note.textContent =
+                                    ` (${entry.note})`;
+
+                                item.appendChild(
+                                    note
+                                );
+
+                            }
+
+
+                            list.appendChild(
+                                item
+                            );
+
+                        }
+                    );
+
+
+                    card.appendChild(
+                        list
+                    );
+
+                }
+
+
+                grid.appendChild(
+                    card
+                );
+
+            }
+        );
+
+
+    const footer =
+        document.createElement(
+            "div"
+        );
+
+    footer.className =
+        "print-roster-footer";
+
+    footer.textContent =
+        "Generated from the current seating plan";
+
+
+    page.append(
+        kicker,
+        title,
+        subtitle,
+        grid,
+        footer
+    );
+
+
+    container.appendChild(
+        page
+    );
+
+}
+
+
+
+async function printSeatingPlan() {
+
+    const root =
+        document.getElementById(
+            "seatingPrintRoot"
+        );
+
+
+    if (
+        !root
+    ) {
+
+        return;
+
+    }
+
+
+    root.innerHTML =
+        "";
+
+
+    buildPrintableFloorplan(
+        root
+    );
+
+    buildPrintableTableRoster(
+        root
+    );
+
+
+    try {
+
+        await floorplanImagePreload
+            .decode?.();
+
+    } catch {
+
+        // Continue even if decode() is unavailable.
+
+    }
+
+
+    window.print();
+
+}
+
+
 function renderSeatingPlanner() {
 
     if (
@@ -10084,6 +10957,16 @@ document
     .addEventListener(
         "click",
         loadSeating
+    );
+
+
+document
+    .getElementById(
+        "printSeatingPlanButton"
+    )
+    .addEventListener(
+        "click",
+        printSeatingPlan
     );
 
 
