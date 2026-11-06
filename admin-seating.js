@@ -403,61 +403,75 @@ async function getRsvpRegistry() {
 }
 
 
-function attendingGuestMap(
+function seatingGuestMap(
     rsvpRegistry,
     invitationRegistry
 ) {
 
-    const map =
-        {};
+    const map = {};
 
 
     for (
         const [
             invitationCode,
-            rsvp
+            invitation
         ]
         of Object.entries(
-            rsvpRegistry.rsvps
+            invitationRegistry.invitations
         )
     ) {
 
-        if (
-            !rsvp ||
-            rsvp.attendance !==
-                "Yes" ||
-            !invitationRegistry
-                .invitations[
-                    invitationCode
-                ]
-        ) {
-
+        if (!invitation) {
             continue;
-
         }
 
 
-        map[
-            invitationCode
-        ] = {
+        const rsvp =
+            rsvpRegistry.rsvps[
+                invitationCode
+            ] || null;
 
+
+        const rsvpStatus =
+            rsvp &&
+            rsvp.attendance === "Yes"
+                ? "attending"
+                : (
+                    rsvp &&
+                    rsvp.attendance === "No"
+                        ? "declined"
+                        : "pending"
+                );
+
+
+        map[invitationCode] = {
             invitationCode,
 
             guestName:
-                rsvp.guestName ||
+                invitation.name ||
+                rsvp?.guestName ||
                 invitationCode,
 
             guestCount:
-                numericGuestCount(
-                    rsvp.guests
-                ),
+                rsvpStatus === "attending"
+                    ? numericGuestCount(
+                        rsvp.guests
+                    )
+                    : 0,
 
             guests:
-                rsvp.guests,
+                rsvp?.guests || null,
 
             message:
-                rsvp.message ||
-                ""
+                rsvp?.message || "",
+
+            rsvpStatus,
+
+            hasRsvp:
+                Boolean(rsvp),
+
+            isAttending:
+                rsvpStatus === "attending"
         };
 
     }
@@ -525,25 +539,54 @@ function pruneStaleAssignments(
 function tableOccupancy(
     tableId,
     registry,
-    attendingGuests
+    seatingGuests
 ) {
 
     let people = 0;
     let invitationCount = 0;
 
+
     for (
-        const [invitationCode, assignment]
-        of Object.entries(registry.assignments)
+        const [
+            invitationCode,
+            assignment
+        ]
+        of Object.entries(
+            registry.assignments
+        )
     ) {
 
-        if (!assignment) continue;
+        if (!assignment) {
+            continue;
+        }
 
-        const guest = attendingGuests[invitationCode];
-        if (!guest) continue;
+
+        const guest =
+            seatingGuests[
+                invitationCode
+            ];
+
+
+        /*
+            Pending and declined invitations may keep a planning
+            assignment, but they do not consume table capacity.
+        */
+        if (
+            !guest ||
+            guest.rsvpStatus !==
+                "attending"
+        ) {
+
+            continue;
+
+        }
+
 
         if (
             assignment.split === true &&
-            Array.isArray(assignment.seats)
+            Array.isArray(
+                assignment.seats
+            )
         ) {
 
             const seatsAtTable =
@@ -553,19 +596,33 @@ function tableOccupancy(
                         seat.tableId === tableId
                 );
 
+
             if (seatsAtTable.length > 0) {
                 people += seatsAtTable.length;
                 invitationCount += 1;
             }
 
+
             continue;
+
         }
 
-        if (assignment.tableId !== tableId) continue;
+
+        if (
+            assignment.tableId !==
+            tableId
+        ) {
+
+            continue;
+
+        }
+
 
         invitationCount += 1;
         people += guest.guestCount;
+
     }
+
 
     return {
         people,
@@ -659,15 +716,15 @@ function buildResponse(
     invitationRegistry
 ) {
 
-    const attendingGuests =
-        attendingGuestMap(
+    const seatingGuests =
+        seatingGuestMap(
             rsvpRegistry,
             invitationRegistry
         );
 
     const guests =
         Object
-            .values(attendingGuests)
+            .values(seatingGuests)
             .map(guest => {
 
                 const assignment =
@@ -710,7 +767,7 @@ function buildResponse(
         tables:
             listTables(
                 registry,
-                attendingGuests
+                seatingGuests
             ),
         assignments: registry.assignments,
         attendingGuests: guests
@@ -797,7 +854,7 @@ export default async function (
 
 
         const attendingGuests =
-            attendingGuestMap(
+            seatingGuestMap(
                 rsvpRegistry,
                 invitationRegistry
             );
@@ -872,7 +929,7 @@ export default async function (
 
 
         const attendingGuests =
-            attendingGuestMap(
+            seatingGuestMap(
                 rsvpRegistry,
                 invitationRegistry
             );
@@ -1272,8 +1329,18 @@ export default async function (
 
             if (!guest) {
                 return jsonResponse(
-                    { error: "Only guests who RSVP'd Attending can be assigned to a table." },
-                    400
+                    { error: "Invitation not found." },
+                    404
+                );
+            }
+
+            if (
+                guest.rsvpStatus ===
+                    "declined"
+            ) {
+                return jsonResponse(
+                    { error: "This invitation has declined and cannot be assigned unless its RSVP changes." },
+                    409
                 );
             }
 
@@ -1331,7 +1398,13 @@ export default async function (
                 );
 
             const projectedPeople =
-                occupancy.people + guest.guestCount;
+                occupancy.people +
+                (
+                    guest.rsvpStatus ===
+                        "attending"
+                        ? guest.guestCount
+                        : 0
+                );
 
             if (projectedPeople > Number(table.capacity)) {
                 return jsonResponse(
@@ -1371,10 +1444,14 @@ export default async function (
             const guest =
                 attendingGuests[invitationCode];
 
-            if (!guest) {
+            if (
+                !guest ||
+                guest.rsvpStatus !==
+                    "attending"
+            ) {
                 return jsonResponse(
-                    { error: "Only guests who RSVP'd Attending can use split seating." },
-                    400
+                    { error: "Split seating is available after this invitation RSVPs Yes." },
+                    409
                 );
             }
 
@@ -1679,10 +1756,14 @@ export default async function (
             const table =
                 registry.tables[tableId];
 
-            if (!guest) {
+            if (
+                !guest ||
+                guest.rsvpStatus !==
+                    "attending"
+            ) {
                 return jsonResponse(
-                    { error: "Only guests who RSVP'd Attending can be assigned to a table." },
-                    400
+                    { error: "Split-seat assignment is available after this invitation RSVPs Yes." },
+                    409
                 );
             }
 

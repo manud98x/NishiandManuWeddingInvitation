@@ -3142,7 +3142,7 @@ code {
                         </div>
 
                         <div class="seating-side-block">
-                            <h3 class="seating-side-title">Unassigned Attending Guests</h3>
+                            <h3 class="seating-side-title">Unassigned Invitations</h3>
                             <div id="seatingUnassignedList" class="seating-unassigned-list"></div>
                         </div>
 
@@ -3287,7 +3287,7 @@ code {
             <section class="panel">
 
                 <h2 class="panel-title">
-                    Unassigned Attending Guests
+                    Unassigned Invitations
                 </h2>
 
                 <p class="panel-copy">
@@ -6580,6 +6580,69 @@ function filteredTables() {
 }
 
 
+function seatingGuestMeta(
+    guest
+) {
+
+    if (!guest) {
+        return "";
+    }
+
+
+    if (
+        guest.rsvpStatus ===
+        "pending"
+    ) {
+
+        return "Awaiting RSVP";
+
+    }
+
+
+    if (
+        guest.rsvpStatus ===
+        "declined"
+    ) {
+
+        return "Declined";
+
+    }
+
+
+    if (
+        Number(
+            guest.guestCount
+        ) === 1
+    ) {
+
+        return "1 attending";
+
+    }
+
+
+    return `${guest.guestCount} attending · together`;
+
+}
+
+
+
+function canSplitSeatingGuest(
+    guest
+) {
+
+    return Boolean(
+        guest &&
+        guest.rsvpStatus ===
+            "attending" &&
+        Number(
+            guest.guestCount
+        ) > 1
+    );
+
+}
+
+
+
 function guestByCode(
     invitationCode
 ) {
@@ -6597,9 +6660,12 @@ function guestByCode(
 function unassignedGuests() {
 
     return attendingGuests
-        .filter(guest =>
-            !guest.tableId &&
-            !guest.splitSeating
+        .filter(
+            guest =>
+                guest.rsvpStatus !==
+                    "declined" &&
+                !guest.tableId &&
+                !guest.splitSeating
         );
 
 }
@@ -6671,7 +6737,7 @@ function renderUnassignedGuests() {
         empty.className = "empty";
         empty.textContent =
             attendingGuests.length
-                ? "All attending guests have been assigned."
+                ? "All eligible invitations have been assigned."
                 : "No attending RSVPs yet.";
         list.appendChild(empty);
         return;
@@ -6689,9 +6755,9 @@ function renderUnassignedGuests() {
         const count = document.createElement("div");
         count.className = "unassigned-count";
         count.textContent =
-            Number(guest.guestCount) === 1
-                ? "1 attending"
-                : `${guest.guestCount} attending · together`;
+            seatingGuestMeta(
+                guest
+            );
 
         left.append(name, count);
 
@@ -6700,7 +6766,7 @@ function renderUnassignedGuests() {
         actionWrap.style.gap = "6px";
         actionWrap.style.alignItems = "center";
 
-        if (guest.guestCount > 1) {
+        if (canSplitSeatingGuest(guest)) {
             const split = document.createElement("button");
             split.type = "button";
             split.className = "mini-button";
@@ -7168,9 +7234,19 @@ function printableGuestsForTable(
                         guest.guestName,
 
                     note:
-                        count > 1
-                            ? `${count} people`
-                            : ""
+                        guest.rsvpStatus ===
+                            "pending"
+                            ? "Awaiting RSVP"
+                            : (
+                                guest.rsvpStatus ===
+                                    "declined"
+                                    ? "Declined"
+                                    : (
+                                        count > 1
+                                            ? `${count} people`
+                                            : ""
+                                    )
+                            )
                 }
             );
 
@@ -8171,7 +8247,7 @@ function renderSelectedTablePanel() {
     const assignmentTitle = document.createElement("div");
     assignmentTitle.className = "table-assignment-title";
     assignmentTitle.style.marginTop = "14px";
-    assignmentTitle.textContent = "Assign Attending Guests";
+    assignmentTitle.textContent = "Assign Invitations";
 
     const assignmentRow = document.createElement("div");
     assignmentRow.className = "table-assignment-row";
@@ -8201,7 +8277,10 @@ function renderSelectedTablePanel() {
                     `guest:${guest.invitationCode}`;
 
                 option.textContent =
-                    `${guest.guestName} (${guest.guestCount})`;
+                    guest.rsvpStatus ===
+                        "pending"
+                        ? `${guest.guestName} (Awaiting RSVP)`
+                        : `${guest.guestName} (${guest.guestCount})`;
 
                 select.appendChild(option);
             });
@@ -8280,18 +8359,14 @@ function renderSelectedTablePanel() {
         const left = document.createElement("div");
         left.innerHTML =
             `<div class="seating-guest-chip-name">${guest.guestName}</div>` +
-            `<div class="seating-guest-chip-meta">${
-                Number(guest.guestCount) === 1
-                    ? "1 attending"
-                    : `${guest.guestCount} attending · together`
-            }</div>`;
+            `<div class="seating-guest-chip-meta">${seatingGuestMeta(guest)}</div>`;
 
         const actionWrap = document.createElement("div");
         actionWrap.style.display = "flex";
         actionWrap.style.gap = "6px";
         actionWrap.style.flexWrap = "wrap";
 
-        if (guest.guestCount > 1) {
+        if (canSplitSeatingGuest(guest)) {
             const split = document.createElement("button");
             split.type = "button";
             split.className = "mini-button";
@@ -8426,7 +8501,7 @@ function renderSeatingUnassignedPanel() {
     ) {
         const empty = document.createElement("div");
         empty.className = "seating-empty-state";
-        empty.textContent = "Everyone attending is currently assigned to a table.";
+        empty.textContent = "All eligible invitations are currently assigned to a table.";
         panel.appendChild(empty);
         return;
     }
@@ -8438,11 +8513,7 @@ function renderSeatingUnassignedPanel() {
         const left = document.createElement("div");
         left.innerHTML =
             `<div class="seating-guest-chip-name">${guest.guestName}</div>` +
-            `<div class="seating-guest-chip-meta">${
-                Number(guest.guestCount) === 1
-                    ? "1 attending"
-                    : `${guest.guestCount} attending · together by default`
-            }</div>`;
+            `<div class="seating-guest-chip-meta">${seatingGuestMeta(guest)}</div>`;
 
         const actions = document.createElement("div");
         actions.style.display = "flex";
@@ -8450,7 +8521,7 @@ function renderSeatingUnassignedPanel() {
         actions.style.flexWrap = "wrap";
         actions.style.justifyContent = "flex-end";
 
-        if (guest.guestCount > 1) {
+        if (canSplitSeatingGuest(guest)) {
             const split = document.createElement("button");
             split.type = "button";
             split.className = "mini-button";
