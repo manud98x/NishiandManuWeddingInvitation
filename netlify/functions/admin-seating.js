@@ -403,61 +403,75 @@ async function getRsvpRegistry() {
 }
 
 
-function attendingGuestMap(
+function seatingGuestMap(
     rsvpRegistry,
     invitationRegistry
 ) {
 
-    const map =
-        {};
+    const map = {};
 
 
     for (
         const [
             invitationCode,
-            rsvp
+            invitation
         ]
         of Object.entries(
-            rsvpRegistry.rsvps
+            invitationRegistry.invitations
         )
     ) {
 
-        if (
-            !rsvp ||
-            rsvp.attendance !==
-                "Yes" ||
-            !invitationRegistry
-                .invitations[
-                    invitationCode
-                ]
-        ) {
-
+        if (!invitation) {
             continue;
-
         }
 
 
-        map[
-            invitationCode
-        ] = {
+        const rsvp =
+            rsvpRegistry.rsvps[
+                invitationCode
+            ] || null;
 
+
+        const rsvpStatus =
+            rsvp &&
+            rsvp.attendance === "Yes"
+                ? "attending"
+                : (
+                    rsvp &&
+                    rsvp.attendance === "No"
+                        ? "declined"
+                        : "pending"
+                );
+
+
+        map[invitationCode] = {
             invitationCode,
 
             guestName:
-                rsvp.guestName ||
+                invitation.name ||
+                rsvp?.guestName ||
                 invitationCode,
 
             guestCount:
-                numericGuestCount(
-                    rsvp.guests
-                ),
+                rsvpStatus === "attending"
+                    ? numericGuestCount(
+                        rsvp.guests
+                    )
+                    : 0,
 
             guests:
-                rsvp.guests,
+                rsvp?.guests || null,
 
             message:
-                rsvp.message ||
-                ""
+                rsvp?.message || "",
+
+            rsvpStatus,
+
+            hasRsvp:
+                Boolean(rsvp),
+
+            isAttending:
+                rsvpStatus === "attending"
         };
 
     }
@@ -525,25 +539,47 @@ function pruneStaleAssignments(
 function tableOccupancy(
     tableId,
     registry,
-    attendingGuests
+    seatingGuests
 ) {
 
     let people = 0;
     let invitationCount = 0;
 
+
     for (
-        const [invitationCode, assignment]
-        of Object.entries(registry.assignments)
+        const [
+            invitationCode,
+            assignment
+        ]
+        of Object.entries(
+            registry.assignments
+        )
     ) {
 
-        if (!assignment) continue;
+        if (!assignment) {
+            continue;
+        }
+
 
         const guest =
-            attendingGuests[
+            seatingGuests[
                 invitationCode
             ];
 
-        if (!guest) continue;
+
+        /*
+            Pending and declined invitations may keep a planning
+            assignment, but they do not consume table capacity.
+        */
+        if (
+            !guest ||
+            guest.rsvpStatus !==
+                "attending"
+        ) {
+
+            continue;
+
+        }
 
 
         if (
@@ -557,22 +593,13 @@ function tableOccupancy(
                 assignment.seats.filter(
                     seat =>
                         seat &&
-                        seat.tableId ===
-                            tableId
+                        seat.tableId === tableId
                 );
 
 
-            if (
-                seatsAtTable.length >
-                0
-            ) {
-
-                people +=
-                    seatsAtTable.length;
-
-                invitationCount +=
-                    1;
-
+            if (seatsAtTable.length > 0) {
+                people += seatsAtTable.length;
+                invitationCount += 1;
             }
 
 
@@ -591,11 +618,8 @@ function tableOccupancy(
         }
 
 
-        invitationCount +=
-            1;
-
-        people +=
-            guest.guestCount;
+        invitationCount += 1;
+        people += guest.guestCount;
 
     }
 
@@ -614,145 +638,73 @@ function listTables(
 ) {
 
     return Object
-        .values(
-            registry.tables
-        )
-        .map(
-            table => {
+        .values(registry.tables)
+        .map(table => {
 
-                const assignedCodes =
-                    [];
+            const assignedCodes = [];
+            const assignedSeats = [];
 
-                const assignedSeats =
-                    [];
+            for (
+                const [invitationCode, assignment]
+                of Object.entries(registry.assignments)
+            ) {
 
+                if (!assignment) continue;
 
-                for (
-                    const [
-                        invitationCode,
-                        assignment
-                    ]
-                    of Object.entries(
-                        registry.assignments
-                    )
+                if (
+                    assignment.split === true &&
+                    Array.isArray(assignment.seats)
                 ) {
 
-                    if (
-                        !assignment
-                    ) {
+                    assignment.seats.forEach(seat => {
+                        if (
+                            seat &&
+                            seat.tableId === table.id
+                        ) {
+                            assignedSeats.push({
+                                invitationCode,
+                                seatId: seat.id,
+                                name: seat.name
+                            });
+                        }
+                    });
 
-                        continue;
-
-                    }
-
-
-                    if (
-                        assignment.split ===
-                            true &&
-                        Array.isArray(
-                            assignment.seats
-                        )
-                    ) {
-
-                        assignment.seats
-                            .forEach(
-                                seat => {
-
-                                    if (
-                                        seat &&
-                                        seat.tableId ===
-                                            table.id
-                                    ) {
-
-                                        assignedSeats.push(
-                                            {
-                                                invitationCode,
-
-                                                seatId:
-                                                    seat.id,
-
-                                                name:
-                                                    seat.name
-                                            }
-                                        );
-
-                                    }
-
-                                }
-                            );
-
-
-                        continue;
-
-                    }
-
-
-                    if (
-                        assignment.tableId ===
-                        table.id
-                    ) {
-
-                        assignedCodes.push(
-                            invitationCode
-                        );
-
-                    }
-
+                    continue;
                 }
 
-
-                const occupancy =
-                    tableOccupancy(
-                        table.id,
-                        registry,
-                        attendingGuests
-                    );
-
-
-                return {
-
-                    ...table,
-
-                    assignedCodes,
-
-                    assignedSeats,
-
-                    assignedPeople:
-                        occupancy.people,
-
-                    assignedInvitations:
-                        occupancy
-                            .invitationCount,
-
-                    remainingCapacity:
-                        Math.max(
-                            0,
-
-                            Number(
-                                table.capacity ||
-                                0
-                            ) -
-                            occupancy.people
-                        )
-
-                };
-
+                if (assignment.tableId === table.id) {
+                    assignedCodes.push(invitationCode);
+                }
             }
-        )
-        .sort(
-            (
-                a,
-                b
-            ) =>
-                a.name
-                    .localeCompare(
-                        b.name,
-                        undefined,
-                        {
-                            numeric:
-                                true
-                        }
+
+            const occupancy =
+                tableOccupancy(
+                    table.id,
+                    registry,
+                    attendingGuests
+                );
+
+            return {
+                ...table,
+                assignedCodes,
+                assignedSeats,
+                assignedPeople: occupancy.people,
+                assignedInvitations: occupancy.invitationCount,
+                remainingCapacity:
+                    Math.max(
+                        0,
+                        Number(table.capacity || 0) -
+                        occupancy.people
                     )
+            };
+
+        })
+        .sort((a,b) =>
+            a.name.localeCompare(
+                b.name,
+                undefined,
+                { numeric: true }
+            )
         );
 
 }
@@ -764,113 +716,61 @@ function buildResponse(
     invitationRegistry
 ) {
 
-    const attendingGuests =
-        attendingGuestMap(
+    const seatingGuests =
+        seatingGuestMap(
             rsvpRegistry,
             invitationRegistry
         );
 
-
     const guests =
         Object
-            .values(
-                attendingGuests
-            )
-            .map(
-                guest => {
+            .values(seatingGuests)
+            .map(guest => {
 
-                    const assignment =
-                        registry
-                            .assignments[
-                                guest
-                                    .invitationCode
-                            ] ||
-                        null;
+                const assignment =
+                    registry.assignments[
+                        guest.invitationCode
+                    ] || null;
 
+                const splitSeating =
+                    Boolean(
+                        assignment &&
+                        assignment.split === true &&
+                        Array.isArray(assignment.seats)
+                    );
 
-                    const splitSeating =
-                        Boolean(
-                            assignment &&
-                            assignment.split ===
-                                true &&
-                            Array.isArray(
-                                assignment.seats
-                            )
-                        );
+                return {
+                    ...guest,
+                    tableId:
+                        !splitSeating && assignment
+                            ? assignment.tableId || null
+                            : null,
+                    splitSeating,
+                    seatAssignments:
+                        splitSeating
+                            ? assignment.seats.map(seat => ({
+                                id: seat.id,
+                                name: seat.name,
+                                tableId: seat.tableId || null
+                            }))
+                            : []
+                };
 
-
-                    return {
-
-                        ...guest,
-
-                        tableId:
-                            !splitSeating &&
-                            assignment
-                                ? (
-                                    assignment
-                                        .tableId ||
-                                    null
-                                )
-                                : null,
-
-                        splitSeating,
-
-                        seatAssignments:
-                            splitSeating
-                                ? assignment
-                                    .seats
-                                    .map(
-                                        seat => ({
-                                            id:
-                                                seat.id,
-
-                                            name:
-                                                seat.name,
-
-                                            tableId:
-                                                seat.tableId ||
-                                                null
-                                        })
-                                    )
-                                : []
-
-                    };
-
-                }
-            )
-            .sort(
-                (
-                    a,
-                    b
-                ) =>
-                    a.guestName
-                        .localeCompare(
-                            b.guestName
-                        )
+            })
+            .sort((a,b) =>
+                a.guestName.localeCompare(b.guestName)
             );
 
-
     return {
-
-        published:
-            registry.published,
-
-        updatedAt:
-            registry.updatedAt ||
-            null,
-
+        published: registry.published,
+        updatedAt: registry.updatedAt || null,
         tables:
             listTables(
                 registry,
-                attendingGuests
+                seatingGuests
             ),
-
-        assignments:
-            registry.assignments,
-
-        attendingGuests:
-            guests
-
+        assignments: registry.assignments,
+        attendingGuests: guests
     };
 
 }
@@ -947,16 +847,14 @@ export default async function (
                     getRegistry(
                         store
                     ),
-
                     getRsvpRegistry(),
-
                     getInvitationRegistry()
                 ]
             );
 
 
         const attendingGuests =
-            attendingGuestMap(
+            seatingGuestMap(
                 rsvpRegistry,
                 invitationRegistry
             );
@@ -1024,16 +922,14 @@ export default async function (
                     getRegistry(
                         store
                     ),
-
                     getRsvpRegistry(),
-
                     getInvitationRegistry()
                 ]
             );
 
 
         const attendingGuests =
-            attendingGuestMap(
+            seatingGuestMap(
                 rsvpRegistry,
                 invitationRegistry
             );
@@ -1065,12 +961,10 @@ export default async function (
                     80
                 );
 
-
             const shape =
                 cleanShape(
                     body.shape
                 );
-
 
             const capacity =
                 cleanCapacity(
@@ -1164,8 +1058,7 @@ export default async function (
                     shape === "banquet"
                         ? 18
                         : (
-                            shape ===
-                                "rectangle"
+                            shape === "rectangle"
                                 ? 13
                                 : 10
                         ),
@@ -1174,8 +1067,7 @@ export default async function (
                     shape === "banquet"
                         ? 7
                         : (
-                            shape ===
-                                "rectangle"
+                            shape === "rectangle"
                                 ? 9
                                 : 10
                         ),
@@ -1187,14 +1079,12 @@ export default async function (
                 updatedAt:
                     new Date()
                         .toISOString()
-
             };
 
 
             markRegistryUpdated(
                 registry
             );
-
 
             await store.setJSON(
                 REGISTRY_KEY,
@@ -1204,9 +1094,7 @@ export default async function (
 
             return jsonResponse(
                 {
-                    created:
-                        true,
-
+                    created: true,
                     ...buildResponse(
                         registry,
                         rsvpRegistry,
@@ -1228,7 +1116,6 @@ export default async function (
                     body.id,
                     120
                 );
-
 
             const existing =
                 registry.tables[
@@ -1257,12 +1144,10 @@ export default async function (
                     80
                 );
 
-
             const shape =
                 cleanShape(
                     body.shape
                 );
-
 
             const capacity =
                 cleanCapacity(
@@ -1332,8 +1217,7 @@ export default async function (
                     )
                     .some(
                         table =>
-                            table.id !==
-                                id &&
+                            table.id !== id &&
                             table.name
                                 .toLocaleLowerCase() ===
                             name
@@ -1399,14 +1283,12 @@ export default async function (
                 updatedAt:
                     new Date()
                         .toISOString()
-
             };
 
 
             markRegistryUpdated(
                 registry
             );
-
 
             await store.setJSON(
                 REGISTRY_KEY,
@@ -1416,9 +1298,7 @@ export default async function (
 
             return jsonResponse(
                 {
-                    updated:
-                        true,
-
+                    updated: true,
                     ...buildResponse(
                         registry,
                         rsvpRegistry,
@@ -1436,118 +1316,79 @@ export default async function (
         ) {
 
             const invitationCode =
-                cleanText(
-                    body.invitationCode,
-                    160
-                );
-
+                cleanText(body.invitationCode, 160);
 
             const tableId =
-                cleanText(
-                    body.tableId,
-                    160
-                );
-
+                cleanText(body.tableId, 160);
 
             const guest =
-                attendingGuests[
-                    invitationCode
-                ];
-
+                attendingGuests[invitationCode];
 
             const table =
-                registry.tables[
-                    tableId
-                ];
+                registry.tables[tableId];
 
-
-            if (
-                !guest
-            ) {
-
+            if (!guest) {
                 return jsonResponse(
-                    {
-                        error:
-                            "Only guests who RSVP'd Attending can be assigned to a table."
-                    },
-                    400
-                );
-
-            }
-
-
-            if (
-                !table
-            ) {
-
-                return jsonResponse(
-                    {
-                        error:
-                            "Table not found."
-                    },
+                    { error: "Invitation not found." },
                     404
                 );
-
             }
 
+            if (
+                guest.rsvpStatus ===
+                    "declined"
+            ) {
+                return jsonResponse(
+                    { error: "This invitation has declined and cannot be assigned unless its RSVP changes." },
+                    409
+                );
+            }
+
+            if (!table) {
+                return jsonResponse(
+                    { error: "Table not found." },
+                    404
+                );
+            }
 
             const currentAssignment =
-                registry.assignments[
-                    invitationCode
-                ];
-
+                registry.assignments[invitationCode];
 
             if (
                 currentAssignment &&
-                currentAssignment.split ===
-                    true
+                currentAssignment.split === true
             ) {
-
                 return jsonResponse(
-                    {
-                        error:
-                            "This invitation has split seating. Assign each named guest individually."
-                    },
+                    { error: "This invitation has split seating. Assign each named guest individually." },
                     409
                 );
-
             }
-
 
             if (
                 currentAssignment &&
-                currentAssignment.tableId ===
-                    tableId
+                currentAssignment.tableId === tableId
             ) {
-
                 return jsonResponse(
-                    {
-                        error:
-                            "That guest is already assigned to this table."
-                    },
+                    { error: "That guest is already assigned to this table." },
                     409
                 );
-
             }
 
-
             if (
+                !Number.isFinite(
+                    Number(
+                        table.capacity
+                    )
+                ) ||
                 Number(
                     table.capacity
-                ) ===
-                0
+                ) <= 0
             ) {
-
                 return jsonResponse(
-                    {
-                        error:
-                            `${table.name} is a non-seating item and cannot have guests assigned to it.`
-                    },
+                    { error: `${table.name} is a non-seating item and cannot have guests assigned to it.` },
                     409
                 );
-
             }
-
 
             const occupancy =
                 tableOccupancy(
@@ -1556,72 +1397,38 @@ export default async function (
                     attendingGuests
                 );
 
-
             const projectedPeople =
                 occupancy.people +
-                guest.guestCount;
-
-
-            if (
-                projectedPeople >
-                Number(
-                    table.capacity
-                )
-            ) {
-
-                return jsonResponse(
-                    {
-                        error:
-                            `${guest.guestName} has ${guest.guestCount} attending. ${table.name} only has ${Math.max(
-                                0,
-                                Number(
-                                    table.capacity
-                                ) -
-                                occupancy.people
-                            )} seat(s) remaining.`
-                    },
-                    409
+                (
+                    guest.rsvpStatus ===
+                        "attending"
+                        ? guest.guestCount
+                        : 0
                 );
 
+            if (projectedPeople > Number(table.capacity)) {
+                return jsonResponse(
+                    { error: `${guest.guestName} has ${guest.guestCount} attending. ${table.name} only has ${Math.max(0, Number(table.capacity) - occupancy.people)} seat(s) remaining.` },
+                    409
+                );
             }
 
-
-            registry.assignments[
-                invitationCode
-            ] = {
-
+            registry.assignments[invitationCode] = {
                 tableId,
-
-                assignedAt:
-                    new Date()
-                        .toISOString()
-
+                assignedAt: new Date().toISOString()
             };
 
+            markRegistryUpdated(registry);
+            await store.setJSON(REGISTRY_KEY, registry);
 
-            markRegistryUpdated(
-                registry
-            );
-
-
-            await store.setJSON(
-                REGISTRY_KEY,
-                registry
-            );
-
-
-            return jsonResponse(
-                {
-                    assigned:
-                        true,
-
-                    ...buildResponse(
-                        registry,
-                        rsvpRegistry,
-                        invitationRegistry
-                    )
-                }
-            );
+            return jsonResponse({
+                assigned: true,
+                ...buildResponse(
+                    registry,
+                    rsvpRegistry,
+                    invitationRegistry
+                )
+            });
 
         }
 
@@ -1632,161 +1439,79 @@ export default async function (
         ) {
 
             const invitationCode =
-                cleanText(
-                    body.invitationCode,
-                    160
-                );
-
+                cleanText(body.invitationCode, 160);
 
             const guest =
-                attendingGuests[
-                    invitationCode
-                ];
-
+                attendingGuests[invitationCode];
 
             if (
-                !guest
+                !guest ||
+                guest.rsvpStatus !==
+                    "attending"
             ) {
-
                 return jsonResponse(
-                    {
-                        error:
-                            "Only guests who RSVP'd Attending can use split seating."
-                    },
-                    400
-                );
-
-            }
-
-
-            if (
-                guest.guestCount <
-                2
-            ) {
-
-                return jsonResponse(
-                    {
-                        error:
-                            "Split seating is only available for invitations with two or more attending guests."
-                    },
+                    { error: "Split seating is available after this invitation RSVPs Yes." },
                     409
                 );
-
             }
 
+            if (guest.guestCount < 2) {
+                return jsonResponse(
+                    { error: "Split seating is only available for invitations with two or more attending guests." },
+                    409
+                );
+            }
 
             const names =
-                Array.isArray(
-                    body.names
-                )
+                Array.isArray(body.names)
                     ? body.names
-                        .map(
-                            name =>
-                                cleanText(
-                                    name,
-                                    100
-                                )
-                        )
-                        .filter(
-                            Boolean
-                        )
+                        .map(name => cleanText(name, 100))
+                        .filter(Boolean)
                     : [];
 
-
-            if (
-                names.length !==
-                guest.guestCount
-            ) {
-
+            if (names.length !== guest.guestCount) {
                 return jsonResponse(
-                    {
-                        error:
-                            `Enter exactly ${guest.guestCount} guest names for this invitation.`
-                    },
+                    { error: `Enter exactly ${guest.guestCount} guest names for this invitation.` },
                     400
                 );
-
             }
 
-
             const existing =
-                registry.assignments[
-                    invitationCode
-                ] ||
-                null;
-
+                registry.assignments[invitationCode] || null;
 
             const preservedTableId =
                 existing &&
-                existing.split !==
-                    true &&
+                existing.split !== true &&
                 existing.tableId
                     ? existing.tableId
                     : null;
 
-
-            const now =
-                new Date()
-                    .toISOString();
-
-
-            registry.assignments[
-                invitationCode
-            ] = {
-
-                split:
-                    true,
-
+            registry.assignments[invitationCode] = {
+                split: true,
                 seats:
-                    names.map(
-                        (
-                            name,
-                            index
-                        ) => ({
-                            id:
-                                `seat-${index + 1}`,
-
-                            name,
-
-                            tableId:
-                                preservedTableId,
-
-                            assignedAt:
-                                preservedTableId
-                                    ? now
-                                    : null
-                        })
-                    ),
-
-                updatedAt:
-                    now
-
+                    names.map((name, index) => ({
+                        id: `seat-${index + 1}`,
+                        name,
+                        tableId: preservedTableId,
+                        assignedAt:
+                            preservedTableId
+                                ? new Date().toISOString()
+                                : null
+                    })),
+                updatedAt: new Date().toISOString()
             };
 
+            markRegistryUpdated(registry);
+            await store.setJSON(REGISTRY_KEY, registry);
 
-            markRegistryUpdated(
-                registry
-            );
-
-
-            await store.setJSON(
-                REGISTRY_KEY,
-                registry
-            );
-
-
-            return jsonResponse(
-                {
-                    split:
-                        true,
-
-                    ...buildResponse(
-                        registry,
-                        rsvpRegistry,
-                        invitationRegistry
-                    )
-                }
-            );
+            return jsonResponse({
+                split: true,
+                ...buildResponse(
+                    registry,
+                    rsvpRegistry,
+                    invitationRegistry
+                )
+            });
 
         }
 
@@ -1873,16 +1598,22 @@ export default async function (
                 null;
 
 
+            /*
+                If every currently assigned named guest points to
+                the same table, try to restore the whole household
+                to that table.
+
+                If the split guests are spread across multiple
+                tables, the safest result is one unassigned
+                household so the admin can choose a new table.
+            */
             if (
                 assignedTableIds.length ===
                 1
             ) {
 
                 const tableId =
-                    assignedTableIds[
-                        0
-                    ];
-
+                    assignedTableIds[0];
 
                 const table =
                     registry.tables[
@@ -1919,7 +1650,6 @@ export default async function (
                     const otherPeopleAtTable =
                         Math.max(
                             0,
-
                             currentOccupancy.people -
                             thisInvitationSeatsAtTable
                         );
@@ -2009,152 +1739,86 @@ export default async function (
         ) {
 
             const invitationCode =
-                cleanText(
-                    body.invitationCode,
-                    160
-                );
-
+                cleanText(body.invitationCode, 160);
 
             const seatId =
-                cleanText(
-                    body.seatId,
-                    100
-                );
-
+                cleanText(body.seatId, 100);
 
             const tableId =
-                cleanText(
-                    body.tableId,
-                    160
-                );
-
+                cleanText(body.tableId, 160);
 
             const guest =
-                attendingGuests[
-                    invitationCode
-                ];
-
+                attendingGuests[invitationCode];
 
             const assignment =
-                registry.assignments[
-                    invitationCode
-                ];
-
+                registry.assignments[invitationCode];
 
             const table =
-                registry.tables[
-                    tableId
-                ];
-
+                registry.tables[tableId];
 
             if (
-                !guest
+                !guest ||
+                guest.rsvpStatus !==
+                    "attending"
             ) {
-
                 return jsonResponse(
-                    {
-                        error:
-                            "Only guests who RSVP'd Attending can be assigned to a table."
-                    },
-                    400
+                    { error: "Split-seat assignment is available after this invitation RSVPs Yes." },
+                    409
                 );
-
             }
-
 
             if (
                 !assignment ||
-                assignment.split !==
-                    true ||
-                !Array.isArray(
-                    assignment.seats
-                )
+                assignment.split !== true ||
+                !Array.isArray(assignment.seats)
             ) {
-
                 return jsonResponse(
-                    {
-                        error:
-                            "This invitation is not using split seating."
-                    },
+                    { error: "This invitation is not using split seating." },
                     409
                 );
-
             }
-
 
             const seat =
-                assignment.seats
-                    .find(
-                        item =>
-                            item &&
-                            item.id ===
-                                seatId
-                    );
-
-
-            if (
-                !seat
-            ) {
-
-                return jsonResponse(
-                    {
-                        error:
-                            "Guest seat not found."
-                    },
-                    404
+                assignment.seats.find(item =>
+                    item && item.id === seatId
                 );
 
-            }
-
-
-            if (
-                !table
-            ) {
-
+            if (!seat) {
                 return jsonResponse(
-                    {
-                        error:
-                            "Table not found."
-                    },
+                    { error: "Guest seat not found." },
                     404
                 );
-
             }
 
+            if (!table) {
+                return jsonResponse(
+                    { error: "Table not found." },
+                    404
+                );
+            }
 
             if (
+                !Number.isFinite(
+                    Number(
+                        table.capacity
+                    )
+                ) ||
                 Number(
                     table.capacity
-                ) ===
-                0
+                ) <= 0
             ) {
-
                 return jsonResponse(
-                    {
-                        error:
-                            `${table.name} is a non-seating item and cannot have guests assigned to it.`
-                    },
+                    { error: `${table.name} is a non-seating item and cannot have guests assigned to it.` },
                     409
                 );
-
             }
 
-
-            if (
-                seat.tableId ===
-                tableId
-            ) {
-
+            if (seat.tableId === tableId) {
                 return jsonResponse(
-                    {
-                        error:
-                            `${seat.name} is already assigned to ${table.name}.`
-                    },
+                    { error: `${seat.name} is already assigned to ${table.name}.` },
                     409
                 );
-
             }
-
 
             const occupancy =
                 tableOccupancy(
@@ -2163,61 +1827,28 @@ export default async function (
                     attendingGuests
                 );
 
-
-            if (
-                occupancy.people +
-                1 >
-                Number(
-                    table.capacity
-                )
-            ) {
-
+            if (occupancy.people + 1 > Number(table.capacity)) {
                 return jsonResponse(
-                    {
-                        error:
-                            `${table.name} has no seats remaining.`
-                    },
+                    { error: `${table.name} has no seats remaining.` },
                     409
                 );
-
             }
 
+            seat.tableId = tableId;
+            seat.assignedAt = new Date().toISOString();
+            assignment.updatedAt = new Date().toISOString();
 
-            seat.tableId =
-                tableId;
+            markRegistryUpdated(registry);
+            await store.setJSON(REGISTRY_KEY, registry);
 
-            seat.assignedAt =
-                new Date()
-                    .toISOString();
-
-            assignment.updatedAt =
-                new Date()
-                    .toISOString();
-
-
-            markRegistryUpdated(
-                registry
-            );
-
-
-            await store.setJSON(
-                REGISTRY_KEY,
-                registry
-            );
-
-
-            return jsonResponse(
-                {
-                    assigned:
-                        true,
-
-                    ...buildResponse(
-                        registry,
-                        rsvpRegistry,
-                        invitationRegistry
-                    )
-                }
-            );
+            return jsonResponse({
+                assigned: true,
+                ...buildResponse(
+                    registry,
+                    rsvpRegistry,
+                    invitationRegistry
+                )
+            });
 
         }
 
@@ -2228,104 +1859,52 @@ export default async function (
         ) {
 
             const invitationCode =
-                cleanText(
-                    body.invitationCode,
-                    160
-                );
-
+                cleanText(body.invitationCode, 160);
 
             const seatId =
-                cleanText(
-                    body.seatId,
-                    100
-                );
-
+                cleanText(body.seatId, 100);
 
             const assignment =
-                registry.assignments[
-                    invitationCode
-                ];
-
+                registry.assignments[invitationCode];
 
             if (
                 !assignment ||
-                assignment.split !==
-                    true ||
-                !Array.isArray(
-                    assignment.seats
-                )
+                assignment.split !== true ||
+                !Array.isArray(assignment.seats)
             ) {
-
                 return jsonResponse(
-                    {
-                        error:
-                            "This invitation is not using split seating."
-                    },
+                    { error: "This invitation is not using split seating." },
                     409
                 );
-
             }
-
 
             const seat =
-                assignment.seats
-                    .find(
-                        item =>
-                            item &&
-                            item.id ===
-                                seatId
-                    );
-
-
-            if (
-                !seat
-            ) {
-
-                return jsonResponse(
-                    {
-                        error:
-                            "Guest seat not found."
-                    },
-                    404
+                assignment.seats.find(item =>
+                    item && item.id === seatId
                 );
 
+            if (!seat) {
+                return jsonResponse(
+                    { error: "Guest seat not found." },
+                    404
+                );
             }
 
+            seat.tableId = null;
+            seat.assignedAt = null;
+            assignment.updatedAt = new Date().toISOString();
 
-            seat.tableId =
-                null;
+            markRegistryUpdated(registry);
+            await store.setJSON(REGISTRY_KEY, registry);
 
-            seat.assignedAt =
-                null;
-
-            assignment.updatedAt =
-                new Date()
-                    .toISOString();
-
-
-            markRegistryUpdated(
-                registry
-            );
-
-
-            await store.setJSON(
-                REGISTRY_KEY,
-                registry
-            );
-
-
-            return jsonResponse(
-                {
-                    unassigned:
-                        true,
-
-                    ...buildResponse(
-                        registry,
-                        rsvpRegistry,
-                        invitationRegistry
-                    )
-                }
-            );
+            return jsonResponse({
+                unassigned: true,
+                ...buildResponse(
+                    registry,
+                    rsvpRegistry,
+                    invitationRegistry
+                )
+            });
 
         }
 
@@ -2368,7 +1947,6 @@ export default async function (
                 registry
             );
 
-
             await store.setJSON(
                 REGISTRY_KEY,
                 registry
@@ -2377,9 +1955,7 @@ export default async function (
 
             return jsonResponse(
                 {
-                    unassigned:
-                        true,
-
+                    unassigned: true,
                     ...buildResponse(
                         registry,
                         rsvpRegistry,
@@ -2406,7 +1982,6 @@ export default async function (
                 registry
             );
 
-
             await store.setJSON(
                 REGISTRY_KEY,
                 registry
@@ -2415,9 +1990,7 @@ export default async function (
 
             return jsonResponse(
                 {
-                    updated:
-                        true,
-
+                    updated: true,
                     ...buildResponse(
                         registry,
                         rsvpRegistry,
@@ -2475,18 +2048,14 @@ export default async function (
 
         const [
             registry,
-            rsvpRegistry,
-            invitationRegistry
+            rsvpRegistry
         ] =
             await Promise.all(
                 [
                     getRegistry(
                         store
                     ),
-
-                    getRsvpRegistry(),
-
-                    getInvitationRegistry()
+                    getRsvpRegistry()
                 ]
             );
 
@@ -2514,74 +2083,32 @@ export default async function (
 
 
         for (
-            const [
-                invitationCode,
-                assignment
-            ]
-            of Object.entries(
-                registry.assignments
-            )
+            const [code, assignment]
+            of Object.entries(registry.assignments)
         ) {
 
-            if (
-                !assignment
-            ) {
-
-                continue;
-
-            }
-
+            if (!assignment) continue;
 
             if (
-                assignment.split ===
-                    true &&
-                Array.isArray(
-                    assignment.seats
-                )
+                assignment.split === true &&
+                Array.isArray(assignment.seats)
             ) {
 
-                assignment.seats
-                    .forEach(
-                        seat => {
-
-                            if (
-                                seat &&
-                                seat.tableId ===
-                                    id
-                            ) {
-
-                                seat.tableId =
-                                    null;
-
-                                seat.assignedAt =
-                                    null;
-
-                            }
-
-                        }
-                    );
-
+                assignment.seats.forEach(seat => {
+                    if (seat && seat.tableId === id) {
+                        seat.tableId = null;
+                        seat.assignedAt = null;
+                    }
+                });
 
                 assignment.updatedAt =
-                    new Date()
-                        .toISOString();
-
+                    new Date().toISOString();
 
                 continue;
-
             }
 
-
-            if (
-                assignment.tableId ===
-                id
-            ) {
-
-                delete registry
-                    .assignments[
-                        invitationCode
-                    ];
-
+            if (assignment.tableId === id) {
+                delete registry.assignments[code];
             }
 
         }
@@ -2591,7 +2118,6 @@ export default async function (
             registry
         );
 
-
         await store.setJSON(
             REGISTRY_KEY,
             registry
@@ -2600,14 +2126,12 @@ export default async function (
 
         return jsonResponse(
             {
-                deleted:
-                    true,
-
+                deleted: true,
                 ...buildResponse(
-                    registry,
-                    rsvpRegistry,
-                    invitationRegistry
-                )
+                        registry,
+                        rsvpRegistry,
+                        invitationRegistry
+                    )
             }
         );
 
