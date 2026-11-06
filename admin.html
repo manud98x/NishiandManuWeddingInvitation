@@ -9753,7 +9753,7 @@ function suggestedSplitNames(
 
     if (count === 2) {
         const parts = name
-            .split(/\s+(?:&|and)\s+/i)
+            .split(/\s*&\s*|\s+and\s+/i)
             .map(value => value.trim())
             .filter(Boolean);
 
