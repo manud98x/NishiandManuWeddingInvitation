@@ -1501,11 +1501,11 @@ export default async function (
 
             if (
                 !guest ||
-                guest.rsvpStatus !==
-                    "attending"
+                guest.rsvpStatus ===
+                    "declined"
             ) {
                 return jsonResponse(
-                    { error: "Split seating is available after this invitation RSVPs Yes." },
+                    { error: "Split seating is unavailable for a declined invitation." },
                     409
                 );
             }
@@ -1813,11 +1813,11 @@ export default async function (
 
             if (
                 !guest ||
-                guest.rsvpStatus !==
-                    "attending"
+                guest.rsvpStatus ===
+                    "declined"
             ) {
                 return jsonResponse(
-                    { error: "Split-seat assignment is available after this invitation RSVPs Yes." },
+                    { error: "Split-seat assignment is unavailable for a declined invitation." },
                     409
                 );
             }

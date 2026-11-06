@@ -6643,8 +6643,8 @@ function canSplitSeatingGuest(
 
     return Boolean(
         guest &&
-        guest.rsvpStatus ===
-            "attending" &&
+        guest.rsvpStatus !==
+            "declined" &&
         Number(
             guest.guestCount
         ) > 1
