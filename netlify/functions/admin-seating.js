@@ -403,6 +403,56 @@ async function getRsvpRegistry() {
 }
 
 
+function inferredInvitationGuestCount(
+    value
+) {
+
+    const name =
+        String(
+            value || ""
+        )
+            .replace(
+                /&amp;/gi,
+                "&"
+            )
+            .replace(
+                /\s+/g,
+                " "
+            )
+            .trim();
+
+
+    if (
+        !name
+    ) {
+
+        return 1;
+
+    }
+
+
+    const parts =
+        name
+            .split(
+                /\s*(?:&|\band\b)\s*/i
+            )
+            .map(
+                part =>
+                    part.trim()
+            )
+            .filter(
+                Boolean
+            );
+
+
+    return parts.length === 2
+        ? 2
+        : 1;
+
+}
+
+
+
 function seatingGuestMap(
     rsvpRegistry,
     invitationRegistry
@@ -453,11 +503,21 @@ function seatingGuestMap(
                 invitationCode,
 
             guestCount:
-                rsvpStatus === "attending"
+                rsvpStatus ===
+                    "attending"
                     ? numericGuestCount(
                         rsvp.guests
                     )
-                    : 0,
+                    : (
+                        rsvpStatus ===
+                            "pending"
+                            ? inferredInvitationGuestCount(
+                                invitation.name ||
+                                rsvp?.guestName ||
+                                invitationCode
+                            )
+                            : 0
+                    ),
 
             guests:
                 rsvp?.guests || null,
@@ -568,13 +628,13 @@ function tableOccupancy(
 
 
         /*
-            Pending and declined invitations may keep a planning
-            assignment, but they do not consume table capacity.
+            Pending invitations use their inferred party size
+            for planning. Declined invitations consume no seats.
         */
         if (
             !guest ||
-            guest.rsvpStatus !==
-                "attending"
+            guest.rsvpStatus ===
+                "declined"
         ) {
 
             continue;
@@ -1399,12 +1459,7 @@ export default async function (
 
             const projectedPeople =
                 occupancy.people +
-                (
-                    guest.rsvpStatus ===
-                        "attending"
-                        ? guest.guestCount
-                        : 0
-                );
+                guest.guestCount;
 
             if (projectedPeople > Number(table.capacity)) {
                 return jsonResponse(
