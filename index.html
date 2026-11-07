@@ -2783,7 +2783,7 @@
         }
 
         .split-seating-person {
-            margin-bottom: 8px;
+            margin-bottom: 18px;
 
             font-family:
                 "Playfair Display",
@@ -3723,7 +3723,7 @@
                                 Message
                             </label>
 
-                            <input type="text" id="message" name="message" placeholder="Leave us a message...">
+                            <textarea id="message" name="message" rows="4" placeholder="Leave us a message..."></textarea>
 
                         </div>
 
@@ -5804,6 +5804,46 @@ END:VCALENDAR`
 
 
         if (rsvpForm) {
+
+            /*
+                Enter should create a new line in the message box.
+                In all other RSVP fields, Enter must not submit
+                the form accidentally.
+            */
+            rsvpForm.addEventListener(
+                "keydown",
+                function (event) {
+
+                    if (
+                        event.key !==
+                        "Enter"
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const target =
+                        event.target;
+
+
+                    if (
+                        target &&
+                        target.tagName ===
+                            "TEXTAREA"
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    event.preventDefault();
+
+                }
+            );
+
 
             rsvpForm.addEventListener(
                 "submit",
