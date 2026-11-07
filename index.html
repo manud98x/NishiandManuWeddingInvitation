@@ -2707,6 +2707,7 @@
 ========================================================= */
 
         .table-assignment-name {
+            margin-top: 18px;
             margin:
                 18px 0 8px;
 
@@ -4246,7 +4247,94 @@ END:VCALENDAR`
 
 
 
-        async function loadExistingRsvpState() {
+        function unlockDateGateForReturningGuest() {
+
+            document
+                .querySelectorAll(
+                    ".post-reveal-card"
+                )
+                .forEach(
+                    card => {
+
+                        card.classList.add(
+                            "revealed"
+                        );
+
+                    }
+                );
+
+
+            const dateCard =
+                document.querySelector(
+                    ".date-card"
+                );
+
+
+            const dateContent =
+                document.querySelector(
+                    ".date-content"
+                );
+
+
+            const slotOverlay =
+                document.querySelector(
+                    ".slot-overlay"
+                );
+
+
+            const slotWindow =
+                document.querySelector(
+                    ".slot-window"
+                );
+
+
+            if (
+                dateCard
+            ) {
+
+                dateCard.classList.add(
+                    "expanded"
+                );
+
+            }
+
+
+            if (
+                dateContent
+            ) {
+
+                dateContent.classList.add(
+                    "show"
+                );
+
+            }
+
+
+            if (
+                slotOverlay
+            ) {
+
+                slotOverlay.style.display =
+                    "none";
+
+            }
+
+
+            if (
+                slotWindow
+            ) {
+
+                slotWindow.classList.add(
+                    "revealed"
+                );
+
+            }
+
+        }
+
+
+
+async function loadExistingRsvpState() {
 
             if (
                 !invitationCode ||
@@ -4291,6 +4379,13 @@ END:VCALENDAR`
                 ) {
 
                     showExistingRsvpState();
+
+                    /*
+                        Returning guests have already completed RSVP,
+                        so do not make them reveal the date again just
+                        to reach their seating information.
+                    */
+                    unlockDateGateForReturningGuest();
 
                     return true;
 
