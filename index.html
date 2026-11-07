@@ -2754,6 +2754,20 @@
                 16px;
         }
 
+        .table-assignment-name.normal-seating-display {
+            margin-top: 0;
+            padding-top: 18px;
+        }
+
+        .table-assignment-name.split-seating-display {
+            margin-top: 0;
+            padding-top: 0;
+        }
+
+        .split-seating-person {
+            margin-bottom: 18px;
+        }
+
         .split-seating-list {
             display: grid;
             gap: 0;
@@ -2784,8 +2798,6 @@
         }
 
         .split-seating-person {
-            margin-bottom: 18px;
-
             font-family:
                 "Playfair Display",
                 serif;
@@ -4324,9 +4336,14 @@ END:VCALENDAR`
                 slotWindow
             ) {
 
-                slotWindow.classList.add(
-                    "revealed"
-                );
+                /*
+                    Returning guests have already RSVP'd, so hide
+                    the date spinner completely. The itinerary is
+                    left untouched and will animate normally when
+                    it enters the viewport.
+                */
+                slotWindow.style.display =
+                    "none";
 
             }
 
@@ -4713,6 +4730,10 @@ async function loadExistingRsvpState() {
 
             name.textContent = "";
             name.classList.add("hidden");
+            name.classList.remove(
+                "normal-seating-display",
+                "split-seating-display"
+            );
 
             try {
                 const response =
@@ -4738,7 +4759,13 @@ async function loadExistingRsvpState() {
                         "We’re delighted to have you seated at";
 
                     name.textContent = "";
-                    name.classList.remove("hidden");
+                    name.classList.remove(
+                        "hidden",
+                        "normal-seating-display"
+                    );
+                    name.classList.add(
+                        "split-seating-display"
+                    );
 
                     const list =
                         document.createElement("div");
@@ -4796,7 +4823,14 @@ async function loadExistingRsvpState() {
                 name.textContent =
                     seating.tableName;
 
-                name.classList.remove("hidden");
+                name.classList.remove(
+                    "hidden",
+                    "split-seating-display"
+                );
+
+                name.classList.add(
+                    "normal-seating-display"
+                );
 
             } catch (error) {
                 console.error(
